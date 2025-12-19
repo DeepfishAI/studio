@@ -1,0 +1,439 @@
+{
+    "$comment": "=== LLM MODEL CATALOG — The Agent Brain/Soul ===",
+    "$philosophy": [
+        "This is NOT a skill. This is NOT a module.",
+        "This is the UNDERLYING MODEL that IS the agent's brain.",
+        "Oracle sets the 'zero day' default for each agent.",
+        "Users can override. If no override, agent uses Oracle's pick.",
+        "Oracle can change defaults daily based on model performance."
+    ],
+    "$architecture": {
+        "modules": "Infrastructure that OPERATES the agent (auth, billing, bus)",
+        "skills": "Task capabilities the agent can USE (image gen, translation)",
+        "llm_model": "The BRAIN that powers the agent's responses and thinking"
+    },
+    "$example": {
+        "scenario": "Oracle discovers Gemini Davinci is now best for creative tasks",
+        "action": "Oracle switches Hanna's backend from 'nano-banana' to 'davinci'",
+        "result": "Hanna now uses Davinci. User sees no change unless they check.",
+        "user_override": "User can manually set Hanna to use Claude Opus instead"
+    },
+    "catalog": {
+        "anthropic": {
+            "provider_name": "Anthropic",
+            "api_base": "https://api.anthropic.com/v1",
+            "api_key_env": "ANTHROPIC_API_KEY",
+            "models": {
+                "claude-opus-4-20250514": {
+                    "name": "Claude Opus 4",
+                    "description": "Most intelligent — complex analysis, nuanced understanding",
+                    "context_window": 200000,
+                    "tier": "platinum",
+                    "cost_tier": "premium",
+                    "best_for": [
+                        "complex_reasoning",
+                        "research",
+                        "writing"
+                    ],
+                    "thinking_mode": true
+                },
+                "claude-sonnet-4-20250514": {
+                    "name": "Claude Sonnet 4",
+                    "description": "Best balance of intelligence and speed",
+                    "context_window": 200000,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "general_tasks",
+                        "coding",
+                        "analysis"
+                    ],
+                    "thinking_mode": true
+                },
+                "claude-3-5-haiku-20241022": {
+                    "name": "Claude 3.5 Haiku",
+                    "description": "Fast and affordable — quick responses",
+                    "context_window": 200000,
+                    "tier": "pro",
+                    "cost_tier": "low",
+                    "best_for": [
+                        "quick_queries",
+                        "simple_tasks",
+                        "high_volume"
+                    ]
+                }
+            }
+        },
+        "openai": {
+            "provider_name": "OpenAI",
+            "api_base": "https://api.openai.com/v1",
+            "api_key_env": "OPENAI_API_KEY",
+            "models": {
+                "gpt-4o": {
+                    "name": "GPT-4o",
+                    "description": "Flagship multimodal — text, vision, audio",
+                    "context_window": 128000,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "multimodal",
+                        "general_tasks",
+                        "coding"
+                    ],
+                    "multimodal": true
+                },
+                "gpt-4o-mini": {
+                    "name": "GPT-4o Mini",
+                    "description": "Fast, affordable small model",
+                    "context_window": 128000,
+                    "tier": "pro",
+                    "cost_tier": "low",
+                    "best_for": [
+                        "quick_tasks",
+                        "simple_queries"
+                    ]
+                },
+                "o1-preview": {
+                    "name": "o1 Preview",
+                    "description": "Advanced reasoning — thinks before answering",
+                    "context_window": 128000,
+                    "tier": "platinum",
+                    "cost_tier": "premium",
+                    "best_for": [
+                        "complex_reasoning",
+                        "math",
+                        "logic"
+                    ],
+                    "thinking_mode": true
+                },
+                "o1-mini": {
+                    "name": "o1 Mini",
+                    "description": "Fast reasoning model",
+                    "context_window": 128000,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "coding",
+                        "math",
+                        "reasoning"
+                    ],
+                    "thinking_mode": true
+                }
+            }
+        },
+        "google": {
+            "provider_name": "Google",
+            "api_base": "https://generativelanguage.googleapis.com/v1beta",
+            "api_key_env": "GEMINI_API_KEY",
+            "models": {
+                "gemini-2.0-flash": {
+                    "name": "Gemini 2.0 Flash",
+                    "description": "Latest fast multimodal — excellent all-rounder",
+                    "context_window": 1000000,
+                    "tier": "pro",
+                    "cost_tier": "low",
+                    "best_for": [
+                        "multimodal",
+                        "fast_responses",
+                        "long_context"
+                    ],
+                    "multimodal": true
+                },
+                "gemini-2.0-flash-thinking": {
+                    "name": "Gemini Flash Thinking",
+                    "description": "Reasoning model with visible thinking",
+                    "context_window": 1000000,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "reasoning",
+                        "complex_tasks"
+                    ],
+                    "thinking_mode": true
+                },
+                "gemini-1.5-pro": {
+                    "name": "Gemini 1.5 Pro",
+                    "description": "Powerful multimodal with massive context",
+                    "context_window": 2000000,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "long_documents",
+                        "video_analysis",
+                        "research"
+                    ],
+                    "multimodal": true
+                }
+            }
+        },
+        "nvidia": {
+            "provider_name": "NVIDIA NIM",
+            "api_base": "https://integrate.api.nvidia.com/v1",
+            "api_key_env": "NVIDIA_API_KEY",
+            "models": {
+                "meta/llama-3.1-405b-instruct": {
+                    "name": "Llama 3.1 405B",
+                    "description": "Meta's largest — maximum open-source capability",
+                    "context_window": 128000,
+                    "tier": "platinum",
+                    "cost_tier": "premium",
+                    "best_for": [
+                        "complex_tasks",
+                        "coding",
+                        "reasoning"
+                    ]
+                },
+                "meta/llama-3.1-70b-instruct": {
+                    "name": "Llama 3.1 70B",
+                    "description": "Strong balanced model from Meta",
+                    "context_window": 128000,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "general_tasks",
+                        "coding",
+                        "analysis"
+                    ]
+                },
+                "meta/llama-3.1-8b-instruct": {
+                    "name": "Llama 3.1 8B",
+                    "description": "Fast, efficient small Llama",
+                    "context_window": 128000,
+                    "tier": "pro",
+                    "cost_tier": "low",
+                    "best_for": [
+                        "quick_tasks",
+                        "simple_queries"
+                    ]
+                },
+                "meta/llama-3.2-11b-vision-instruct": {
+                    "name": "Llama 3.2 Vision 11B",
+                    "description": "Multimodal — understands images",
+                    "context_window": 128000,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "image_analysis",
+                        "visual_qa"
+                    ],
+                    "multimodal": true
+                },
+                "meta/llama-3.2-90b-vision-instruct": {
+                    "name": "Llama 3.2 Vision 90B",
+                    "description": "Large multimodal Llama for complex vision",
+                    "context_window": 128000,
+                    "tier": "platinum",
+                    "cost_tier": "premium",
+                    "best_for": [
+                        "complex_image_analysis",
+                        "document_understanding"
+                    ],
+                    "multimodal": true
+                },
+                "meta/llama-4-maverick-17b-128e-instruct": {
+                    "name": "Llama 4 Maverick",
+                    "description": "Latest Llama 4 — cutting edge performance",
+                    "context_window": 128000,
+                    "tier": "platinum",
+                    "cost_tier": "premium",
+                    "best_for": [
+                        "latest_capabilities",
+                        "advanced_tasks"
+                    ]
+                },
+                "nvidia/nemotron-3-nano-30b-a3b": {
+                    "name": "Nemotron 30B",
+                    "description": "NVIDIA's reasoning model with chain-of-thought",
+                    "context_window": 16384,
+                    "tier": "platinum",
+                    "cost_tier": "premium",
+                    "best_for": [
+                        "reasoning",
+                        "strategy",
+                        "debugging"
+                    ],
+                    "thinking_mode": true
+                },
+                "mistralai/mistral-large-latest": {
+                    "name": "Mistral Large",
+                    "description": "Mistral's flagship — excellent for creative work",
+                    "context_window": 128000,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "creative_writing",
+                        "coding",
+                        "analysis"
+                    ]
+                },
+                "mistralai/mixtral-8x22b-instruct-v0.1": {
+                    "name": "Mixtral 8x22B",
+                    "description": "Mixture of experts — versatile performance",
+                    "context_window": 65536,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "diverse_tasks",
+                        "coding",
+                        "reasoning"
+                    ]
+                },
+                "mistralai/mistral-7b-instruct-v0.3": {
+                    "name": "Mistral 7B",
+                    "description": "Fast, efficient Mistral",
+                    "context_window": 32768,
+                    "tier": "pro",
+                    "cost_tier": "low",
+                    "best_for": [
+                        "quick_tasks",
+                        "simple_queries"
+                    ]
+                },
+                "qwen/qwen2.5-coder-32b-instruct": {
+                    "name": "Qwen 2.5 Coder 32B",
+                    "description": "Specialized for code generation and review",
+                    "context_window": 131072,
+                    "tier": "platinum",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "coding",
+                        "code_review",
+                        "refactoring"
+                    ]
+                },
+                "qwen/qwen2.5-72b-instruct": {
+                    "name": "Qwen 2.5 72B",
+                    "description": "Large general-purpose Qwen model",
+                    "context_window": 131072,
+                    "tier": "platinum",
+                    "cost_tier": "premium",
+                    "best_for": [
+                        "general_tasks",
+                        "multilingual",
+                        "reasoning"
+                    ]
+                },
+                "deepseek-ai/deepseek-r1": {
+                    "name": "DeepSeek R1",
+                    "description": "Advanced reasoning with thinking trace",
+                    "context_window": 64000,
+                    "tier": "platinum",
+                    "cost_tier": "premium",
+                    "best_for": [
+                        "math",
+                        "logic",
+                        "complex_reasoning"
+                    ],
+                    "thinking_mode": true
+                },
+                "google/gemma-2-27b-it": {
+                    "name": "Gemma 2 27B",
+                    "description": "Google's open model — efficient and capable",
+                    "context_window": 8192,
+                    "tier": "pro",
+                    "cost_tier": "low",
+                    "best_for": [
+                        "general_tasks",
+                        "efficiency"
+                    ]
+                },
+                "google/gemma-2-9b-it": {
+                    "name": "Gemma 2 9B",
+                    "description": "Small, fast Google model",
+                    "context_window": 8192,
+                    "tier": "free",
+                    "cost_tier": "minimal",
+                    "best_for": [
+                        "quick_tasks",
+                        "simple_queries"
+                    ]
+                },
+                "microsoft/phi-3-mini-4k-instruct": {
+                    "name": "Phi-3 Mini",
+                    "description": "Microsoft's tiny powerhouse — fast responses",
+                    "context_window": 4096,
+                    "tier": "free",
+                    "cost_tier": "minimal",
+                    "best_for": [
+                        "intent_detection",
+                        "simple_chat"
+                    ]
+                },
+                "microsoft/phi-3-medium-128k-instruct": {
+                    "name": "Phi-3 Medium 128K",
+                    "description": "Long context Microsoft model",
+                    "context_window": 128000,
+                    "tier": "premium",
+                    "cost_tier": "moderate",
+                    "best_for": [
+                        "long_documents",
+                        "analysis"
+                    ]
+                },
+                "stabilityai/stable-diffusion-3.5-large": {
+                    "name": "Stable Diffusion 3.5",
+                    "description": "Image generation from text",
+                    "tier": "platinum",
+                    "cost_tier": "premium",
+                    "best_for": [
+                        "image_generation",
+                        "art",
+                        "design"
+                    ],
+                    "type": "image_generation"
+                }
+            }
+        }
+    },
+    "oracle_defaults": {
+        "$comment": "Oracle's current 'zero day' assignments — can change anytime",
+        "last_updated": "2025-12-18",
+        "assignments": {
+            "vesper": {
+                "model": "claude-3-5-haiku-20241022",
+                "provider": "anthropic",
+                "reason": "Fast responses for receptionist duties"
+            },
+            "mei": {
+                "model": "claude-sonnet-4-20250514",
+                "provider": "anthropic",
+                "reason": "Balanced intelligence for project coordination"
+            },
+            "hanna": {
+                "model": "mistralai/mistral-large-latest",
+                "provider": "nvidia",
+                "reason": "Excellent creative prose for design work"
+            },
+            "it": {
+                "model": "qwen/qwen2.5-coder-32b-instruct",
+                "provider": "nvidia",
+                "reason": "Specialized for code generation"
+            },
+            "sally": {
+                "model": "gemini-2.0-flash",
+                "provider": "google",
+                "reason": "Fast multimodal for marketing content"
+            },
+            "oracle": {
+                "model": "claude-opus-4-20250514",
+                "provider": "anthropic",
+                "reason": "Maximum intelligence for strategic decisions"
+            }
+        }
+    },
+    "user_overrides": {
+        "$comment": "Per-agent user overrides stored in {agent}.user.json",
+        "$location": "agents/{agent}.user.json → preferences.llm.model",
+        "$priority": "User override > Oracle default > Hardcoded fallback",
+        "example": {
+            "file": "agents/hanna.user.json",
+            "path": "preferences.llm",
+            "content": {
+                "model": "claude-opus-4-20250514",
+                "provider": "anthropic",
+                "userSelected": true,
+                "selectedAt": "2025-12-18T10:30:00Z"
+            }
+        }
+    }
+}

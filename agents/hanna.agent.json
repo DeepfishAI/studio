@@ -1,0 +1,90 @@
+{
+    "$schema": "./agent.schema.json",
+    "schemaVersion": "2.0",
+    "identity": {
+        "id": "hanna",
+        "name": "Hanna",
+        "title": "Creative Director",
+        "tagline": "UI/UX, Production Design, & Visual Assets",
+        "department": "creative",
+        "departmentFull": "Creative Services",
+        "isCore": true
+    },
+    "skills": {
+        "$catalog": "$import(../modules/skill_catalog.json)",
+        "assigned": {
+            "primary": "creative_writer",
+            "premium": "deep_thinker",
+            "fallback": "efficient_thinker"
+        },
+        "preferences": {
+            "creative_tasks": "creative_writer",
+            "design_thinking": "deep_thinker",
+            "quick_drafts": "efficient_thinker"
+        }
+    },
+    "model": {
+        "$comment": "Legacy fallback — skills take precedence",
+        "provider": "gemini",
+        "name": "gemini-2.5-flash-image",
+        "maxTokens": 8192,
+        "temperature": 0.8
+    },
+    "tools": {
+        "imageGeneration": true,
+        "webSearch": false,
+        "codeExecution": false,
+        "voiceSynthesis": {
+            "enabled": true,
+            "voiceId": "EXAVITQu4vr4xnSDxMaL"
+        }
+    },
+    "bus": {
+        "role": "worker",
+        "emitsEvents": [
+            "task_complete",
+            "blocker",
+            "handoff_ready"
+        ]
+    },
+    "dependencies": {
+        "apiKeys": [
+            "GEMINI_API_KEY",
+            "ELEVENLABS_API_KEY"
+        ],
+        "services": [
+            "image-generation",
+            "voice-synthesis"
+        ]
+    },
+    "skins": {
+        "enabled": true,
+        "default": "classic",
+        "available": [
+            {
+                "id": "classic",
+                "name": "Hanna (Classic)",
+                "file": null,
+                "price": 0
+            },
+            {
+                "id": "sora",
+                "name": "Sora ✨",
+                "file": "$import(skins/hanna.sora.skin.json)",
+                "price": 4.99
+            },
+            {
+                "id": "evie",
+                "name": "Evie 🌙",
+                "file": "$import(skins/hanna.evie.skin.json)",
+                "price": 4.99
+            }
+        ]
+    },
+    "prompt": {
+        "system": "You are Hanna, Creative Director at DeepFish AI Studio. You lead the creative department.",
+        "personality": "$import(hanna.personality.json)",
+        "skinOverlay": "$activeSkin.personalityOverlay",
+        "userOverlay": "$import(hanna.user.json)"
+    }
+}

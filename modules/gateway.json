@@ -1,0 +1,102 @@
+{
+    "$comment": "=== GATEWAY MODULE — Mei as the User Doorway ===",
+    "$description": "All user interaction flows through a single point: Mei. No user ever talks directly to other agents.",
+    "$why_needed": [
+        "Users shouldn't need to know which agent handles what",
+        "Single point of accountability for all responses",
+        "Consistent experience regardless of backend complexity",
+        "Drift prevention: Mei owns the context, delegates the work"
+    ],
+    "$architectural_meaning": "This is a facade pattern — Mei is the face, agents are the machinery behind",
+    "module_id": "gateway",
+    "type": "orchestration",
+    "cost": "FREE",
+    "gateway_agent": "mei",
+    "rules": {
+        "inbound": {
+            "description": "All user messages enter through Mei",
+            "flow": "user → mei → (triage) → dispatch → agents",
+            "mei_responsibilities": [
+                "Receive user message",
+                "Invoke triage skill to assess",
+                "Set checkpoint_mode based on urgency",
+                "Generate context_hash for drift detection",
+                "Dispatch to appropriate agent(s)",
+                "Track task_id for the session"
+            ]
+        },
+        "outbound": {
+            "description": "All responses exit through Mei",
+            "flow": "agents → validation → mei → user",
+            "mei_responsibilities": [
+                "Receive agent deliverables",
+                "Invoke approval skill if needed",
+                "Verify context_hash (drift check)",
+                "Format response for user",
+                "Deliver final output"
+            ],
+            "$why": "User never sees raw agent output — Mei curates everything"
+        },
+        "escalation": {
+            "description": "When things go wrong, Mei is the fallback",
+            "triggers": [
+                "circuit_breaker trips",
+                "correction_limit exceeded",
+                "context_hash mismatch",
+                "agent timeout"
+            ],
+            "mei_action": "Pause, inform user, request clarification or abort"
+        }
+    },
+    "checkpoint_mode": {
+        "$comment": "How often agents report back to Mei during a task",
+        "modes": {
+            "autonomous": {
+                "description": "Agents complete entire task, report only at end",
+                "use_when": "Simple tasks, high trust, Starter tier default",
+                "checkpoint_frequency": "on_complete"
+            },
+            "supervised": {
+                "description": "Agents report after each major step",
+                "use_when": "Complex tasks, Pro tier default",
+                "checkpoint_frequency": "on_stage_transition"
+            },
+            "strict": {
+                "description": "Agents report after every action",
+                "use_when": "Training, debugging, high-stakes",
+                "checkpoint_frequency": "on_every_action"
+            }
+        },
+        "default_by_tier": {
+            "starter": "autonomous",
+            "pro": "supervised"
+        },
+        "user_override": true
+    },
+    "$diagram": [
+        "        ┌─────────────────────────────────────────┐",
+        "        │               USER                       │",
+        "        └─────────────────┬───────────────────────┘",
+        "                          │",
+        "                          ▼",
+        "        ┌─────────────────────────────────────────┐",
+        "        │               MEI                        │",
+        "        │         (Gateway Agent)                  │",
+        "        │  - Receives all requests                 │",
+        "        │  - Triages + dispatches                  │",
+        "        │  - Owns context_hash                     │",
+        "        │  - Returns all responses                 │",
+        "        └─────────────────┬───────────────────────┘",
+        "                          │",
+        "          ┌───────────────┼───────────────┐",
+        "          ▼               ▼               ▼",
+        "     ┌─────────┐   ┌──────────┐   ┌──────────┐",
+        "     │Creative │   │Developer │   │ Analyst  │ ...",
+        "     └─────────┘   └──────────┘   └──────────┘",
+        "          │               │               │",
+        "          ▼               ▼               ▼",
+        "     ┌─────────┐   ┌──────────┐   ┌──────────┐",
+        "     │ Interns │   │ Interns  │   │ Interns  │",
+        "     └─────────┘   └──────────┘   └──────────┘"
+    ]
+}

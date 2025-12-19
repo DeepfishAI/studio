@@ -1,0 +1,56 @@
+{
+    "$comment": "=== APPROVAL SKILL ===",
+    "skill_id": "approval",
+    "name": "Deliverable Approval",
+    "version": "1.0.0",
+    "skill_level": "A",
+    "required_access": {
+        "level": "A",
+        "description": "Officers only — final approval before user delivery",
+        "bus_access": true
+    },
+    "description": "Final approval gate before deliverables reach the user. Ensures work meets expectations.",
+    "capabilities": {
+        "review": {
+            "description": "Review deliverable against original request",
+            "inputs": [
+                "deliverable",
+                "original_request",
+                "context_hash"
+            ],
+            "outputs": [
+                "matches",
+                "discrepancies"
+            ]
+        },
+        "approve": {
+            "description": "Approve for delivery to user",
+            "outputs": [
+                "approval_token",
+                "timestamp"
+            ]
+        },
+        "reject": {
+            "description": "Reject and return for revision",
+            "inputs": [
+                "reason",
+                "specific_issues"
+            ],
+            "outputs": [
+                "rejection_notice",
+                "revision_instructions"
+            ]
+        },
+        "request_revision": {
+            "description": "Send back to agent with specific feedback",
+            "inputs": [
+                "feedback",
+                "target_agent"
+            ],
+            "outputs": [
+                "revision_task"
+            ]
+        }
+    },
+    "default_owner": "mei"
+}

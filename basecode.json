@@ -1,0 +1,80 @@
+{
+    "$comment": "=== BASECODE — DeepFish Operating System ===",
+    "$version": "2.0.0",
+    "$description": "The foundational layer governing all agent workflow. Uses electronic circuit patterns to ensure stable, predictable, non-destructive operation.",
+    "$architecture": "Modules are now in separate JSONs in modules/ folder for easier understanding and maintenance.",
+    "circuit": {
+        "$comment": "=== CIRCUIT COMPONENTS (loaded from modules/) ===",
+        "resistor": {
+            "$ref": "modules/resistor.json"
+        },
+        "capacitor": {
+            "$ref": "modules/capacitor.json"
+        },
+        "diode": {
+            "$ref": "modules/diode.json"
+        },
+        "circuit_breaker": {
+            "$ref": "modules/circuit_breaker.json"
+        },
+        "ground": {
+            "$ref": "modules/ground.json"
+        }
+    },
+    "call_stack": {
+        "$comment": "Runtime tracking for diode enforcement",
+        "purpose": "Track agent call chain to prevent circular references",
+        "schema": {
+            "task_id": "string",
+            "stack": [
+                "agent_id_1",
+                "agent_id_2",
+                "..."
+            ],
+            "timestamp": "ISO8601"
+        },
+        "max_depth": 5,
+        "on_max_depth": "reject + escalate_to_mei"
+    },
+    "execution_order": {
+        "$comment": "=== THE CIRCUIT FLOW ===",
+        "description": "Every request flows through this circuit",
+        "flow": [
+            {
+                "stage": "1_intake",
+                "module": "resistor",
+                "action": "Check rate limits, reject if exceeded"
+            },
+            {
+                "stage": "2_buffer",
+                "module": "capacitor",
+                "action": "Queue task, respect WIP limits"
+            },
+            {
+                "stage": "3_route",
+                "module": "diode",
+                "action": "Assign agent, init call_stack, enforce direction"
+            },
+            {
+                "stage": "4_execute",
+                "module": "circuit_breaker",
+                "action": "Monitor for failures, trip if threshold exceeded"
+            },
+            {
+                "stage": "5_complete",
+                "module": "ground",
+                "action": "Handle errors gracefully, return result or safe default"
+            }
+        ]
+    },
+    "integration": {
+        "with_bus": {
+            "description": "Basecode enforces rules BEFORE messages hit the bus",
+            "order": "basecode.circuit → bus.gates → agent.execute"
+        },
+        "with_skills": {
+            "description": "Skill invocation goes through basecode first",
+            "order": "basecode.diode (check access) → invoke_skill → basecode.ground (catch errors)"
+        }
+    }
+}

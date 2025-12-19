@@ -1,0 +1,48 @@
+{
+    "$comment": "=== GROUND MODULE ===",
+    "$description": "This module acts like an electrical ground - it provides a SAFE PATH for errors to discharge without damaging the system.",
+    "$why_needed": [
+        "Not every error should crash the system - some can be handled gracefully",
+        "Users need friendly messages, not stack traces",
+        "Failed tasks need somewhere to go that doesn't block everything else"
+    ],
+    "$lean_equivalent": "Scrap/rework area - defects go somewhere safe for handling",
+    "$electrical_analogy": "A ground wire safely discharges excess current to earth, preventing shocks",
+    "module_id": "ground",
+    "name": "Ground",
+    "version": "1.0.0",
+    "type": "circuit_component",
+    "cost": "FREE",
+    "description": "Error sink — graceful degradation instead of crashes",
+    "error_handling": {
+        "uncaught_exception": {
+            "action": "log + notify_mei + return_safe_default",
+            "safe_default": "I encountered an issue and couldn't complete this. Mei has been notified.",
+            "$why": "User gets a message, Mei knows there's a problem, system doesn't crash"
+        },
+        "timeout": {
+            "action": "log + release_resources + return_partial",
+            "message": "Task timed out. Partial results returned.",
+            "$why": "Better to return something than nothing - release resources for others"
+        },
+        "validation_failure": {
+            "action": "log + queue_for_retry",
+            "max_retries": 2,
+            "$why": "Validation failures might be transient - try again before giving up"
+        }
+    },
+    "log_destination": {
+        "value": "basecode://error_log",
+        "$why": "All errors go to a central log for analysis and debugging"
+    },
+    "retention_days": {
+        "value": 30,
+        "$why": "Keep 30 days of errors for pattern analysis, then clean up"
+    },
+    "$how_to_read_this": [
+        "1. This is your 'what happens when things go wrong' playbook",
+        "2. Every error type has a defined handling strategy - no surprises",
+        "3. The pattern: log it, notify someone, give user a friendly message",
+        "4. Think of this as your safety net - errors land here, not on users"
+    ]
+}

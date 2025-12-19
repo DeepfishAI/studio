@@ -1,0 +1,174 @@
+{
+    "$comment": "Agent Creator Form Schema — defines fields for creating new employees",
+    "form": {
+        "title": "Create New Employee",
+        "description": "Form for adding officers, managers, or interns to the virtual office",
+        "fields": [
+            {
+                "name": "role",
+                "type": "select",
+                "label": "Role",
+                "required": true,
+                "options": [
+                    {
+                        "value": "officer",
+                        "label": "Officer",
+                        "description": "Elevated permissions, top-level oversight"
+                    },
+                    {
+                        "value": "manager",
+                        "label": "Manager",
+                        "description": "Specialist lead, manages interns"
+                    },
+                    {
+                        "value": "intern",
+                        "label": "Intern",
+                        "description": "Sub-agent, reports to a manager"
+                    }
+                ]
+            },
+            {
+                "name": "id",
+                "type": "text",
+                "label": "ID",
+                "required": true,
+                "placeholder": "lowercase_with_underscores",
+                "validation": {
+                    "pattern": "^[a-z][a-z0-9_]*$",
+                    "unique_in": "_config.agents[].id"
+                }
+            },
+            {
+                "name": "name",
+                "type": "text",
+                "label": "Display Name",
+                "required": true,
+                "placeholder": "e.g., Creative, Oracle, Graphic Designer"
+            },
+            {
+                "name": "primitive",
+                "type": "text",
+                "label": "Primitive (Core Function)",
+                "required": true,
+                "placeholder": "e.g., Research, Coding, Content Creation"
+            },
+            {
+                "name": "responsibilities",
+                "type": "textarea_list",
+                "label": "Responsibilities",
+                "required": true,
+                "min_items": 1,
+                "placeholder": "One responsibility per line"
+            },
+            {
+                "name": "rom_identity",
+                "type": "textarea",
+                "label": "ROM Identity (Permanent Personality)",
+                "required": true,
+                "placeholder": "You are... Your role is..."
+            },
+            {
+                "name": "preferred_models",
+                "type": "multi_select",
+                "label": "Preferred LLM Models",
+                "required": false,
+                "options_from": "_config.llm_models.text[].id"
+            },
+            {
+                "name": "triggers",
+                "type": "tag_input",
+                "label": "Trigger Keywords (for routing)",
+                "required": false,
+                "placeholder": "Add keywords that route tasks to this agent",
+                "show_if": {
+                    "role": [
+                        "manager",
+                        "intern"
+                    ]
+                }
+            },
+            {
+                "name": "reports_to",
+                "type": "select",
+                "label": "Reports To",
+                "required": false,
+                "options_from": "_config.agents[?role=='officer' || role=='manager'].id",
+                "show_if": {
+                    "role": [
+                        "manager",
+                        "intern"
+                    ]
+                },
+                "default_if": {
+                    "role": "manager",
+                    "default": "mei"
+                }
+            },
+            {
+                "name": "parent_manager",
+                "type": "select",
+                "label": "Parent Manager",
+                "required": true,
+                "options_from": "_config.agents[?role=='manager'].id",
+                "show_if": {
+                    "role": "intern"
+                }
+            },
+            {
+                "name": "permissions",
+                "type": "checkbox_group",
+                "label": "Permissions",
+                "show_if": {
+                    "role": "officer"
+                },
+                "options": [
+                    {
+                        "name": "elevated",
+                        "label": "Elevated Access",
+                        "default": true
+                    },
+                    {
+                        "name": "can_override",
+                        "label": "Can Override Others",
+                        "default": true
+                    },
+                    {
+                        "name": "access_all_memory",
+                        "label": "Access All Agent Memory",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    },
+    "templates": {
+        "officer": {
+            "role": "officer",
+            "permissions": {
+                "elevated": true,
+                "can_override": true,
+                "access_all_memory": true
+            },
+            "reports_to": null,
+            "direct_reports": []
+        },
+        "manager": {
+            "role": "manager",
+            "reports_to": "mei",
+            "interns": []
+        },
+        "intern": {
+            "triggers": []
+        }
+    },
+    "actions": {
+        "on_submit": [
+            "Validate all required fields",
+            "Check ID uniqueness",
+            "Apply role template",
+            "Insert into _config.agents (or as intern under parent_manager)",
+            "Update routing rules if triggers provided",
+            "Save virtual_office.json"
+        ]
+    }
+}

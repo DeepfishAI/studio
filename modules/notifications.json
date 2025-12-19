@@ -1,0 +1,28 @@
+{
+    "$comment": "=== NOTIFICATIONS MODULE ===",
+    "module_id": "notifications",
+    "name": "Notifications",
+    "version": "1.0.0",
+    "type": "communication",
+    "cost": "FREE",
+    "status": "placeholder",
+    "description": "User notifications, alerts, in-app messages.",
+    "channels": [
+        "in_app",
+        "email",
+        "push"
+    ],
+    "types": [
+        "task_complete",
+        "error",
+        "system",
+        "billing",
+        "agent_message"
+    ],
+    "operations": [
+        "send",
+        "mark_read",
+        "list",
+        "preferences"
+    ]
+}

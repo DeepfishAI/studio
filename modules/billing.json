@@ -1,0 +1,46 @@
+{
+    "$comment": "=== BILLING MODULE ===",
+    "module_id": "billing",
+    "name": "Billing & Payments",
+    "version": "1.0.0",
+    "type": "monetization",
+    "cost": "FREE",
+    "status": "active",
+    "description": "Handles subscriptions, microtransactions, skill purchases.",
+    "providers": [
+        "stripe"
+    ],
+    "models": {
+        "subscription": "Monthly/annual plans",
+        "microtransaction": "Per-skill purchases",
+        "usage_based": "Pay per API call (future)"
+    },
+    "operations": [
+        "subscribe",
+        "cancel",
+        "purchase_skill",
+        "get_invoices",
+        "update_payment_method"
+    ],
+    "stripe_config": {
+        "mode": "test",
+        "api_version": "2024-12-18.acacia",
+        "webhook_events": [
+            "checkout.session.completed",
+            "customer.subscription.created",
+            "customer.subscription.updated",
+            "customer.subscription.deleted",
+            "invoice.paid",
+            "invoice.payment_failed"
+        ]
+    },
+    "api_routes": [
+        "GET /api/billing/status",
+        "GET /api/billing/products",
+        "POST /api/billing/checkout",
+        "POST /api/billing/portal",
+        "POST /api/billing/purchase",
+        "GET /api/billing/subscription/:userId",
+        "POST /api/billing/webhook"
+    ]
+}

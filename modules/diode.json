@@ -1,0 +1,56 @@
+{
+    "$comment": "=== DIODE MODULE ===",
+    "$description": "This module acts like an electrical diode - it ensures ONE-WAY FLOW and prevents backflow/loops.",
+    "$why_needed": [
+        "Without diodes, Agent A could call Agent B who calls Agent A - infinite loop!",
+        "Interns might try to delegate to their managers - hierarchy violation",
+        "Circular references would deadlock the system"
+    ],
+    "$lean_equivalent": "Poka-yoke (error-proofing) - prevents defects from occurring",
+    "$electrical_analogy": "A diode only allows current in one direction, blocking reverse flow",
+    "module_id": "diode",
+    "name": "Diode",
+    "version": "1.0.0",
+    "type": "circuit_component",
+    "cost": "FREE",
+    "description": "One-way flow — prevents circular calls and reverse delegation",
+    "rules": {
+        "no_circular_calls": {
+            "description": "Agent cannot call agent already in call_stack",
+            "enforcement": "runtime_check",
+            "on_violation": "reject_call + log",
+            "$example": "If call_stack = [mei, creative, researcher], researcher cannot call mei or creative",
+            "$why": "Calling back up the chain creates infinite loops"
+        },
+        "no_reverse_delegation": {
+            "description": "Interns cannot delegate, only report UP",
+            "intern_allowed_ops": [
+                "execute",
+                "report",
+                "ASSERT",
+                "QUERY"
+            ],
+            "intern_forbidden_ops": [
+                "delegate",
+                "invoke_skill_level_above_C"
+            ],
+            "$why": "Hierarchy exists for a reason - interns execute, managers delegate"
+        },
+        "manager_to_manager": {
+            "description": "Managers can consult peers, but not in same call chain",
+            "enforcement": "call_stack_check",
+            "$example": "Creative can ask Researcher for facts, unless Researcher already called Creative"
+        }
+    },
+    "call_stack": {
+        "max_depth": 5,
+        "on_max_depth": "reject + escalate_to_mei",
+        "$why": "If we're 5 agents deep, something is wrong - escalate instead of going deeper"
+    },
+    "$how_to_read_this": [
+        "1. Think of this as traffic rules for agent communication",
+        "2. call_stack tracks who called whom - prevents circular highways",
+        "3. Interns are like junior employees - they DO work, they don't assign it",
+        "4. This is your 'prevent infinite loops' protection"
+    ]
+}

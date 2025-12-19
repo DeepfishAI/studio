@@ -1,0 +1,239 @@
+{
+    "$comment": "=== VIRTUAL CODING OFFICE — QUICK START GUIDE ===",
+    "purpose": "Multi-agent AI system aligned with MCP (Model Context Protocol)\n2 officers + 6 managers + 12 interns\nCollaborative task processing\nMemory management (ROM/RAM)",
+    "$comment_files": "=== PROJECT FILES — What each file does ===",
+    "files": [
+        {
+            "name": "INIT.json",
+            "purpose": "This file — quick start guide & concept definitions",
+            "edit": "Rarely"
+        },
+        {
+            "name": "virtual_office.json",
+            "purpose": "Main config — agents, tools, routing, memory. This is the 'source of truth'",
+            "edit": "Often"
+        },
+        {
+            "name": "MCP_STANDARD.json",
+            "purpose": "⚠️ DEVIATION CHECKER — read before editing virtual_office.json",
+            "edit": "Never"
+        },
+        {
+            "name": "TODO.json",
+            "purpose": "Task tracking & open design decisions",
+            "edit": "Often"
+        },
+        {
+            "name": "agent_creator.json",
+            "purpose": "Form schema for adding new employees (officers/managers/interns)",
+            "edit": "Rarely"
+        },
+        {
+            "name": "modules/",
+            "purpose": "OS internals — circuit components + infrastructure, always FREE",
+            "edit": "Rarely",
+            "cost": "FREE",
+            "circuit_modules": [
+                "resistor.json",
+                "capacitor.json",
+                "diode.json",
+                "circuit_breaker.json",
+                "ground.json"
+            ],
+            "infrastructure_modules": [
+                "permission_matrix.json",
+                "bus.json",
+                "workspace.json",
+                "auth.json",
+                "billing.json",
+                "notifications.json",
+                "logging.json",
+                "analytics.json",
+                "cache.json",
+                "gateway.json",
+                "switchboard.json"
+            ]
+        },
+        {
+            "name": "tools/",
+            "purpose": "Purchasable items — both SKILLS (actions agents do) and OBJECTS (things agents use)",
+            "edit": "Often",
+            "cost": "PAID (microtransactions)",
+            "$types": {
+                "skill": "An action or process an agent can execute (e.g., triage, moderation)",
+                "object": "A thing or space an agent can use (e.g., conference_room, dashboard)"
+            },
+            "current": {
+                "skills": [
+                    "triage.json",
+                    "get_time.json",
+                    "moderation.json",
+                    "knowledge_curation.json",
+                    "quality_assurance.json",
+                    "user_interface.json",
+                    "approval.json"
+                ],
+                "objects": [
+                    "conference_room.json"
+                ]
+            },
+            "future": {
+                "skills": [
+                    "scheduler.json",
+                    "voice_interface.json",
+                    "video_animation.json",
+                    "youtube_player.json",
+                    "youtube_transcript.json"
+                ],
+                "objects": [
+                    "dashboard.json",
+                    "inbox.json"
+                ]
+            }
+        },
+        {
+            "name": "basecode.json",
+            "purpose": "OS orchestrator — references modules/, defines execution order",
+            "edit": "Rarely",
+            "layer": "Foundation — loaded first"
+        }
+    ],
+    "$comment_mcp": "=== MCP COMPLIANCE — Protocol we follow ===",
+    "mcp_compliance": {
+        "standard": "Model Context Protocol (MCP)",
+        "version": "2025-11-25",
+        "reference": "https://modelcontextprotocol.io/specification/2025-11-25",
+        "why_mcp": "Purpose-built for AI agents, less abstraction fog, algebraic routing",
+        "deviation_check": "Before editing virtual_office.json, read MCP_STANDARD.json"
+    },
+    "$comment_concepts": "=== CONCEPTS — Vocabulary this system uses ===",
+    "concepts": {
+        "$comment_primitives": "--- MCP PRIMITIVES (Standard, any MCP system understands these) ---",
+        "tool": {
+            "mcp_primitive": true,
+            "what": "Executable function for AI to invoke",
+            "example": "dispatch (route tasks), browse (interact with web)",
+            "defined_in": "virtual_office.json → tools[]"
+        },
+        "resource": {
+            "mcp_primitive": true,
+            "what": "Data accessible via URI",
+            "example": "memory://office/agents/{id}/rom",
+            "defined_in": "virtual_office.json → resources[]"
+        },
+        "prompt": {
+            "mcp_primitive": true,
+            "what": "Templated message/workflow",
+            "example": "task-dispatch (route user request to agent)",
+            "defined_in": "virtual_office.json → prompts[]"
+        },
+        "$comment_custom": "--- CUSTOM CONCEPTS (Our extensions, prefixed with _ in config) ---",
+        "officer": {
+            "mcp_primitive": false,
+            "what": "Top-level AI with elevated permissions",
+            "example": "Oracle (oversight), Mei (coordination)",
+            "reports_to": "Nobody",
+            "defined_in": "virtual_office.json → _config.agents[] where role='officer'"
+        },
+        "agent": {
+            "mcp_primitive": false,
+            "what": "AI specialist (manager level)",
+            "example": "Creative, Developer, Analyst",
+            "reports_to": "Mei",
+            "defined_in": "virtual_office.json → _config.agents[] where role='manager'"
+        },
+        "intern": {
+            "mcp_primitive": false,
+            "what": "Sub-agent under a manager",
+            "example": "Graphic Designer (under Creative)",
+            "reports_to": "Their parent manager",
+            "defined_in": "virtual_office.json → _config.agents[].interns[]"
+        },
+        "rom": {
+            "mcp_primitive": false,
+            "what": "Permanent memory — identity, personality, training",
+            "analogy": "Hardcoded personality (read-only at runtime)",
+            "defined_in": "virtual_office.json → _config.agents[].rom"
+        },
+        "ram": {
+            "mcp_primitive": false,
+            "what": "Session context — current learnings",
+            "analogy": "Working memory (read-write, clearable)",
+            "defined_in": "virtual_office.json → _config.memory.ram"
+        },
+        "bus": {
+            "mcp_primitive": false,
+            "what": "Algebraic communication channel for inter-agent coordination",
+            "operations": [
+                "ASSERT",
+                "QUERY",
+                "VALIDATE",
+                "CORRECT",
+                "ACK"
+            ],
+            "key_features": [
+                "Hashchain verification (detects context degradation)",
+                "Boolean gates (deterministic pass/fail)",
+                "Mei controls validation threshold based on urgency"
+            ],
+            "defined_in": "virtual_office.json → _config.bus"
+        },
+        "skill": {
+            "mcp_primitive": false,
+            "what": "Modular process that any agent can invoke at runtime",
+            "example": "triage (decomposes tasks, assesses urgency, sets validation threshold)",
+            "key_principle": "Skills are DECOUPLED from agents — defined in their own JSONs",
+            "invoked_via": "invoke_skill tool",
+            "defined_in": "tools/*.json"
+        },
+        "skill_levels": {
+            "mcp_primitive": false,
+            "what": "Permission tiers that constrain which agents can access which skills",
+            "purpose": "Limit LLM scope, reduce bloat, keep focus sharp",
+            "hierarchy": {
+                "A": "Officers only — triage, bus access, override capabilities",
+                "B": "Managers — specialized domain skills",
+                "C": "Interns — task-specific skills",
+                "D": "Basic — anyone can use (e.g., get_time, lookup)"
+            },
+            "current_skills": {
+                "A": [
+                    "triage"
+                ],
+                "D": [
+                    "get_time"
+                ]
+            },
+            "enforcement": "invoke_skill checks agent.skill_access >= skill.skill_level"
+        }
+    },
+    "$comment_routing": "=== ROUTING — How tasks reach the right agent ===",
+    "routing_overview": {
+        "how_it_works": "Keywords in user request → match routing rules → assign agent",
+        "example": "'Create a logo' matches 'logo' → routes to Creative → delegates to Graphic Designer",
+        "defined_in": "virtual_office.json → _config.routing.rules[]"
+    },
+    "$comment_next": "=== NEXT STEPS — What to do now ===",
+    "next_steps": {
+        "1_understand": {
+            "action": "Read MCP_STANDARD.json to understand the format",
+            "why": "So you don't break MCP compliance when editing"
+        },
+        "2_explore": {
+            "action": "Open virtual_office.json to see agents, routing, memory",
+            "why": "This is where the system is actually defined"
+        },
+        "3_customize": {
+            "action": "Define the placeholder interns (currently [TBD])",
+            "why": "Only Creative has real interns; others need filling in"
+        },
+        "4_add_employees": {
+            "action": "Use agent_creator.json schema to add new officers/managers/interns",
+            "why": "Consistent structure for new team members"
+        },
+        "5_validate": {
+            "action": "Check edits against MCP_STANDARD.json",
+            "why": "Avoid deviations that could break compatibility"
+        }
+    }
+}

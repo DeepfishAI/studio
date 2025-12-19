@@ -1,0 +1,494 @@
+{
+    "$comment": "=== SKILL CATALOG — The Big Pit of Skills ===",
+    "$philosophy": "LLMs are not infrastructure, they are SKILLS we assign to agents",
+    "$marketing": "Vesper runs on Llama. Hanna runs on Nemotron. Each agent, hand-picked power.",
+    "skillSelectionProtocol": {
+        "$comment": "How agents select skills to avoid decision fatigue",
+        "defaultSource": "oracle",
+        "overridePermission": "mei",
+        "userEscalation": [
+            "tier_upgrade",
+            "cost_increase"
+        ],
+        "catalogVisibility": "task_start",
+        "flow": [
+            "1. Agent receives task from Mei",
+            "2. Agent reviews skill catalog (sees available options)",
+            "3. Agent checks Oracle's default assignment",
+            "4. If default fits → use it (no permission needed)",
+            "5. If override needed → request permission from Mei",
+            "6. Mei approves/denies based on tier and budget"
+        ],
+        "exampleDialogue": {
+            "hanna": "I received a complex design task. Oracle assigned me 'creative_writer' but this needs deep thinking. Requesting 'deep_thinker' skill.",
+            "mei": "Approved. User is Platinum tier. Proceed.",
+            "result": "[Hanna uses Nemotron for this task]"
+        }
+    },
+    "catalog": {
+        "llm_skills": {
+            "$comment": "Each LLM is a skill that can be assigned to any agent",
+            "fast_responder": {
+                "name": "Fast Responder",
+                "description": "Quick responses for simple queries",
+                "llm": "microsoft/phi-3-mini-4k-instruct",
+                "tier": "free",
+                "keywords": [
+                    "quick",
+                    "simple",
+                    "fast",
+                    "intent",
+                    "greeting",
+                    "hello",
+                    "hi"
+                ],
+                "best_for": [
+                    "intent_detection",
+                    "quick_lookups",
+                    "simple_chat"
+                ],
+                "latency": "low",
+                "cost": "minimal"
+            },
+            "efficient_thinker": {
+                "name": "Efficient Thinker",
+                "description": "Balanced speed and capability from Google",
+                "llm": "google/gemma-2-9b-it",
+                "tier": "free",
+                "keywords": [
+                    "summary",
+                    "summarize",
+                    "draft",
+                    "outline",
+                    "basic"
+                ],
+                "best_for": [
+                    "summarization",
+                    "basic_analysis",
+                    "drafts"
+                ],
+                "latency": "low",
+                "cost": "low"
+            },
+            "standard_llama": {
+                "name": "Standard Llama",
+                "description": "Meta's reliable all-purpose intelligence",
+                "llm": "meta/llama-3.1-8b-instruct",
+                "tier": "pro",
+                "keywords": [
+                    "general",
+                    "help",
+                    "explain",
+                    "write",
+                    "question"
+                ],
+                "best_for": [
+                    "general_tasks",
+                    "writing",
+                    "q_and_a"
+                ],
+                "latency": "medium",
+                "cost": "moderate"
+            },
+            "creative_writer": {
+                "name": "Creative Writer",
+                "description": "Mistral's excellent prose and creative output",
+                "llm": "mistralai/mistral-7b-instruct-v0.3",
+                "tier": "pro",
+                "keywords": [
+                    "creative",
+                    "story",
+                    "write",
+                    "copy",
+                    "blog",
+                    "article",
+                    "marketing"
+                ],
+                "best_for": [
+                    "copywriting",
+                    "storytelling",
+                    "marketing_content"
+                ],
+                "latency": "medium",
+                "cost": "moderate"
+            },
+            "power_llama": {
+                "name": "Power Llama",
+                "description": "Meta's strong reasoning for complex tasks",
+                "llm": "meta/llama-3.1-70b-instruct",
+                "tier": "premium",
+                "keywords": [
+                    "complex",
+                    "analyze",
+                    "research",
+                    "deep",
+                    "detailed"
+                ],
+                "best_for": [
+                    "code_generation",
+                    "complex_analysis",
+                    "research"
+                ],
+                "latency": "medium",
+                "cost": "higher"
+            },
+            "multi_expert": {
+                "name": "Multi-Expert",
+                "description": "Mistral's mixture of experts for varied tasks",
+                "llm": "mistralai/mixtral-8x22b-instruct-v0.1",
+                "tier": "premium",
+                "keywords": [
+                    "versatile",
+                    "multi",
+                    "varied",
+                    "diverse",
+                    "synthesize"
+                ],
+                "best_for": [
+                    "multi_domain",
+                    "versatile_tasks",
+                    "synthesis"
+                ],
+                "latency": "medium",
+                "cost": "higher"
+            },
+            "long_context": {
+                "name": "Long Context Master",
+                "description": "Microsoft Phi-3 handles massive documents (128K tokens)",
+                "llm": "microsoft/phi-3-medium-128k-instruct",
+                "tier": "premium",
+                "keywords": [
+                    "document",
+                    "long",
+                    "pdf",
+                    "file",
+                    "contract",
+                    "legal",
+                    "paper"
+                ],
+                "best_for": [
+                    "document_analysis",
+                    "legal_review",
+                    "research_papers"
+                ],
+                "latency": "higher",
+                "cost": "higher"
+            },
+            "mega_llama": {
+                "name": "Mega Llama",
+                "description": "Meta's 405B — maximum capability, massive scale",
+                "llm": "meta/llama-3.1-405b-instruct",
+                "tier": "platinum",
+                "keywords": [
+                    "complex",
+                    "architecture",
+                    "production",
+                    "enterprise",
+                    "critical"
+                ],
+                "best_for": [
+                    "complex_architecture",
+                    "deep_reasoning",
+                    "production_code"
+                ],
+                "latency": "higher",
+                "cost": "premium"
+            },
+            "deep_thinker": {
+                "name": "Deep Thinker",
+                "description": "NVIDIA Nemotron — chain-of-thought with visible thinking",
+                "llm": "nvidia/nemotron-3-nano-30b-a3b",
+                "tier": "platinum",
+                "thinking_mode": true,
+                "keywords": [
+                    "think",
+                    "reason",
+                    "strategy",
+                    "plan",
+                    "debug",
+                    "why"
+                ],
+                "best_for": [
+                    "strategic_decisions",
+                    "debugging",
+                    "architecture_design"
+                ],
+                "latency": "higher",
+                "cost": "premium"
+            },
+            "reasoning_master": {
+                "name": "Reasoning Master",
+                "description": "DeepSeek R1 — advanced reasoning with thinking trace",
+                "llm": "deepseek-ai/deepseek-r1",
+                "tier": "platinum",
+                "thinking_mode": true,
+                "keywords": [
+                    "math",
+                    "logic",
+                    "proof",
+                    "calculate",
+                    "solve",
+                    "puzzle"
+                ],
+                "best_for": [
+                    "math",
+                    "logic_puzzles",
+                    "complex_reasoning"
+                ],
+                "latency": "higher",
+                "cost": "premium"
+            },
+            "code_specialist": {
+                "name": "Code Specialist",
+                "description": "Qwen's 32B coder — optimized for code generation and review",
+                "llm": "qwen/qwen2.5-coder-32b-instruct",
+                "tier": "platinum",
+                "keywords": [
+                    "code",
+                    "program",
+                    "function",
+                    "class",
+                    "api",
+                    "backend",
+                    "frontend"
+                ],
+                "best_for": [
+                    "code_generation",
+                    "code_review",
+                    "refactoring"
+                ],
+                "latency": "medium",
+                "cost": "premium"
+            },
+            "vision_analyst": {
+                "name": "Vision Analyst",
+                "description": "Meta Llama 3.2 Vision — understands images and screenshots",
+                "llm": "meta/llama-3.2-11b-vision-instruct",
+                "tier": "premium",
+                "keywords": [
+                    "image",
+                    "screenshot",
+                    "picture",
+                    "photo",
+                    "visual",
+                    "see",
+                    "look"
+                ],
+                "best_for": [
+                    "image_analysis",
+                    "screenshot_review",
+                    "visual_qa"
+                ],
+                "latency": "medium",
+                "cost": "higher",
+                "multimodal": true
+            },
+            "vision_master": {
+                "name": "Vision Master",
+                "description": "Meta Llama 3.2 90B Vision — powerful multimodal understanding",
+                "llm": "meta/llama-3.2-90b-vision-instruct",
+                "tier": "platinum",
+                "keywords": [
+                    "image",
+                    "diagram",
+                    "chart",
+                    "ui",
+                    "design",
+                    "mockup"
+                ],
+                "best_for": [
+                    "complex_image_analysis",
+                    "ui_review",
+                    "diagram_understanding"
+                ],
+                "latency": "higher",
+                "cost": "premium",
+                "multimodal": true
+            },
+            "translator": {
+                "name": "Translator",
+                "description": "NVIDIA Riva — professional translation across languages",
+                "llm": "nvidia/riva-translate-4b-instruct-v1_1",
+                "tier": "premium",
+                "keywords": [
+                    "translate",
+                    "spanish",
+                    "french",
+                    "german",
+                    "chinese",
+                    "language"
+                ],
+                "best_for": [
+                    "translation",
+                    "localization",
+                    "multilingual"
+                ],
+                "latency": "low",
+                "cost": "moderate"
+            },
+            "speech_to_text": {
+                "name": "Speech to Text",
+                "description": "OpenAI Whisper — transcribe audio to text",
+                "llm": "openai/whisper-large-v3",
+                "tier": "premium",
+                "keywords": [
+                    "transcribe",
+                    "audio",
+                    "voice",
+                    "speech",
+                    "recording",
+                    "podcast"
+                ],
+                "best_for": [
+                    "transcription",
+                    "voice_notes",
+                    "meeting_notes"
+                ],
+                "latency": "medium",
+                "cost": "moderate"
+            },
+            "text_to_speech": {
+                "name": "Text to Speech",
+                "description": "NVIDIA Magpie TTS — natural voice synthesis",
+                "llm": "nvidia/magpie-tts-multilingual",
+                "tier": "premium",
+                "keywords": [
+                    "speak",
+                    "voice",
+                    "audio",
+                    "read",
+                    "narrate"
+                ],
+                "best_for": [
+                    "voice_generation",
+                    "narration",
+                    "accessibility"
+                ],
+                "latency": "medium",
+                "cost": "moderate"
+            },
+            "image_generator": {
+                "name": "Image Generator",
+                "description": "Stability AI — create images from text",
+                "llm": "stabilityai/stable-diffusion-3.5-large",
+                "tier": "platinum",
+                "keywords": [
+                    "generate",
+                    "create",
+                    "image",
+                    "art",
+                    "design",
+                    "illustration"
+                ],
+                "best_for": [
+                    "image_generation",
+                    "concept_art",
+                    "illustrations"
+                ],
+                "latency": "higher",
+                "cost": "premium"
+            },
+            "llama_latest": {
+                "name": "Llama 4 Maverick",
+                "description": "Meta's latest Llama 4 — cutting edge performance",
+                "llm": "meta/llama-4-maverick-17b-128e-instruct",
+                "tier": "platinum",
+                "keywords": [
+                    "latest",
+                    "new",
+                    "cutting-edge",
+                    "advanced",
+                    "state-of-the-art"
+                ],
+                "best_for": [
+                    "latest_capabilities",
+                    "experimental",
+                    "benchmarking"
+                ],
+                "latency": "medium",
+                "cost": "premium"
+            },
+            "safety_guard": {
+                "name": "Safety Guard",
+                "description": "NVIDIA Nemoguard — content safety and jailbreak detection",
+                "llm": "nvidia/nemoguard-jailbreak-detect",
+                "tier": "pro",
+                "keywords": [
+                    "safe",
+                    "moderate",
+                    "filter",
+                    "check",
+                    "review"
+                ],
+                "best_for": [
+                    "content_moderation",
+                    "safety_checks",
+                    "compliance"
+                ],
+                "latency": "low",
+                "cost": "low"
+            }
+        }
+    },
+    "default_assignments": {
+        "$comment": "Recommended skill assignments per agent (can be customized)",
+        "vesper": {
+            "primary": "fast_responder",
+            "reason": "Intent detection needs speed, not power"
+        },
+        "mei": {
+            "primary": "standard_llama",
+            "reason": "Dispatching needs reliability, not creativity"
+        },
+        "hanna": {
+            "primary": "creative_writer",
+            "premium": "deep_thinker",
+            "reason": "Creative work benefits from Mistral's prose + Nemotron's thinking"
+        },
+        "it": {
+            "primary": "power_llama",
+            "premium": "code_specialist",
+            "platinum": "mega_llama",
+            "reason": "Code needs power, scales with tier"
+        },
+        "sally": {
+            "primary": "creative_writer",
+            "premium": "multi_expert",
+            "reason": "Marketing needs creativity + versatility"
+        },
+        "oracle": {
+            "primary": "power_llama",
+            "reason": "Research synthesis needs strong reasoning"
+        }
+    },
+    "tier_access": {
+        "free": [
+            "fast_responder",
+            "efficient_thinker"
+        ],
+        "pro": [
+            "fast_responder",
+            "efficient_thinker",
+            "standard_llama",
+            "creative_writer",
+            "safety_guard"
+        ],
+        "premium": [
+            "fast_responder",
+            "efficient_thinker",
+            "standard_llama",
+            "creative_writer",
+            "safety_guard",
+            "power_llama",
+            "multi_expert",
+            "long_context",
+            "vision_analyst",
+            "translator",
+            "speech_to_text",
+            "text_to_speech"
+        ],
+        "platinum": [
+            "ALL"
+        ]
+    }
+}

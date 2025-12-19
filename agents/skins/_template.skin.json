@@ -1,0 +1,32 @@
+{
+    "$schema": "./skin.schema.json",
+    "schemaVersion": "2.0",
+    "_comment": "SKIN FILE TEMPLATE - Personality overlay that changes voice/quirks but preserves core agent skills",
+    "skinId": "example-skin",
+    "skinName": "Example Skin Name",
+    "skinTagline": "A catchy tagline for this personality variant",
+    "baseAgent": "agent-id",
+    "price": 4.99,
+    "personalityOverlay": {
+        "backstory": {
+            "origin": "How this personality variant came to be...",
+            "philosophy": "What drives this variant's worldview...",
+            "reputation": "How others perceive this variant..."
+        },
+        "communication": {
+            "style": "Overall communication approach",
+            "voice": "Specific voice characteristics",
+            "tone": "Emotional register",
+            "quirks": [
+                "Specific behavioral quirks unique to this skin"
+            ],
+            "catchphrases": [
+                "Signature phrases this skin uses"
+            ]
+        },
+        "aestheticInfluences": [
+            "Cultural/visual influences that inform this personality"
+        ]
+    },
+    "_note": "Core agent skills, tools, and prime directives are INHERITED from baseAgent. This file ONLY overrides personality/communication."
+}

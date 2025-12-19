@@ -1,0 +1,113 @@
+{
+    "module_id": "training_inbox",
+    "type": "feature",
+    "description": "Force-feed training materials to agents — files disappear after parsing",
+    "$userFeature": "Drop PDFs, URLs, text into agent profile to train them. Files auto-delete after processing.",
+    "inbox": {
+        "location": "agent_profile_page",
+        "component": "TrainingDropZone",
+        "acceptedFormats": [
+            ".pdf",
+            ".txt",
+            ".md",
+            ".docx",
+            ".url",
+            ".json",
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp",
+            ".gif"
+        ],
+        "maxFileSize": "10MB",
+        "maxFilesPerUpload": 5
+    },
+    "processingFlow": {
+        "$comment": "What happens when user drops a file",
+        "steps": [
+            "1. User drops file into agent's training inbox",
+            "2. File uploaded to temp storage",
+            "3. RAG pipeline extracts content",
+            "4. Facts added to agent's user.json → learnedFacts",
+            "5. Original file DELETED (no bloat)",
+            "6. User sees confirmation: 'Learned 4 facts from brand_guide.pdf'"
+        ],
+        "extraction": {
+            "pdf": "NVIDIA NeMo Retriever → text extraction",
+            "url": "Fetch + parse → key facts",
+            "text": "Direct parsing → bullet points",
+            "docx": "Convert → text extraction",
+            "image": "NVIDIA Vision LLM → describe + extract text (OCR)"
+        }
+    },
+    "learnedFactsSchema": {
+        "$comment": "How extracted facts are stored",
+        "format": {
+            "source": "$type: pdf | url | text | docx",
+            "sourceFile": "$original filename (for reference)",
+            "fact": "$extracted fact",
+            "extractedAt": "$timestamp",
+            "confidence": "$number 0-1"
+        },
+        "example": {
+            "source": "pdf",
+            "sourceFile": "brand_guide.pdf",
+            "fact": "Company logo must have 20px padding on all sides",
+            "extractedAt": "2024-12-17T10:30:00Z",
+            "confidence": 0.95
+        }
+    },
+    "userInterface": {
+        "dropZone": {
+            "placeholder": "Drop files here to train {agentName}",
+            "dragOverText": "Release to upload",
+            "processingText": "Extracting knowledge...",
+            "successText": "Learned {count} facts from {filename}",
+            "errorText": "Could not process {filename}"
+        },
+        "viewLearnedFacts": {
+            "location": "agent_profile_page → Knowledge tab",
+            "actions": [
+                "view",
+                "delete",
+                "edit"
+            ]
+        }
+    },
+    "tierLimits": {
+        "free": {
+            "factsPerAgent": 10,
+            "uploadsPerMonth": 5,
+            "urlFetching": false
+        },
+        "pro": {
+            "factsPerAgent": 50,
+            "uploadsPerMonth": 20,
+            "urlFetching": true
+        },
+        "premium": {
+            "factsPerAgent": 200,
+            "uploadsPerMonth": 100,
+            "urlFetching": true
+        },
+        "platinum": {
+            "factsPerAgent": "unlimited",
+            "uploadsPerMonth": "unlimited",
+            "urlFetching": true
+        }
+    },
+    "autoCleanup": {
+        "$comment": "Files are NEVER stored permanently",
+        "tempStorageDuration": "5 minutes",
+        "deleteAfterProcessing": true,
+        "noBackups": true,
+        "privacyNote": "Original files are never retained. Only extracted facts are stored."
+    },
+    "agentIntegration": {
+        "$comment": "How agents use learned facts",
+        "injection": "Facts are injected into agent's system prompt",
+        "priority": "Recent facts weighted higher",
+        "maxFactsInPrompt": 20,
+        "selectionStrategy": "relevance-to-current-task"
+    }
+}

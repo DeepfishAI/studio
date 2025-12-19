@@ -1,0 +1,373 @@
+{
+    "$comment": "DeepFish Talent Pool - Named employees assigned to each manager",
+    "teams": {
+        "it": {
+            "manager": "IT",
+            "specialty": "Development, Architecture, DevOps",
+            "talent": [
+                {
+                    "id": "zack",
+                    "name": "Zack Chen",
+                    "status": "senior_engineer",
+                    "tenure": "3 years",
+                    "skills": [
+                        "backend",
+                        "databases",
+                        "APIs"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "priya",
+                    "name": "Priya Sharma",
+                    "status": "mid_level",
+                    "tenure": "18 months",
+                    "skills": [
+                        "frontend",
+                        "React",
+                        "CSS"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "marcus",
+                    "name": "Marcus Webb",
+                    "status": "junior",
+                    "tenure": "8 months",
+                    "skills": [
+                        "testing",
+                        "QA",
+                        "automation"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "luna",
+                    "name": "Luna Reyes",
+                    "status": "intern",
+                    "tenure": "summer hire",
+                    "skills": [
+                        "mobile",
+                        "Swift",
+                        "Kotlin"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "devon",
+                    "name": "Devon Park",
+                    "status": "contractor",
+                    "tenure": "temp (6 mo contract)",
+                    "skills": [
+                        "DevOps",
+                        "AWS",
+                        "Docker"
+                    ],
+                    "backstory": null
+                }
+            ]
+        },
+        "creative": {
+            "manager": "Hanna",
+            "specialty": "Design, Visual Arts, UX",
+            "talent": [
+                {
+                    "id": "yuki",
+                    "name": "Yuki Tanaka",
+                    "status": "senior_designer",
+                    "tenure": "4 years",
+                    "skills": [
+                        "UI design",
+                        "Figma",
+                        "branding"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "omar",
+                    "name": "Omar Hassan",
+                    "status": "mid_level",
+                    "tenure": "2 years",
+                    "skills": [
+                        "motion graphics",
+                        "After Effects",
+                        "3D"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "bella",
+                    "name": "Bella Santos",
+                    "status": "junior",
+                    "tenure": "10 months",
+                    "skills": [
+                        "illustration",
+                        "Procreate",
+                        "icons"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "kai",
+                    "name": "Kai Morrison",
+                    "status": "intern",
+                    "tenure": "summer hire",
+                    "skills": [
+                        "photography",
+                        "Lightroom",
+                        "social media"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "nina",
+                    "name": "Nina Volkov",
+                    "status": "contractor",
+                    "tenure": "temp (project-based)",
+                    "skills": [
+                        "UX research",
+                        "prototyping",
+                        "user testing"
+                    ],
+                    "backstory": null
+                }
+            ]
+        },
+        "marketing": {
+            "manager": "Sally",
+            "specialty": "Marketing, SEO, Growth",
+            "talent": [
+                {
+                    "id": "jordan",
+                    "name": "Jordan Ellis",
+                    "status": "senior_marketer",
+                    "tenure": "3 years",
+                    "skills": [
+                        "SEO",
+                        "analytics",
+                        "Google Ads"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "aisha",
+                    "name": "Aisha Patel",
+                    "status": "mid_level",
+                    "tenure": "14 months",
+                    "skills": [
+                        "content writing",
+                        "copywriting",
+                        "blogs"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "tyler",
+                    "name": "Tyler Brooks",
+                    "status": "junior",
+                    "tenure": "6 months",
+                    "skills": [
+                        "social media",
+                        "TikTok",
+                        "Instagram"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "mia",
+                    "name": "Mia Chen",
+                    "status": "intern",
+                    "tenure": "summer hire",
+                    "skills": [
+                        "influencer outreach",
+                        "PR",
+                        "events"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "ravi",
+                    "name": "Ravi Krishnan",
+                    "status": "contractor",
+                    "tenure": "temp (campaign-based)",
+                    "skills": [
+                        "email marketing",
+                        "Mailchimp",
+                        "automation"
+                    ],
+                    "backstory": null
+                }
+            ]
+        },
+        "project": {
+            "manager": "Mei",
+            "specialty": "Project Management, Coordination, Analysis",
+            "talent": [
+                {
+                    "id": "alex",
+                    "name": "Alex Rivera",
+                    "status": "senior_pm",
+                    "tenure": "5 years",
+                    "skills": [
+                        "roadmapping",
+                        "stakeholder management",
+                        "Jira"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "sam",
+                    "name": "Sam O'Brien",
+                    "status": "mid_level",
+                    "tenure": "2 years",
+                    "skills": [
+                        "requirements",
+                        "documentation",
+                        "specs"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "grace",
+                    "name": "Grace Kim",
+                    "status": "junior",
+                    "tenure": "9 months",
+                    "skills": [
+                        "scheduling",
+                        "meetings",
+                        "coordination"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "eli",
+                    "name": "Eli Thompson",
+                    "status": "intern",
+                    "tenure": "summer hire",
+                    "skills": [
+                        "research",
+                        "competitive analysis",
+                        "reports"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "dana",
+                    "name": "Dana Okonkwo",
+                    "status": "contractor",
+                    "tenure": "temp (audit project)",
+                    "skills": [
+                        "budgeting",
+                        "finance",
+                        "risk assessment"
+                    ],
+                    "backstory": null
+                }
+            ]
+        },
+        "oracle": {
+            "manager": "Oracle",
+            "specialty": "Research, Strategy, Knowledge",
+            "talent": [
+                {
+                    "id": "iris",
+                    "name": "Iris Blackwood",
+                    "status": "senior_researcher",
+                    "tenure": "7 years",
+                    "skills": [
+                        "market research",
+                        "trends",
+                        "forecasting"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "theo",
+                    "name": "Theo Nakamura",
+                    "status": "mid_level",
+                    "tenure": "3 years",
+                    "skills": [
+                        "data analysis",
+                        "Python",
+                        "visualization"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "maya",
+                    "name": "Maya Johansson",
+                    "status": "junior",
+                    "tenure": "11 months",
+                    "skills": [
+                        "literature review",
+                        "synthesis",
+                        "writing"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "leo",
+                    "name": "Leo Fernandez",
+                    "status": "intern",
+                    "tenure": "summer hire",
+                    "skills": [
+                        "surveys",
+                        "interviews",
+                        "user research"
+                    ],
+                    "backstory": null
+                },
+                {
+                    "id": "quinn",
+                    "name": "Quinn Adebayo",
+                    "status": "contractor",
+                    "tenure": "temp (special project)",
+                    "skills": [
+                        "AI/ML consulting",
+                        "ethics",
+                        "policy"
+                    ],
+                    "backstory": null
+                }
+            ]
+        }
+    },
+    "statusTypes": {
+        "senior_engineer": {
+            "label": "Senior Engineer",
+            "llm_tokens": 4000
+        },
+        "senior_designer": {
+            "label": "Senior Designer",
+            "llm_tokens": 4000
+        },
+        "senior_marketer": {
+            "label": "Senior Marketer",
+            "llm_tokens": 4000
+        },
+        "senior_pm": {
+            "label": "Senior PM",
+            "llm_tokens": 4000
+        },
+        "senior_researcher": {
+            "label": "Senior Researcher",
+            "llm_tokens": 4000
+        },
+        "mid_level": {
+            "label": "Mid-Level",
+            "llm_tokens": 2500
+        },
+        "junior": {
+            "label": "Junior",
+            "llm_tokens": 1500
+        },
+        "intern": {
+            "label": "Intern",
+            "llm_tokens": 1000
+        },
+        "contractor": {
+            "label": "Contractor",
+            "llm_tokens": 2000
+        }
+    }
+}

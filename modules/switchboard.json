@@ -1,0 +1,100 @@
+{
+    "$comment": "=== MODULE SWITCHBOARD ===",
+    "$description": "Toggle system for modules. Identical pattern to skills switchboard. Enables tier-based feature gating.",
+    "$why_needed": [
+        "Starter vs Pro tiers need different module access",
+        "Promotional unlocks: flip a Pro module ON for Starter users temporarily",
+        "A/B testing: enable experimental modules for select users",
+        "Same architecture as skills = less cognitive load"
+    ],
+    "module_id": "switchboard",
+    "type": "meta",
+    "cost": "FREE",
+    "toggles": {
+        "$comment": "Each module can be ON/OFF per tier. User overrides possible.",
+        "schema": {
+            "module_id": "string",
+            "starter": "boolean",
+            "pro": "boolean",
+            "user_override": "boolean | null"
+        },
+        "defaults": [
+            {
+                "module_id": "resistor",
+                "starter": true,
+                "pro": true,
+                "$note": "Rate limiting - everyone needs this"
+            },
+            {
+                "module_id": "capacitor",
+                "starter": true,
+                "pro": true,
+                "$note": "Task queuing - core functionality"
+            },
+            {
+                "module_id": "diode",
+                "starter": true,
+                "pro": true,
+                "$note": "Direction enforcement - prevents loops"
+            },
+            {
+                "module_id": "circuit_breaker",
+                "starter": false,
+                "pro": true,
+                "$note": "Advanced failure handling - Pro feature"
+            },
+            {
+                "module_id": "ground",
+                "starter": true,
+                "pro": true,
+                "$note": "Error handling - everyone needs this"
+            },
+            {
+                "module_id": "bus",
+                "starter": false,
+                "pro": true,
+                "$note": "Inter-agent communication - Pro feature"
+            },
+            {
+                "module_id": "analytics",
+                "starter": false,
+                "pro": true,
+                "$note": "Performance tracking - Pro feature"
+            },
+            {
+                "module_id": "cache",
+                "starter": false,
+                "pro": true,
+                "$note": "Response caching - Pro optimization"
+            }
+        ]
+    },
+    "promotional_unlocks": {
+        "$comment": "Temporary Pro features for Starter users - marketing tool",
+        "schema": {
+            "module_id": "string",
+            "unlock_duration_hours": "number",
+            "trigger": "signup | milestone | referral | campaign"
+        },
+        "examples": [
+            {
+                "module_id": "bus",
+                "unlock_duration_hours": 24,
+                "trigger": "signup",
+                "$promo": "Try Pro-level agent coordination FREE for 24 hours!"
+            },
+            {
+                "module_id": "analytics",
+                "unlock_duration_hours": 168,
+                "trigger": "referral",
+                "$promo": "Refer a friend, get a week of Pro analytics!"
+            }
+        ]
+    },
+    "resolution_order": [
+        "1. Check user_override (if set, use it)",
+        "2. Check promotional_unlocks (if active, enable)",
+        "3. Check tier defaults (starter/pro)",
+        "4. Default to OFF if not specified"
+    ]
+}

@@ -1,0 +1,111 @@
+{
+    "$schema": "./user-overlay.schema.json",
+    "schemaVersion": "2.0",
+    "agentId": "vesper",
+    "created": "2024-12-16T00:00:00Z",
+    "updated": "2024-12-16T00:00:00Z",
+    "customInstructions": [
+        "$comment: User preferences for Vesper's greeting and routing",
+        "$example: User prefers casual greetings over formal",
+        "$example: Always ask about project type before routing"
+    ],
+    "learnedFacts": [
+        {
+            "source": "conversation",
+            "fact": "$template: Facts Vesper learns about caller patterns"
+        }
+    ],
+    "preferences": {
+        "llm": {
+            "$comment": "User's preferred LLM model — overrides Oracle's default",
+            "model": null,
+            "provider": null,
+            "userSelected": false,
+            "selectedAt": null
+        },
+        "greetingStyle": "$example: formal | casual | playful",
+        "routingSpeed": "$example: quick-transfer | conversational | thorough-screening",
+        "regularCallerTreatment": "$example: personalized | standard",
+        "voiceTone": "$example: warm | professional | flirty",
+        "voice": {
+            "$comment": "ElevenLabs voice settings",
+            "voiceId": "pNInz6obpgDQGcFmaJgB",
+            "voiceName": "Lily",
+            "provider": "elevenlabs",
+            "speed": 1.0,
+            "stability": 0.5,
+            "userSelected": false
+        },
+        "skin": {
+            "$comment": "Visual appearance / personality skin",
+            "activeSkin": "retro",
+            "available": [
+                "classic",
+                "retro",
+                "corporate"
+            ],
+            "userSelected": false
+        }
+    },
+    "stats": {
+        "$comment": "Agent performance analytics",
+        "totalTasks": 312,
+        "completedTasks": 310,
+        "avgResponseTime": 0.8,
+        "lastActive": "2024-12-18T11:30:00Z",
+        "favoriteSkills": [
+            "fast_responder",
+            "intent_classifier"
+        ],
+        "userRating": 4.9,
+        "streak": 21
+    },
+    "frequentCallers": {
+        "$comment": "Vesper remembers regular callers",
+        "recognized": [
+            {
+                "identifier": "$template: caller-id or name",
+                "preferredAgent": "$example: hanna",
+                "notes": "$template: What Vesper remembers about this caller",
+                "lastContact": "2024-12-16T00:00:00Z"
+            }
+        ]
+    },
+    "routingPatterns": {
+        "$comment": "Learned routing shortcuts",
+        "intentMappings": [
+            {
+                "keywords": [
+                    "design",
+                    "ui",
+                    "visual"
+                ],
+                "routeTo": "hanna",
+                "confidence": 0.95
+            },
+            {
+                "keywords": [
+                    "code",
+                    "bug",
+                    "api"
+                ],
+                "routeTo": "it",
+                "confidence": 0.95
+            },
+            {
+                "keywords": [
+                    "marketing",
+                    "seo",
+                    "growth"
+                ],
+                "routeTo": "sally",
+                "confidence": 0.95
+            }
+        ]
+    },
+    "memory": {
+        "maxEntries": 50,
+        "compressionStrategy": "summarize-weekly",
+        "entries": []
+    }
+}

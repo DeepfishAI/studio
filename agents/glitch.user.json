@@ -1,0 +1,22 @@
+{
+    "$schema": "./user.schema.json",
+    "schemaVersion": "2.0",
+    "preferences": {
+        "defaultEngine": "canvas",
+        "preferredStyle": "retro-pixel",
+        "autoTouchControls": true
+    },
+    "customizations": {
+        "activeSkin": "classic",
+        "voiceEnabled": true,
+        "ownedSkins": [
+            "classic"
+        ]
+    },
+    "stats": {
+        "gamesCreated": 0,
+        "totalPlaytests": 0,
+        "favoriteGameType": null
+    },
+    "recentGames": []
+}

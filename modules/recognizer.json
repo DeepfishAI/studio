@@ -1,0 +1,130 @@
+{
+    "$comment": "=== RECOGNIZER MODULE — System Maintenance ===",
+    "$reference": "Inspired by Tron's Recognizers — hunters that maintain system clarity",
+    "$philosophy": [
+        "Runs periodically to clean up cruft and anomalies",
+        "Prevents unbounded growth and stale references",
+        "Does NOT touch user data — only system/config cleanup",
+        "Can be assigned to Oracle or run as standalone cron"
+    ],
+    "module_id": "recognizer",
+    "type": "maintenance",
+    "version": "1.0.0",
+    "status": "designed",
+    "jobs": {
+        "memory_compressor": {
+            "name": "Memory Compressor",
+            "description": "Compresses old memory entries into summaries",
+            "target": "agents/*.user.json → memory.entries[]",
+            "schedule": "weekly",
+            "rules": [
+                "Entries older than 7 days → summarize into 1 entry",
+                "Keep max 50 entries per agent",
+                "Preserve high-sentiment entries longer"
+            ],
+            "preserves": [
+                "learnedFacts",
+                "customInstructions",
+                "preferences"
+            ],
+            "enabled": true
+        },
+        "orphan_cleaner": {
+            "name": "Orphan Cleaner",
+            "description": "Removes references to deleted/missing resources",
+            "targets": [
+                "learnedFacts referencing deleted files",
+                "projects referencing removed team members",
+                "bus task contexts older than 24h with status 'active'"
+            ],
+            "schedule": "daily",
+            "enabled": true
+        },
+        "skill_pruner": {
+            "name": "Skill Pruner",
+            "description": "Updates agent configs when models are deprecated",
+            "trigger": "on_catalog_update",
+            "actions": [
+                "Find agents with LLM assignments to removed models",
+                "Reassign to Oracle's new default",
+                "Log changes to audit trail"
+            ],
+            "enabled": true
+        },
+        "permission_auditor": {
+            "name": "Permission Auditor",
+            "description": "Ensures user tier matches accessible features",
+            "trigger": "on_user_login",
+            "checks": [
+                "User's selected LLM matches their tier",
+                "User's skills are within their tier",
+                "No 'impossible' preferences exist"
+            ],
+            "action_on_violation": "downgrade_gracefully",
+            "enabled": true
+        },
+        "config_validator": {
+            "name": "Config Validator",
+            "description": "Validates JSON schemas and fixes malformed configs",
+            "targets": [
+                "agents/*.agent.json",
+                "agents/*.user.json",
+                "modules/*.json"
+            ],
+            "schedule": "on_startup",
+            "actions": [
+                "Validate against schema",
+                "Report errors to admin",
+                "Auto-fix trivial issues (trailing commas, etc.)"
+            ],
+            "enabled": true
+        },
+        "catalog_sync": {
+            "name": "Catalog Sync",
+            "description": "Ensures llm_catalog.json matches reality",
+            "schedule": "daily",
+            "checks": [
+                "All listed models still exist at provider",
+                "API endpoints are reachable",
+                "Pricing tiers are current"
+            ],
+            "action_on_failure": "mark_model_unavailable",
+            "enabled": false,
+            "$note": "Requires API calls to providers — enable when ready"
+        }
+    },
+    "audit_log": {
+        "enabled": true,
+        "location": "logs/recognizer.log",
+        "retention_days": 30,
+        "format": "json"
+    },
+    "assignment": {
+        "$comment": "Who runs the Recognizer?",
+        "default": "oracle",
+        "alternatives": [
+            "cron",
+            "system",
+            "manual"
+        ],
+        "can_reassign": true
+    },
+    "$diagram": [
+        "    ┌─────────────────────────────────────────────────┐",
+        "    │              🔴 RECOGNIZER                      │",
+        "    │         System Maintenance Module               │",
+        "    └─────────────────────┬───────────────────────────┘",
+        "                          │",
+        "         ┌────────────────┼────────────────┐",
+        "         ▼                ▼                ▼",
+        "    ┌─────────┐     ┌──────────┐     ┌──────────┐",
+        "    │ MEMORY  │     │  ORPHAN  │     │  SKILL   │",
+        "    │COMPRESS │     │ CLEANER  │     │ PRUNER   │",
+        "    └─────────┘     └──────────┘     └──────────┘",
+        "         │                │                │",
+        "         └────────────────┴────────────────┘",
+        "                          │",
+        "                          ▼",
+        "                   📋 AUDIT LOG"
+    ]
+}

@@ -1,0 +1,61 @@
+{
+    "$comment": "=== CAPACITOR MODULE ===",
+    "$description": "This module acts like an electrical capacitor - it STORES/BUFFERS requests and releases them smoothly.",
+    "$why_needed": [
+        "Without buffering, a burst of 100 tasks would overwhelm agents",
+        "Triage might decompose one request into dozens of sub-tasks instantly",
+        "We need to smooth out spikes and process at sustainable pace"
+    ],
+    "$lean_equivalent": "Kanban / Heijunka (leveling) - smooth flow, prevent overburden",
+    "$electrical_analogy": "A capacitor stores charge and releases it smoothly, preventing spikes",
+    "module_id": "capacitor",
+    "name": "Capacitor",
+    "version": "1.0.0",
+    "type": "circuit_component",
+    "cost": "FREE",
+    "description": "Kanban queue — buffers tasks, prevents flooding",
+    "rules": {
+        "max_wip_per_agent": {
+            "value": 3,
+            "$why": "Each agent works on max 3 tasks at once - focus beats multitasking"
+        },
+        "max_subtasks_per_triage": {
+            "value": 10,
+            "$why": "Triage can't explode one request into infinite sub-tasks"
+        },
+        "max_queue_depth": {
+            "value": 20,
+            "$why": "If queue grows beyond 20, we're accepting more than we can handle"
+        },
+        "overflow_action": {
+            "value": "reject_with_message",
+            "$why": "Better to say 'busy, try later' than accept and never deliver"
+        }
+    },
+    "queue_priority": {
+        "order": [
+            "CORRECT",
+            "QUERY",
+            "ASSERT",
+            "VALIDATE",
+            "new_task"
+        ],
+        "$why": "Corrections are urgent (unblock others), new tasks can wait"
+    },
+    "drain_policy": {
+        "value": "oldest_first",
+        "$why": "FIFO prevents starvation - no task waits forever"
+    },
+    "on_overflow": {
+        "action": "reject_with_message",
+        "message": "System is busy. Please wait a moment.",
+        "log_level": "INFO",
+        "$why": "Graceful rejection is better than silent failure"
+    },
+    "$how_to_read_this": [
+        "1. This is your Kanban board in code form",
+        "2. max_wip_per_agent = WIP limit per swimlane",
+        "3. queue_priority = which cards move first",
+        "4. Think of tasks as cards flowing through the system"
+    ]
+}

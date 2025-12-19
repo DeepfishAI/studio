@@ -1,0 +1,52 @@
+{
+    "$comment": "=== KNOWLEDGE CURATION SKILL ===",
+    "skill_id": "knowledge_curation",
+    "name": "Knowledge Curation",
+    "version": "1.0.0",
+    "skill_level": "A",
+    "required_access": {
+        "level": "A",
+        "description": "Officers only — curate and organize knowledge base",
+        "bus_access": true
+    },
+    "description": "Curate, organize, and maintain the knowledge base. Extract insights from transcripts, documents, and agent learnings.",
+    "capabilities": {
+        "extract_knowledge": {
+            "description": "Extract key insights from documents, transcripts, conversations",
+            "inputs": [
+                "raw_text",
+                "source_url",
+                "source_type"
+            ],
+            "outputs": [
+                "facts",
+                "insights",
+                "entities",
+                "relationships"
+            ]
+        },
+        "organize_knowledge": {
+            "description": "Categorize and tag knowledge for retrieval",
+            "inputs": [
+                "knowledge_item"
+            ],
+            "outputs": [
+                "categorized_item",
+                "tags",
+                "links"
+            ]
+        },
+        "transfer_to_rom": {
+            "description": "Promote verified knowledge from RAM to ROM",
+            "inputs": [
+                "knowledge_id",
+                "target_agent"
+            ],
+            "outputs": [
+                "confirmation",
+                "rom_entry_id"
+            ]
+        }
+    },
+    "default_owner": "oracle"
+}

@@ -1,0 +1,51 @@
+{
+    "$comment": "=== QUALITY ASSURANCE SKILL ===",
+    "skill_id": "quality_assurance",
+    "name": "Quality Assurance",
+    "version": "1.0.0",
+    "skill_level": "A",
+    "required_access": {
+        "level": "A",
+        "description": "Officers only — review and approve deliverables",
+        "bus_access": true
+    },
+    "description": "Review deliverables for quality, accuracy, and alignment with user expectations.",
+    "capabilities": {
+        "review_deliverable": {
+            "description": "Check deliverable against original request",
+            "inputs": [
+                "deliverable",
+                "original_request",
+                "context_hash"
+            ],
+            "outputs": [
+                "approval_status",
+                "feedback",
+                "corrections_needed"
+            ]
+        },
+        "check_consistency": {
+            "description": "Ensure deliverable is consistent with brand/style guidelines",
+            "inputs": [
+                "deliverable",
+                "guidelines"
+            ],
+            "outputs": [
+                "consistency_score",
+                "issues"
+            ]
+        },
+        "final_approval": {
+            "description": "Give final approval before delivery to user",
+            "inputs": [
+                "deliverable",
+                "all_validations"
+            ],
+            "outputs": [
+                "approved",
+                "rejection_reason"
+            ]
+        }
+    },
+    "default_owner": "oracle"
+}

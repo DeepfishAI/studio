@@ -1,0 +1,16 @@
+{
+    "$comment": "=== CACHE MODULE ===",
+    "module_id": "cache",
+    "name": "Caching Layer",
+    "version": "1.0.0",
+    "type": "performance",
+    "cost": "FREE",
+    "status": "placeholder",
+    "description": "Speed up repeated lookups, reduce database load.",
+    "provider": "redis",
+    "strategies": {
+        "user_session": "TTL 1 hour",
+        "skill_definitions": "TTL 24 hours, invalidate on update",
+        "agent_configs": "TTL 24 hours, invalidate on update"
+    }
+}

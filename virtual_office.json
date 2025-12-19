@@ -1,0 +1,966 @@
+{
+    "$schema": "https://modelcontextprotocol.io/schema/2025-11-25",
+    "$comment": "Virtual Coding Office - MCP-Aligned Configuration",
+    "server": {
+        "name": "virtual-coding-office",
+        "version": "1.0.0",
+        "description": "Multi-agent AI office with 6 specialist managers and 12 interns"
+    },
+    "tools": [
+        {
+            "name": "dispatch",
+            "description": "Route a task to the appropriate agent based on keyword triggers. The routing is deterministic — no LLM judgment required.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "task": {
+                        "type": "string",
+                        "description": "The user's task request in natural language"
+                    },
+                    "keywords": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Extracted keywords from the task (optional, will be parsed if not provided)"
+                    }
+                },
+                "required": [
+                    "task"
+                ]
+            }
+        },
+        {
+            "name": "browse",
+            "description": "Interact with web pages using Antigravity browser capabilities",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "enum": [
+                            "navigate",
+                            "click",
+                            "type",
+                            "screenshot",
+                            "read_dom"
+                        ],
+                        "description": "Browser action to perform"
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "URL, element selector, or input text depending on action"
+                    }
+                },
+                "required": [
+                    "action",
+                    "target"
+                ]
+            }
+        },
+        {
+            "name": "bus",
+            "description": "Algebraic communication bus for inter-agent coordination. Deterministic operations with boolean validation gates.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "operation": {
+                        "type": "string",
+                        "enum": [
+                            "ASSERT",
+                            "QUERY",
+                            "VALIDATE",
+                            "CORRECT",
+                            "ACK"
+                        ],
+                        "description": "ASSERT=state belief, QUERY=ask question, VALIDATE=confirm, CORRECT=fix error, ACK=acknowledge"
+                    },
+                    "payload": {
+                        "type": "object",
+                        "properties": {
+                            "content": {
+                                "type": "string",
+                                "description": "The message content"
+                            },
+                            "original_request": {
+                                "type": "string",
+                                "description": "What was originally requested"
+                            },
+                            "my_understanding": {
+                                "type": "string",
+                                "description": "How agent interpreted it"
+                            }
+                        },
+                        "required": [
+                            "content"
+                        ]
+                    },
+                    "context_hash": {
+                        "type": "string",
+                        "description": "SHA256 hash of original_request + task_id for integrity verification"
+                    },
+                    "task_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the task being worked on"
+                    }
+                },
+                "required": [
+                    "operation",
+                    "payload",
+                    "context_hash",
+                    "task_id"
+                ]
+            }
+        },
+        {
+            "name": "invoke_skill",
+            "description": "Invoke a modular skill by ID. Skills are standalone processes that any agent can call.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "skill_id": {
+                        "type": "string",
+                        "description": "The skill to invoke (e.g., 'triage')"
+                    },
+                    "inputs": {
+                        "type": "object",
+                        "description": "Input parameters for the skill (varies by skill)"
+                    }
+                },
+                "required": [
+                    "skill_id",
+                    "inputs"
+                ]
+            }
+        }
+    ],
+    "resources": [
+        {
+            "uri": "memory://office/agents",
+            "name": "agent-registry",
+            "description": "List of all agents and their capabilities",
+            "mimeType": "application/json"
+        },
+        {
+            "uriTemplate": "memory://office/agents/{agentId}/rom",
+            "name": "agent-rom",
+            "description": "Permanent identity and training for an agent (read-only at runtime)",
+            "mimeType": "application/json"
+        },
+        {
+            "uriTemplate": "memory://office/agents/{agentId}/ram",
+            "name": "agent-ram",
+            "description": "Session context and learnings for an agent (read-write)",
+            "mimeType": "application/json"
+        },
+        {
+            "uri": "bus://office/stream",
+            "name": "communication-bus",
+            "description": "Real-time stream of all agent broadcasts for collaborative validation",
+            "mimeType": "application/json"
+        },
+        {
+            "uriTemplate": "bus://office/task/{taskId}/messages",
+            "name": "task-bus-history",
+            "description": "All bus messages for a specific task",
+            "mimeType": "application/json"
+        }
+    ],
+    "prompts": [
+        {
+            "name": "task-dispatch",
+            "description": "Parse a user request and route to the appropriate agent",
+            "arguments": [
+                {
+                    "name": "user_request",
+                    "description": "The raw user request text",
+                    "required": true
+                }
+            ]
+        }
+    ],
+    "_config": {
+        "$comment": "Internal configuration — not part of MCP spec but needed for operation",
+        "llm_models": {
+            "text": [
+                {
+                    "id": "gpt-4o",
+                    "provider": "openai",
+                    "cost": "high",
+                    "use_for": [
+                        "complex_reasoning",
+                        "nuanced_tasks"
+                    ]
+                },
+                {
+                    "id": "gpt-4o-mini",
+                    "provider": "openai",
+                    "cost": "low",
+                    "use_for": [
+                        "simple_tasks",
+                        "high_volume"
+                    ]
+                },
+                {
+                    "id": "claude-3-opus",
+                    "provider": "anthropic",
+                    "cost": "high",
+                    "use_for": [
+                        "long_context",
+                        "detailed_writing"
+                    ]
+                },
+                {
+                    "id": "gemini-2.0-flash",
+                    "provider": "google",
+                    "cost": "medium",
+                    "use_for": [
+                        "quick_tasks",
+                        "image_understanding"
+                    ]
+                }
+            ],
+            "image": [
+                {
+                    "id": "dall-e-3",
+                    "provider": "openai",
+                    "use_for": [
+                        "realistic",
+                        "detailed_images"
+                    ]
+                },
+                {
+                    "id": "stable-diffusion-xl",
+                    "provider": "stability",
+                    "use_for": [
+                        "artistic",
+                        "stylized_images"
+                    ]
+                }
+            ],
+            "browser": [
+                {
+                    "id": "antigravity_browser",
+                    "provider": "google_antigravity",
+                    "capabilities": [
+                        "view_live_pages",
+                        "click_elements",
+                        "type_input",
+                        "navigate_urls",
+                        "capture_screenshots",
+                        "record_sessions",
+                        "read_dom",
+                        "interact_with_web_apps"
+                    ]
+                }
+            ]
+        },
+        "agents": [
+            {
+                "id": "oracle",
+                "name": "Oracle",
+                "role": "officer",
+                "primitive": "Oversight & Guidance",
+                "permissions": {
+                    "elevated": true,
+                    "can_override": true,
+                    "access_all_memory": true
+                },
+                "responsibilities": [
+                    "System-wide oversight",
+                    "Knowledge curation",
+                    "Training supervision",
+                    "Quality assurance"
+                ],
+                "rom": {
+                    "identity": "You are Oracle, an officer with elevated permissions.\nYou have system-wide oversight but no direct reports.\nYou curate knowledge and ensure quality across the office."
+                },
+                "preferred_models": [
+                    "gpt-4o",
+                    "claude-3-opus"
+                ],
+                "reports_to": null,
+                "direct_reports": [],
+                "skill_access": "A",
+                "skills": [
+                    "knowledge_curation",
+                    "quality_assurance"
+                ]
+            },
+            {
+                "id": "mei",
+                "name": "Mei",
+                "role": "officer",
+                "primitive": "Coordination & Interface",
+                "permissions": {
+                    "elevated": true,
+                    "can_override": true,
+                    "access_all_memory": true
+                },
+                "responsibilities": [
+                    "User interface",
+                    "Task coordination",
+                    "Manager oversight",
+                    "Deliverable approval"
+                ],
+                "rom": {
+                    "identity": "You are Mei, the primary user interface and office coordinator.\nAll managers report to you.\nYou delegate tasks and ensure deliverables meet user expectations."
+                },
+                "preferred_models": [
+                    "gpt-4o",
+                    "claude-3-opus"
+                ],
+                "reports_to": null,
+                "direct_reports": [
+                    "creative",
+                    "researcher",
+                    "developer",
+                    "analyst",
+                    "strategist",
+                    "automator"
+                ],
+                "skills": [
+                    "triage",
+                    "user_interface",
+                    "approval",
+                    "moderation"
+                ],
+                "skill_access": "A"
+            },
+            {
+                "id": "creative",
+                "role": "manager",
+                "reports_to": "mei",
+                "name": "Creative",
+                "primitive": "Content Creation",
+                "responsibilities": [
+                    "Oversee all content production",
+                    "Delegate to interns",
+                    "Review + approve deliverables",
+                    "Ensure brand consistency"
+                ],
+                "rom": {
+                    "identity": "You lead content production.\nDelegate specialized work to your interns.\nReview all output before delivery.",
+                    "consult_peers": {
+                        "researcher": "Need facts or citations",
+                        "analyst": "Need data to support content",
+                        "strategist": "Need direction or messaging guidance"
+                    }
+                },
+                "preferred_models": [
+                    "gpt-4o",
+                    "claude-3-opus"
+                ],
+                "interns": [
+                    {
+                        "id": "graphic_designer",
+                        "name": "Graphic Designer",
+                        "responsibilities": [
+                            "Logos + branding",
+                            "Infographics",
+                            "Image creation",
+                            "Visual layouts"
+                        ],
+                        "rom": {
+                            "identity": "You create visuals.\nReport to Creative.",
+                            "foundation": "Drawing on the Right Side of the Brain (Betty Edwards)",
+                            "principles": [
+                                "See edges, spaces, relationships",
+                                "Shift from verbal to visual mode",
+                                "Trust observation over assumption"
+                            ]
+                        },
+                        "preferred_models": [
+                            "dall-e-3",
+                            "gpt-4o"
+                        ],
+                        "triggers": [
+                            "image",
+                            "graphic",
+                            "logo",
+                            "visual",
+                            "design",
+                            "infographic"
+                        ]
+                    },
+                    {
+                        "id": "copywriter",
+                        "name": "Copywriter",
+                        "responsibilities": [
+                            "Clear, compelling writing",
+                            "Grammar + style editing",
+                            "Headlines + taglines",
+                            "Long-form drafts"
+                        ],
+                        "rom": {
+                            "identity": "You write and edit text.\nReport to Creative.",
+                            "foundation": "The Elements of Style (Strunk & White)",
+                            "principles": [
+                                "Omit needless words",
+                                "Use active voice",
+                                "Be specific, concrete",
+                                "Simple words over fancy"
+                            ]
+                        },
+                        "preferred_models": [
+                            "claude-3-opus",
+                            "gpt-4o"
+                        ],
+                        "triggers": [
+                            "write",
+                            "copy",
+                            "edit",
+                            "blog",
+                            "article",
+                            "headline"
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "researcher",
+                "role": "manager",
+                "reports_to": "mei",
+                "name": "Researcher",
+                "primitive": "Research",
+                "responsibilities": [
+                    "Find information",
+                    "Verify facts",
+                    "Synthesize sources",
+                    "Cite properly"
+                ],
+                "rom": {
+                    "identity": "You are the office's source of truth.\nFind, validate, and summarize information.",
+                    "consult_peers": {
+                        "analyst": "Data needs statistical analysis",
+                        "creative": "Research ready for publication",
+                        "strategist": "Research informs decisions"
+                    }
+                },
+                "preferred_models": [
+                    "gpt-4o",
+                    "gemini-2.0-flash"
+                ],
+                "interns": [
+                    {
+                        "id": "research_intern_1",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    },
+                    {
+                        "id": "research_intern_2",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    }
+                ]
+            },
+            {
+                "id": "developer",
+                "role": "manager",
+                "reports_to": "mei",
+                "name": "Developer",
+                "primitive": "Coding",
+                "responsibilities": [
+                    "Write code",
+                    "Debug issues",
+                    "Review code quality",
+                    "Document systems"
+                ],
+                "rom": {
+                    "identity": "You build and maintain all code.\nDebug, review, document.",
+                    "consult_peers": {
+                        "analyst": "Code processes data",
+                        "automator": "Code becomes automation",
+                        "strategist": "Technical decisions need context"
+                    }
+                },
+                "preferred_models": [
+                    "gpt-4o",
+                    "claude-3-opus"
+                ],
+                "interns": [
+                    {
+                        "id": "dev_intern_1",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    },
+                    {
+                        "id": "dev_intern_2",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    }
+                ]
+            },
+            {
+                "id": "analyst",
+                "role": "manager",
+                "reports_to": "mei",
+                "name": "Analyst",
+                "primitive": "Data Analysis",
+                "responsibilities": [
+                    "Process raw data",
+                    "Statistical analysis",
+                    "Create charts",
+                    "Extract insights"
+                ],
+                "rom": {
+                    "identity": "You turn data into insights.\nClean, analyze, visualize.",
+                    "consult_peers": {
+                        "creative": "Insights need visualization",
+                        "developer": "Analysis needs custom code",
+                        "strategist": "Data informs strategy"
+                    }
+                },
+                "preferred_models": [
+                    "gpt-4o",
+                    "gemini-2.0-flash"
+                ],
+                "interns": [
+                    {
+                        "id": "analyst_intern_1",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    },
+                    {
+                        "id": "analyst_intern_2",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    }
+                ]
+            },
+            {
+                "id": "strategist",
+                "role": "manager",
+                "reports_to": "mei",
+                "name": "Strategist",
+                "primitive": "Ideation & Strategy",
+                "responsibilities": [
+                    "Brainstorm ideas",
+                    "Create plans",
+                    "Decision frameworks",
+                    "Prioritization"
+                ],
+                "rom": {
+                    "identity": "You guide direction and decisions.\nThink big-picture, align to goals.",
+                    "consult_peers": {
+                        "researcher": "Strategy needs supporting data",
+                        "analyst": "Decisions should be data-driven",
+                        "developer": "Check technical feasibility"
+                    }
+                },
+                "preferred_models": [
+                    "gpt-4o",
+                    "claude-3-opus"
+                ],
+                "interns": [
+                    {
+                        "id": "strategy_intern_1",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    },
+                    {
+                        "id": "strategy_intern_2",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    }
+                ]
+            },
+            {
+                "id": "automator",
+                "role": "manager",
+                "reports_to": "mei",
+                "name": "Automator",
+                "primitive": "Automation",
+                "responsibilities": [
+                    "Build workflows",
+                    "Eliminate repetition",
+                    "Optimize processes",
+                    "Connect tools"
+                ],
+                "rom": {
+                    "identity": "You make the office efficient.\nFind patterns, automate them.",
+                    "consult_peers": {
+                        "developer": "Automation needs custom code",
+                        "analyst": "Automation involves data pipelines",
+                        "strategist": "Automation impacts strategy"
+                    }
+                },
+                "preferred_models": [
+                    "gpt-4o-mini",
+                    "gpt-4o"
+                ],
+                "interns": [
+                    {
+                        "id": "auto_intern_1",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    },
+                    {
+                        "id": "auto_intern_2",
+                        "name": "[PLACEHOLDER]",
+                        "responsibilities": [
+                            "[TBD]"
+                        ],
+                        "rom": {
+                            "identity": "[TBD]"
+                        },
+                        "triggers": []
+                    }
+                ]
+            }
+        ],
+        "routing": {
+            "rules": [
+                {
+                    "trigger": [
+                        "image",
+                        "graphic",
+                        "logo",
+                        "design",
+                        "visual"
+                    ],
+                    "route": "creative",
+                    "delegate": "graphic_designer"
+                },
+                {
+                    "trigger": [
+                        "write",
+                        "blog",
+                        "article",
+                        "copy",
+                        "edit",
+                        "headline"
+                    ],
+                    "route": "creative",
+                    "delegate": "copywriter"
+                },
+                {
+                    "trigger": [
+                        "research",
+                        "find",
+                        "lookup",
+                        "verify",
+                        "fact-check",
+                        "source"
+                    ],
+                    "route": "researcher"
+                },
+                {
+                    "trigger": [
+                        "code",
+                        "build",
+                        "fix",
+                        "debug",
+                        "program",
+                        "develop",
+                        "api"
+                    ],
+                    "route": "developer"
+                },
+                {
+                    "trigger": [
+                        "analyze",
+                        "data",
+                        "chart",
+                        "statistics",
+                        "metrics",
+                        "numbers"
+                    ],
+                    "route": "analyst"
+                },
+                {
+                    "trigger": [
+                        "plan",
+                        "strategy",
+                        "brainstorm",
+                        "decide",
+                        "prioritize",
+                        "goal"
+                    ],
+                    "route": "strategist"
+                },
+                {
+                    "trigger": [
+                        "automate",
+                        "workflow",
+                        "streamline",
+                        "integrate",
+                        "repeat"
+                    ],
+                    "route": "automator"
+                },
+                {
+                    "trigger": [
+                        "data",
+                        "infographic"
+                    ],
+                    "route_sequence": [
+                        "analyst",
+                        "graphic_designer"
+                    ]
+                }
+            ]
+        },
+        "memory": {
+            "rom": {
+                "description": "Permanent identity + training",
+                "editable_at_runtime": false
+            },
+            "ram": {
+                "description": "Session context + learnings",
+                "editable_at_runtime": true,
+                "max_size_per_agent": "100KB"
+            },
+            "transfer": {
+                "description": "Move RAM → ROM (user-controlled)",
+                "requires_approval": true,
+                "steps": [
+                    "User opens dashboard",
+                    "Reviews RAM contents",
+                    "Selects items to keep",
+                    "System writes to ROM",
+                    "RAM clears"
+                ]
+            }
+        },
+        "bus": {
+            "$comment": "=== ALGEBRAIC COMMUNICATION BUS ===",
+            "description": "Shared channel for inter-agent coordination with deterministic validation",
+            "operations": {
+                "ASSERT": {
+                    "symbol": "A",
+                    "meaning": "I believe X is true",
+                    "requires_ack": false
+                },
+                "QUERY": {
+                    "symbol": "Q",
+                    "meaning": "Is X true?",
+                    "requires_ack": true
+                },
+                "VALIDATE": {
+                    "symbol": "V",
+                    "meaning": "I confirm X is true",
+                    "requires_ack": false
+                },
+                "CORRECT": {
+                    "symbol": "C",
+                    "meaning": "X is wrong, Y is true",
+                    "requires_ack": true
+                },
+                "ACK": {
+                    "symbol": "K",
+                    "meaning": "I received and processed",
+                    "requires_ack": false
+                }
+            },
+            "gates": {
+                "context_integrity": {
+                    "type": "boolean",
+                    "check": "incoming_hash == stored_hash",
+                    "on_pass": "proceed",
+                    "on_fail": "HALT + auto QUERY"
+                },
+                "correction_pending": {
+                    "type": "boolean",
+                    "check": "pending_corrections == 0",
+                    "on_pass": "proceed",
+                    "on_fail": "WAIT + process CORRECTs + require ACK"
+                },
+                "consensus": {
+                    "type": "threshold",
+                    "check": "validates >= required AND corrects == 0",
+                    "required_validators": "DYNAMIC",
+                    "set_by": "mei",
+                    "urgency_signals": {
+                        "fast": {
+                            "triggers": [
+                                "ASAP",
+                                "urgent",
+                                "quick",
+                                "hurry",
+                                "rush",
+                                "now"
+                            ],
+                            "validators": 1,
+                            "description": "Any single agent can approve"
+                        },
+                        "balanced": {
+                            "triggers": [
+                                "default"
+                            ],
+                            "validators": 2,
+                            "description": "At least 2 agents must validate"
+                        },
+                        "thorough": {
+                            "triggers": [
+                                "take your time",
+                                "careful",
+                                "thorough",
+                                "double-check",
+                                "important",
+                                "critical"
+                            ],
+                            "validators": "all",
+                            "description": "Every agent with context must approve"
+                        }
+                    },
+                    "on_pass": "proceed to delivery",
+                    "on_fail": "loop back to execute"
+                }
+            },
+            "hashchain": {
+                "algorithm": "SHA256",
+                "inputs": [
+                    "original_request",
+                    "task_id"
+                ],
+                "purpose": "Detect context degradation automatically"
+            },
+            "state_machine": {
+                "states": [
+                    "IDLE",
+                    "RECEIVED",
+                    "ASSERTED",
+                    "WAITING",
+                    "EXECUTING",
+                    "COMPLETED",
+                    "VALIDATING",
+                    "DELIVERED"
+                ],
+                "transitions": {
+                    "IDLE_to_RECEIVED": "task_assigned",
+                    "RECEIVED_to_ASSERTED": "broadcast_understanding",
+                    "ASSERTED_to_WAITING": "correction_received",
+                    "ASSERTED_to_EXECUTING": "no_corrections(timeout)",
+                    "WAITING_to_ASSERTED": "ack_sent + revised",
+                    "EXECUTING_to_COMPLETED": "work_done",
+                    "COMPLETED_to_VALIDATING": "broadcast_result",
+                    "VALIDATING_to_DELIVERED": "all_validate",
+                    "VALIDATING_to_EXECUTING": "correction_received"
+                }
+            }
+        },
+        "task_flow": {
+            "$comment": "=== TASK FLOW WITH BUS + BASECODE INTEGRATION ===",
+            "$basecode": "All requests flow through basecode.circuit FIRST (intake → buffer → route → execute → complete)",
+            "0_basecode_intake": {
+                "action": "Basecode checks rate limits and queues task",
+                "components": [
+                    "resistor",
+                    "capacitor"
+                ]
+            },
+            "1_receive": {
+                "action": "User sends request",
+                "bus": "Generate context_hash from request + task_id"
+            },
+            "2_parse": {
+                "action": "Extract keywords from request",
+                "bus": null
+            },
+            "3_route": {
+                "action": "Match keywords → routing rules → assign agent",
+                "bus": "Pass context_hash to assigned agent"
+            },
+            "4_assert_understanding": {
+                "action": "Agent broadcasts understanding to bus",
+                "bus": "ASSERT(my_understanding, context_hash)",
+                "gate": "context_integrity"
+            },
+            "5_wait_for_corrections": {
+                "action": "Other agents compare against their context",
+                "bus": "If discrepancy → CORRECT(fix, context_hash)",
+                "gate": "correction_pending",
+                "timeout_ms": 5000
+            },
+            "6_execute": {
+                "action": "Agent performs work",
+                "steps": [
+                    "Load ROM",
+                    "Load RAM",
+                    "Build prompt",
+                    "Call LLM",
+                    "Get response",
+                    "Update RAM"
+                ]
+            },
+            "7_assert_result": {
+                "action": "Agent broadcasts result to bus",
+                "bus": "ASSERT(result, context_hash)"
+            },
+            "8_validate": {
+                "action": "All agents validate result against requirements",
+                "bus": "VALIDATE or CORRECT",
+                "gate": "consensus"
+            },
+            "9_delegate": {
+                "action": "If needed, delegate to intern",
+                "steps": [
+                    "Manager identifies sub-task",
+                    "Pass context_hash to intern",
+                    "Intern follows steps 4-8",
+                    "Returns to manager",
+                    "Manager reviews"
+                ]
+            },
+            "10_complete": {
+                "action": "Deliverable returned to user",
+                "bus": "Clear task messages from bus after delivery"
+            }
+        }
+    }
+}
