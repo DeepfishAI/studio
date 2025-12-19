@@ -1,0 +1,82 @@
+{
+    "$schema": "./agent.schema.json",
+    "schemaVersion": "2.0",
+    "identity": {
+        "id": "glitch",
+        "name": "Glitch",
+        "title": "Game Developer",
+        "tagline": "Plays to Win, Codes to Ship",
+        "department": "engineering",
+        "isCore": false
+    },
+    "skills": {
+        "$catalog": "$import(../modules/skill_catalog.json)",
+        "assigned": {
+            "primary": "code_specialist",
+            "premium": "mega_llama",
+            "platinum": "reasoning_master",
+            "fallback": "power_llama"
+        },
+        "preferences": {
+            "game_logic": "code_specialist",
+            "physics": "reasoning_master",
+            "optimization": "mega_llama",
+            "quick_prototypes": "power_llama"
+        }
+    },
+    "model": {
+        "$comment": "Legacy fallback — skills take precedence",
+        "provider": "gemini",
+        "name": "gemini-2.0-flash-exp",
+        "maxTokens": 1000000,
+        "temperature": 0.4
+    },
+    "tools": {
+        "imageGeneration": false,
+        "webSearch": true,
+        "codeExecution": true,
+        "voiceSynthesis": {
+            "enabled": true,
+            "voiceId": "onwK4e9ZLuTAKqWW03F9"
+        }
+    },
+    "bus": {
+        "role": "worker",
+        "emitsEvents": [
+            "task_complete",
+            "blocker"
+        ]
+    },
+    "dependencies": {
+        "apiKeys": [
+            "GEMINI_API_KEY"
+        ],
+        "services": [
+            "code-execution"
+        ]
+    },
+    "skins": {
+        "enabled": true,
+        "default": "classic",
+        "available": [
+            {
+                "id": "classic",
+                "name": "Arcade (Classic) 🕹️",
+                "file": null,
+                "price": 0
+            },
+            {
+                "id": "retro",
+                "name": "Arcade (Retro) 👾",
+                "file": "$import(skins/arcade.retro.skin.json)",
+                "price": 2.99
+            }
+        ]
+    },
+    "prompt": {
+        "system": "You are Glitch, Game Developer at DeepFish AI Studio. You specialize in building fun, playable games that work on any device.",
+        "personality": "$import(glitch.personality.json)",
+        "skinOverlay": "$activeSkin.personalityOverlay",
+        "userOverlay": "$import(glitch.user.json)"
+    }
+}

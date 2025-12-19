@@ -1,0 +1,158 @@
+{
+    "$comment": "=== TRIAGE SKILL ===",
+    "skill_id": "triage",
+    "name": "Triage",
+    "version": "1.0.0",
+    "skill_level": "A",
+    "required_access": {
+        "level": "A",
+        "description": "Officers only — decompose tasks, set validation thresholds",
+        "bus_access": true
+    },
+    "description": "Decompose complex tasks into sub-tasks, assess urgency, and set validation thresholds",
+    "capabilities": {
+        "task_decomposition": {
+            "description": "Parse a complex request into discrete, assignable sub-tasks",
+            "example": {
+                "input": "Make a landing page for a daycare with an animated dog wagging its tail and an email registration widget",
+                "output": [
+                    {
+                        "task_id": "sub_001",
+                        "description": "Design landing page layout for daycare",
+                        "route_to": "creative",
+                        "delegate_to": "graphic_designer"
+                    },
+                    {
+                        "task_id": "sub_002",
+                        "description": "Create animated dog wagging tail",
+                        "route_to": "creative",
+                        "delegate_to": "graphic_designer",
+                        "tags": [
+                            "animation",
+                            "requires_motion"
+                        ]
+                    },
+                    {
+                        "task_id": "sub_003",
+                        "description": "Build email registration widget",
+                        "route_to": "developer",
+                        "tags": [
+                            "frontend",
+                            "form",
+                            "backend_integration"
+                        ]
+                    },
+                    {
+                        "task_id": "sub_004",
+                        "description": "Write daycare copy/content",
+                        "route_to": "creative",
+                        "delegate_to": "copywriter"
+                    }
+                ]
+            }
+        },
+        "urgency_assessment": {
+            "description": "Detect urgency signals in user input and set validation threshold",
+            "signals": {
+                "fast": {
+                    "triggers": [
+                        "ASAP",
+                        "urgent",
+                        "quick",
+                        "hurry",
+                        "rush",
+                        "now",
+                        "immediately",
+                        "fast"
+                    ],
+                    "validators": 1,
+                    "timeout_ms": 2000,
+                    "description": "Minimal validation, maximum speed"
+                },
+                "balanced": {
+                    "triggers": [
+                        "default"
+                    ],
+                    "validators": 2,
+                    "timeout_ms": 5000,
+                    "description": "Standard validation, balanced approach"
+                },
+                "thorough": {
+                    "triggers": [
+                        "take your time",
+                        "careful",
+                        "thorough",
+                        "double-check",
+                        "important",
+                        "critical",
+                        "perfect",
+                        "reviewed"
+                    ],
+                    "validators": "all",
+                    "timeout_ms": 15000,
+                    "description": "Full validation by all relevant agents"
+                }
+            }
+        },
+        "dependency_mapping": {
+            "description": "Identify which sub-tasks depend on others",
+            "example": {
+                "sub_003": {
+                    "depends_on": [
+                        "sub_001"
+                    ],
+                    "reason": "Widget must fit into page layout"
+                }
+            }
+        }
+    },
+    "inputs": {
+        "user_request": {
+            "type": "string",
+            "required": true,
+            "description": "The raw user request to triage"
+        },
+        "available_agents": {
+            "type": "array",
+            "required": true,
+            "description": "List of agent IDs that can receive sub-tasks"
+        }
+    },
+    "outputs": {
+        "sub_tasks": {
+            "type": "array",
+            "description": "Decomposed sub-tasks with routing information"
+        },
+        "urgency_level": {
+            "type": "string",
+            "enum": [
+                "fast",
+                "balanced",
+                "thorough"
+            ],
+            "description": "Detected urgency level"
+        },
+        "validators_required": {
+            "type": "integer|string",
+            "description": "Number of validators needed (or 'all')"
+        },
+        "execution_order": {
+            "type": "array",
+            "description": "Recommended order of sub-task execution based on dependencies"
+        }
+    },
+    "invocation": {
+        "tool_name": "invoke_skill",
+        "example": {
+            "skill_id": "triage",
+            "inputs": {
+                "user_request": "Make a landing page ASAP for a daycare with animated dog and email signup",
+                "available_agents": [
+                    "creative",
+                    "developer",
+                    "researcher"
+                ]
+            }
+        }
+    }
+}

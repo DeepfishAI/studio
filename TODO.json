@@ -1,0 +1,201 @@
+{
+    "decisions": [
+        {
+            "id": "standard_choice",
+            "decision": "Use MCP (Model Context Protocol) as the system standard",
+            "rationale": "Less informational fog, purpose-built for agents, aligns with algebraic vision",
+            "date": "2025-12-15"
+        }
+    ],
+    "todo": {
+        "strategic_priority": {
+            "id": "the_goal",
+            "principle": "Goldratt's Theory of Constraints - THE GOAL is money for the enterprise",
+            "directive": "Fastest path to revenue. Not things, not wealth accumulation - CASH FLOW for operations.",
+            "strategy": "Developer Platform / B2D Model",
+            "rationale": "Create tools developers embed in THEIR apps. One customer = millions of end users. Leverage, lock-in, usage-based revenue.",
+            "constraint_focus": "Identify and exploit the bottleneck. Everything else is subordinate.",
+            "first_customer_principle": {
+                "rule": "Tiny amount, tiny effort = best way to start",
+                "mantra": "Don't wait for the big deal. Get a TINY deal. As fast as possible.",
+                "milestone": "FIRST PAYING CUSTOMER. The first one. That's the target.",
+                "why": "Proof of value. Proof of market. Momentum. Everything else is theory until someone pays."
+            },
+            "monetization_concept": {
+                "id": "spinup_purchases",
+                "name": "Office Expansion Packs",
+                "core_idea": "Sell SPINUPS not compute. User buys an 'intern' for $1.99, which grants them an additional parallel instance of that agent type.",
+                "ux_framing": "Your office just expanded! Hanna now has a creative assistant.",
+                "user_perception": "They bought a 'person' — their virtual team grew",
+                "technical_reality": "They purchased permission to spawn +1 concurrent LLM instance for that agent",
+                "example_products": [
+                    {
+                        "name": "Creative Intern for Hanna",
+                        "price": "$1.99",
+                        "effect": "+1 Hanna parallel instance"
+                    },
+                    {
+                        "name": "Code Monkey for IT",
+                        "price": "$2.99",
+                        "effect": "+1 IT parallel instance"
+                    },
+                    {
+                        "name": "Research Buddy for Oracle",
+                        "price": "$1.49",
+                        "effect": "+1 Oracle parallel instance"
+                    },
+                    {
+                        "name": "Office Expansion Pack (5)",
+                        "price": "$7.99",
+                        "effect": "+5 any-agent instances"
+                    }
+                ],
+                "why_this_works": [
+                    "Tiny price = low friction",
+                    "Value-framed = 'more staff' not 'more compute'",
+                    "Scalable = user buys as they need",
+                    "Recurring = heavy users buy more",
+                    "Gamified = collect team members"
+                ],
+                "core_psychology": {
+                    "thesis": "PAYING for your office build is MORE satisfying than getting it free",
+                    "prediction": "Users will BUY more than they would USE if free",
+                    "principles": [
+                        "IKEA Effect - people value what they invest in building",
+                        "Sunk Cost Engagement - payment creates commitment to use",
+                        "Collecting Psychology - buying team = collectible dopamine",
+                        "Free = Disposable - zero cost = zero identity attachment"
+                    ],
+                    "system_philosophy": "Microtransaction the ENTIRE system. Every expansion is a purchase."
+                },
+                "design_tension": {
+                    "top_priority": true,
+                    "the_scale": {
+                        "side_a": "Gamification / Microtransactions (revenue, engagement, fun)",
+                        "side_b": "System Power (value, capability, professional output)",
+                        "danger": "Gamification must NOT minimize the actual power of the system",
+                        "balance": "Unknown - this is the proportion we must find to win"
+                    },
+                    "guiding_question": "Does this purchase make the user MORE powerful, or just feel like they paid for nothing?",
+                    "success_criteria": [
+                        "Every purchase INCREASES real capability",
+                        "Free tier is still genuinely useful (not crippled)",
+                        "Paid users feel powerful, not nickel-and-dimed",
+                        "The game IS the work, the work IS the game"
+                    ]
+                },
+                "status": "READY_TO_BUILD",
+                "date_added": "2025-12-18"
+            },
+            "immediate_questions": [
+                "What is the ONE constraint blocking revenue RIGHT NOW?",
+                "What is the minimum viable product developers will PAY for?",
+                "Who are the first 10 paying customers?",
+                "What can we ship THIS WEEK that generates revenue?"
+            ],
+            "status": "PRIORITY_ZERO",
+            "date_added": "2025-12-18"
+        },
+        "deferred_repairs": {
+            "description": "Holes we plugged fast - proper fix needed later. Constraint mindset: don't let perfect block revenue.",
+            "items": [
+                {
+                    "id": "frontend_wiring",
+                    "hole": "React frontend not wired to backend agents",
+                    "quick_plug": "Skip frontend for now, test via CLI",
+                    "proper_fix": "Wire ChatPage.jsx to backend orchestrator via API",
+                    "status": "deferred",
+                    "priority": "after_revenue"
+                },
+                {
+                    "id": "bus_event_loop",
+                    "hole": "Bus architecture defined but not running",
+                    "quick_plug": "Direct function calls between agents for demo",
+                    "proper_fix": "Implement full event-driven dispatch with Mei sleep/wake",
+                    "status": "deferred",
+                    "priority": "after_revenue"
+                },
+                {
+                    "id": "intern_system_polish",
+                    "hole": "Intern system works but not production-hardened",
+                    "quick_plug": "Working prototype in test-interns.js",
+                    "proper_fix": "Error handling, retry logic, rate limiting, cost tracking",
+                    "status": "deferred",
+                    "priority": "after_revenue"
+                }
+            ]
+        },
+        "design_considerations": [
+            {
+                "id": "trigger_collisions",
+                "task": "What happens if a request matches multiple agents?",
+                "notes": "Fallback logic or priority weighting?",
+                "status": "open"
+            },
+            {
+                "id": "compound_tasks",
+                "task": "Does the algebraic router handle decomposition?",
+                "notes": "Or must the user phrase clearly?",
+                "status": "open"
+            },
+            {
+                "id": "agent_autonomy",
+                "task": "Once invoked, can agents invoke interns freely?",
+                "notes": "Or is that also formula-driven?",
+                "status": "open"
+            }
+        ],
+        "routing_algebra": [
+            {
+                "id": "trigger_taxonomy",
+                "task": "Define trigger taxonomy",
+                "notes": "Ensure no overlaps/gaps between agents",
+                "status": "open"
+            },
+            {
+                "id": "routing_function_spec",
+                "task": "Define routing function spec",
+                "notes": "Input → agent mapping formula",
+                "status": "open"
+            },
+            {
+                "id": "execution_protocol",
+                "task": "Define execution protocol",
+                "notes": "What happens post-match",
+                "status": "open"
+            }
+        ],
+        "product_tiers": [
+            {
+                "id": "tier_beginner",
+                "name": "DeepFish Starter",
+                "status": "planned",
+                "target_market": [
+                    "Confused AI experimenters",
+                    "Intelligent kids learning to build",
+                    "College study teams",
+                    "Gamers who want to create, not just consume"
+                ],
+                "positioning": "Making your own app is better than using someone else's",
+                "llm_strategy": "Cost-efficient models, forgiving of mistakes",
+                "ux_priority": "Approachable, educational, encouraging",
+                "price_tier": "Free / Low-cost subscription"
+            },
+            {
+                "id": "tier_premium",
+                "name": "DeepFish Pro",
+                "status": "planned",
+                "target_market": [
+                    "High-power managers",
+                    "Product designers",
+                    "Enterprise employees",
+                    "People who recognize excellence and pay for it"
+                ],
+                "positioning": "Premium results for premium professionals",
+                "llm_strategy": "Highest-scoring LLMs, most expensive token chains, no compromises",
+                "ux_priority": "Power, precision, professional output",
+                "price_tier": "Premium subscription"
+            }
+        ]
+    }
+}

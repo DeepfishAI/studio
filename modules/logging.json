@@ -1,0 +1,27 @@
+{
+    "$comment": "=== LOGGING MODULE ===",
+    "module_id": "logging",
+    "name": "System Logging",
+    "version": "1.0.0",
+    "type": "observability",
+    "cost": "FREE",
+    "status": "placeholder",
+    "description": "System logs, audit trails, debugging.",
+    "levels": [
+        "DEBUG",
+        "INFO",
+        "WARNING",
+        "ERROR",
+        "CRITICAL"
+    ],
+    "destinations": [
+        "console",
+        "database",
+        "external (datadog/etc)"
+    ],
+    "retention": {
+        "debug": "7 days",
+        "info": "30 days",
+        "error": "90 days"
+    }
+}

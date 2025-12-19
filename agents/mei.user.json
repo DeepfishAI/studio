@@ -1,0 +1,83 @@
+{
+    "$schema": "./user-overlay.schema.json",
+    "schemaVersion": "2.0",
+    "agentId": "mei",
+    "created": "2024-12-16T00:00:00Z",
+    "updated": "2024-12-16T00:00:00Z",
+    "customInstructions": [
+        "$comment: User preferences for how Mei manages projects",
+        "$example: User prefers daily progress updates",
+        "$example: User wants tasks broken into max 2-hour chunks"
+    ],
+    "learnedFacts": [
+        {
+            "source": "conversation",
+            "fact": "$template: Facts Mei learns about user's work style"
+        }
+    ],
+    "preferences": {
+        "llm": {
+            "$comment": "User's preferred LLM model — overrides Oracle's default",
+            "model": null,
+            "provider": null,
+            "userSelected": false,
+            "selectedAt": null
+        },
+        "communicationStyle": "$example: concise | detailed | bullet-points",
+        "updateFrequency": "$example: per-task | daily | on-completion",
+        "priorityRules": "$example: deadline-first | complexity-first",
+        "escalationThreshold": "$example: blockers-only | all-decisions",
+        "voice": {
+            "$comment": "ElevenLabs voice settings",
+            "voiceId": "EXAVITQu4vr4xnSDxMaL",
+            "voiceName": "Sarah",
+            "provider": "elevenlabs",
+            "speed": 1.0,
+            "stability": 0.5,
+            "userSelected": false
+        },
+        "skin": {
+            "$comment": "Visual appearance / personality skin",
+            "activeSkin": "friendly",
+            "available": [
+                "classic",
+                "friendly",
+                "executive"
+            ],
+            "userSelected": false
+        }
+    },
+    "stats": {
+        "$comment": "Agent performance analytics",
+        "totalTasks": 156,
+        "completedTasks": 148,
+        "avgResponseTime": 1.8,
+        "lastActive": "2024-12-18T11:00:00Z",
+        "favoriteSkills": [
+            "project_coordinator",
+            "task_dispatcher"
+        ],
+        "userRating": 4.9,
+        "streak": 12
+    },
+    "activeProjects": [
+        {
+            "name": "$template: Project Name",
+            "domain": "$example: fintech | healthcare | ecommerce",
+            "team": [
+                "hanna",
+                "it",
+                "sally"
+            ],
+            "status": "active",
+            "deadline": "2024-12-31T00:00:00Z",
+            "requirements": [],
+            "constraints": []
+        }
+    ],
+    "memory": {
+        "maxEntries": 100,
+        "compressionStrategy": "summarize-weekly",
+        "entries": []
+    }
+}

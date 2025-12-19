@@ -1,0 +1,158 @@
+{
+    "$comment": "=== CONFERENCE ROOM SKILL ===",
+    "$description": "A collaborative space where invited agents communicate freely. Bus permissions wide open. All voices heard.",
+    "$why_needed": [
+        "Design discussions need multiple perspectives at once",
+        "Troubleshooting benefits from cross-functional input",
+        "Normal bus restrictions prevent open brainstorming",
+        "User wants to hear from everyone, not just one routed agent"
+    ],
+    "$analogy": "Like a real conference room — everyone at the table can speak",
+    "skill_id": "conference_room",
+    "capability_type": "object",
+    "$tool_type_note": "object = a thing/space agents use. skill = an action agents perform.",
+    "name": "Conference Room",
+    "version": "1.0.0",
+    "skill_level": "A",
+    "cost": "PAID",
+    "cost_rationale": "High token usage — multiple agents responding to same prompt",
+    "invoked_by": [
+        "mei",
+        "oracle"
+    ],
+    "inputs": {
+        "attendees": {
+            "type": "array",
+            "items": "agent_id",
+            "description": "Which agents to invite. Can be specific IDs or 'all_managers', 'all_officers', etc.",
+            "required": true
+        },
+        "topic": {
+            "type": "string",
+            "description": "The subject of the meeting — sets context for all agents",
+            "required": true
+        },
+        "question": {
+            "type": "string",
+            "description": "The user's question or prompt for discussion",
+            "required": true
+        }
+    },
+    "outputs": {
+        "transcript": {
+            "type": "array",
+            "items": {
+                "agent_id": "string",
+                "response": "string",
+                "timestamp": "ISO8601"
+            },
+            "description": "Ordered list of all agent contributions"
+        },
+        "synthesis": {
+            "type": "string",
+            "description": "Mei's summary of the discussion (optional, if user wants)"
+        }
+    },
+    "bus_override": {
+        "$comment": "This is the key — conference room temporarily lifts bus restrictions",
+        "description": "While in conference, normal bus access rules are suspended for attendees",
+        "overrides": {
+            "access_control": {
+                "original": "role-based (officers/managers/interns)",
+                "conference": "all attendees = full bus access"
+            },
+            "operations_allowed": [
+                "ASSERT",
+                "QUERY",
+                "VALIDATE",
+                "CORRECT",
+                "ACK"
+            ],
+            "correction_limit": {
+                "original": "max 2 per agent",
+                "conference": "unlimited (it's a discussion)"
+            },
+            "consensus_threshold": {
+                "original": "mei-controlled",
+                "conference": "none required (open floor)"
+            }
+        },
+        "scope": "Only applies to agents in this conference instance",
+        "duration": "Until conference ends (user closes or topic resolved)"
+    },
+    "speaking_order": {
+        "$comment": "How agents take turns responding",
+        "mode": "round_robin",
+        "options": {
+            "round_robin": "Each agent speaks once in order, then open floor",
+            "expertise_first": "Agents with topic-relevant triggers speak first",
+            "voluntary": "Agent only speaks if they have something to add"
+        },
+        "default": "expertise_first",
+        "moderation": {
+            "moderator": "mei",
+            "responsibilities": [
+                "Open the conference",
+                "State the topic and question",
+                "Call on agents in order",
+                "Synthesize at end if requested"
+            ]
+        }
+    },
+    "execution": {
+        "steps": [
+            {
+                "step": 1,
+                "action": "mei creates conference instance",
+                "details": "Assigns conference_id, logs attendees, sets topic"
+            },
+            {
+                "step": 2,
+                "action": "bus_override activates",
+                "details": "Attendees gain full bus access for this conference_id only"
+            },
+            {
+                "step": 3,
+                "action": "mei broadcasts question to all attendees",
+                "details": "Each agent receives: topic + question + attendee list"
+            },
+            {
+                "step": 4,
+                "action": "agents respond in speaking_order",
+                "details": "Each agent assesses: do I have relevant input? If yes, respond."
+            },
+            {
+                "step": 5,
+                "action": "transcript compiled",
+                "details": "All responses logged with agent_id and timestamp"
+            },
+            {
+                "step": 6,
+                "action": "mei closes conference",
+                "details": "Optional synthesis, bus_override reverts, return transcript to user"
+            }
+        ]
+    },
+    "example_invocation": {
+        "user_says": "I want to brainstorm the app architecture. Get Creative, Developer, and Strategist in the room.",
+        "mei_invokes": {
+            "skill_id": "conference_room",
+            "inputs": {
+                "attendees": [
+                    "creative",
+                    "developer",
+                    "strategist"
+                ],
+                "topic": "App architecture brainstorm",
+                "question": "What are the key considerations for our app architecture?"
+            }
+        },
+        "result": "Each agent contributes their perspective, Mei synthesizes, user gets full transcript"
+    },
+    "tier_availability": {
+        "starter": false,
+        "pro": true,
+        "$note": "High token cost makes this a Pro feature. Great promotional unlock candidate."
+    },
+    "default_owner": "mei"
+}

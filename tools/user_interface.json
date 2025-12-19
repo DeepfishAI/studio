@@ -1,0 +1,47 @@
+{
+    "$comment": "=== USER INTERFACE SKILL ===",
+    "skill_id": "user_interface",
+    "name": "User Interface",
+    "version": "1.0.0",
+    "skill_level": "A",
+    "required_access": {
+        "level": "A",
+        "description": "Officers only — direct user communication",
+        "bus_access": true
+    },
+    "description": "Handle direct communication with users. Parse intent, respond appropriately, manage expectations.",
+    "capabilities": {
+        "parse_intent": {
+            "description": "Understand what user is asking for",
+            "inputs": [
+                "user_message"
+            ],
+            "outputs": [
+                "intent",
+                "entities",
+                "urgency",
+                "ambiguity_score"
+            ]
+        },
+        "format_response": {
+            "description": "Format agent output for user consumption",
+            "inputs": [
+                "raw_output",
+                "user_preferences"
+            ],
+            "outputs": [
+                "formatted_response"
+            ]
+        },
+        "manage_expectations": {
+            "description": "Set appropriate expectations for delivery time, complexity",
+            "inputs": [
+                "task_estimate"
+            ],
+            "outputs": [
+                "user_message"
+            ]
+        }
+    },
+    "default_owner": "mei"
+}

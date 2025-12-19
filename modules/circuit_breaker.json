@@ -1,0 +1,78 @@
+{
+    "$comment": "=== CIRCUIT BREAKER MODULE ===",
+    "$description": "This module acts like an electrical circuit breaker - it HALTS everything when things go wrong to prevent damage.",
+    "$why_needed": [
+        "If errors keep happening, continuing just wastes resources and compounds problems",
+        "Better to STOP and get human attention than keep failing silently",
+        "Prevents cascading failures from taking down the whole system"
+    ],
+    "$lean_equivalent": "Jidoka / Andon cord - stop the line when defects occur",
+    "$electrical_analogy": "A circuit breaker trips when overloaded, cutting power to prevent fire",
+    "module_id": "circuit_breaker",
+    "name": "Circuit Breaker",
+    "version": "1.0.0",
+    "type": "circuit_component",
+    "cost": "FREE",
+    "description": "Emergency halt — trips on overload, stops everything",
+    "states": {
+        "CLOSED": {
+            "$meaning": "Normal operation - requests flow through",
+            "$when": "System is healthy"
+        },
+        "OPEN": {
+            "$meaning": "HALTED - no requests allowed through",
+            "$when": "Too many failures detected"
+        },
+        "HALF_OPEN": {
+            "$meaning": "Testing - allowing one request to see if system recovered",
+            "$when": "Cooldown period ended, trying to recover"
+        }
+    },
+    "current_state": "CLOSED",
+    "rules": {
+        "trip_threshold": {
+            "consecutive_failures": {
+                "value": 3,
+                "$why": "3 failures in a row = not random, something is broken"
+            },
+            "error_rate_percent": {
+                "value": 50,
+                "$why": "If half of requests fail, system is unhealthy"
+            },
+            "error_window_seconds": {
+                "value": 60,
+                "$why": "Measure error rate over last minute, not all time"
+            }
+        },
+        "recovery": {
+            "cooldown_seconds": {
+                "value": 30,
+                "$why": "Wait 30 seconds before trying again - let transient issues resolve"
+            },
+            "test_request_count": {
+                "value": 1,
+                "$why": "Send one test request to see if system recovered"
+            },
+            "success_to_close": {
+                "value": 1,
+                "$why": "One success = system is back, close the breaker"
+            }
+        }
+    },
+    "on_trip": {
+        "action": "HALT_ALL",
+        "notify": [
+            "mei",
+            "oracle"
+        ],
+        "log_level": "CRITICAL",
+        "user_message": "System paused due to errors. Mei is reviewing.",
+        "$what_happens": "Everything stops, officers are notified, user gets a message"
+    },
+    "$how_to_read_this": [
+        "1. This is your emergency stop button",
+        "2. States work like: CLOSED (normal) → OPEN (stopped) → HALF_OPEN (testing) → CLOSED (recovered)",
+        "3. In Lean terms: this is the Andon cord - any worker can pull it to stop the line",
+        "4. Mei and Oracle get notified when it trips - they're the supervisors"
+    ]
+}

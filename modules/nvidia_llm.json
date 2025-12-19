@@ -1,0 +1,137 @@
+{
+    "$comment": "=== NVIDIA LLM MODULE — Multi-Model AI Gateway ===",
+    "$description": "Provides access to 56+ enterprise LLMs through NVIDIA's unified API",
+    "$why_needed": [
+        "Single API key for 56+ models (Llama, Mistral, Nemotron, Phi, Gemma, etc.)",
+        "Oracle can intelligently route tasks to optimal model",
+        "Cost optimization: pick small/fast vs big/smart per task",
+        "Enterprise-grade infrastructure from NVIDIA"
+    ],
+    "$architectural_meaning": "This is an adapter pattern — provides unified interface to heterogeneous LLM backends",
+    "$legal_note": "NVIDIA® is a trademark of NVIDIA Corporation. DeepFish is not affiliated with or endorsed by NVIDIA.",
+    "module_id": "nvidia_llm",
+    "type": "infrastructure",
+    "cost": "PREMIUM",
+    "available_tiers": [
+        "premium",
+        "platinum"
+    ],
+    "config": {
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "api_key_env": "NVIDIA_API_KEY",
+        "timeout_seconds": 30,
+        "max_retries": 3,
+        "retry_backoff_multiplier": 1.5
+    },
+    "models": {
+        "tiers": {
+            "fast": {
+                "description": "Quick responses, lower cost",
+                "models": [
+                    "microsoft/phi-3-mini-4k-instruct",
+                    "google/gemma-2-9b-it",
+                    "meta/llama-3.1-8b-instruct"
+                ],
+                "max_tokens": 4096,
+                "use_when": [
+                    "simple_queries",
+                    "quick_lookups",
+                    "summarization"
+                ]
+            },
+            "balanced": {
+                "description": "Good balance of speed and capability",
+                "models": [
+                    "meta/llama-3.1-70b-instruct",
+                    "mistralai/mistral-7b-instruct-v0.3",
+                    "mistralai/mixtral-8x7b-instruct-v0.1"
+                ],
+                "max_tokens": 8192,
+                "use_when": [
+                    "code_review",
+                    "writing",
+                    "analysis"
+                ]
+            },
+            "powerful": {
+                "description": "Maximum capability for complex tasks",
+                "models": [
+                    "meta/llama-3.1-405b-instruct",
+                    "mistralai/mixtral-8x22b-instruct-v0.1",
+                    "microsoft/phi-3-medium-128k-instruct"
+                ],
+                "max_tokens": 16384,
+                "use_when": [
+                    "deep_reasoning",
+                    "long_documents",
+                    "complex_code"
+                ]
+            },
+            "reasoning": {
+                "description": "Chain-of-thought reasoning with visible thinking",
+                "models": [
+                    "nvidia/nemotron-3-nano-30b-a3b"
+                ],
+                "max_tokens": 16384,
+                "thinking_mode": true,
+                "use_when": [
+                    "strategic_decisions",
+                    "architecture_design",
+                    "debugging"
+                ]
+            }
+        }
+    },
+    "oracle_routing": {
+        "$comment": "Oracle uses these rules to select the optimal model",
+        "rules": [
+            {
+                "condition": "task.complexity == 'simple' AND user.tier IN ['premium', 'platinum']",
+                "route_to": "fast",
+                "reason": "Fast response for simple tasks"
+            },
+            {
+                "condition": "task.type == 'code' AND task.complexity == 'medium'",
+                "route_to": "balanced",
+                "reason": "Code tasks need balanced models"
+            },
+            {
+                "condition": "task.type == 'document' AND context_length > 32000",
+                "route_to": "powerful",
+                "reason": "Long documents need 128K context"
+            },
+            {
+                "condition": "task.requires_reasoning == true OR task.type == 'strategy'",
+                "route_to": "reasoning",
+                "reason": "Complex decisions need thinking mode"
+            },
+            {
+                "condition": "user.tier == 'platinum'",
+                "route_to": "powerful",
+                "reason": "Platinum users get best models by default"
+            }
+        ],
+        "fallback": "balanced"
+    },
+    "$diagram": [
+        "    ┌──────────────────────────────────────────────────────┐",
+        "    │                    ORACLE                             │",
+        "    │              (LLM Router Agent)                       │",
+        "    └──────────────────────┬───────────────────────────────┘",
+        "                           │",
+        "         ┌─────────────────┼─────────────────┐",
+        "         ▼                 ▼                 ▼",
+        "    ┌─────────┐      ┌──────────┐      ┌──────────┐",
+        "    │  FAST   │      │ BALANCED │      │ POWERFUL │",
+        "    │ Phi-3   │      │ Llama-70B│      │Llama-405B│",
+        "    │ Gemma   │      │ Mistral  │      │Mixtral   │",
+        "    └─────────┘      └──────────┘      └──────────┘",
+        "                                              │",
+        "                                              ▼",
+        "                                       ┌──────────┐",
+        "                                       │REASONING │",
+        "                                       │ Nemotron │",
+        "                                       │(thinking)│",
+        "                                       └──────────┘"
+    ]
+}

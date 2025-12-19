@@ -1,0 +1,49 @@
+{
+    "$comment": "=== RESISTOR MODULE ===",
+    "$description": "This module acts like an electrical resistor - it LIMITS the flow of requests to prevent system overload.",
+    "$why_needed": [
+        "Without rate limiting, a runaway loop could fire thousands of requests",
+        "Agents might retry forever on failure, wasting resources",
+        "One bad task could consume all system capacity"
+    ],
+    "$lean_equivalent": "Takt time / WIP limits - prevents overproduction",
+    "$electrical_analogy": "A resistor limits current flow to protect circuits from burning out",
+    "module_id": "resistor",
+    "name": "Resistor",
+    "version": "1.0.0",
+    "type": "circuit_component",
+    "cost": "FREE",
+    "description": "Rate limiting — prevents runaway loops and resource exhaustion",
+    "rules": {
+        "max_retries_per_agent": {
+            "value": 3,
+            "$why": "After 3 failures, something is fundamentally wrong - stop trying"
+        },
+        "max_corrections_per_task": {
+            "value": 5,
+            "$why": "If agents can't agree after 5 corrections, escalate to human"
+        },
+        "max_consecutive_failures": {
+            "value": 3,
+            "$why": "3 failures in a row = systemic issue, not random error"
+        },
+        "cooldown_after_failure_ms": {
+            "value": 1000,
+            "$why": "Brief pause lets transient issues resolve, prevents hammering"
+        }
+    },
+    "on_exceed": {
+        "action": "trip_circuit_breaker",
+        "$what_happens": "When limits exceeded, we don't just fail silently - we HALT everything and notify Mei",
+        "notify": [
+            "mei"
+        ],
+        "log_level": "WARNING"
+    },
+    "$how_to_read_this": [
+        "1. This file defines WHAT a resistor does, not HOW (that's the runtime code)",
+        "2. Rules are the configuration - change values here to tune behavior",
+        "3. on_exceed defines what happens when limits are hit",
+        "4. $comments explain WHY each decision was made"
+    ]
+}

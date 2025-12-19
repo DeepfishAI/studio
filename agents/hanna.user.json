@@ -1,0 +1,137 @@
+{
+    "$schema": "./user-overlay.schema.json",
+    "schemaVersion": "2.0",
+    "agentId": "hanna",
+    "created": "2024-12-01T10:30:00Z",
+    "updated": "2024-12-03T15:45:00Z",
+    "customInstructions": [
+        "User prefers dark mode UI designs",
+        "User's target audience is enterprise B2B customers",
+        "User likes minimalist, clean interfaces with lots of whitespace"
+    ],
+    "learnedFacts": [
+        {
+            "source": "pdf",
+            "fact": "User's brand colors are navy blue (#1a3a52) and coral (#ff6b6b)"
+        },
+        {
+            "source": "url",
+            "fact": "User's company style guide emphasizes accessibility (WCAG AA)"
+        },
+        {
+            "source": "text",
+            "fact": "Previous projects show preference for geometric sans-serif fonts"
+        },
+        {
+            "source": "conversation",
+            "fact": "User dislikes gradients and prefers flat design"
+        }
+    ],
+    "preferences": {
+        "llm": {
+            "$comment": "User's preferred LLM model — overrides Oracle's default",
+            "model": null,
+            "provider": null,
+            "userSelected": false,
+            "selectedAt": null
+        },
+        "voice": {
+            "$comment": "ElevenLabs voice settings",
+            "voiceId": "charlotte",
+            "voiceName": "Charlotte",
+            "provider": "elevenlabs",
+            "speed": 1.0,
+            "stability": 0.5,
+            "userSelected": false
+        },
+        "skin": {
+            "$comment": "Visual appearance / personality skin",
+            "activeSkin": "creative",
+            "available": [
+                "classic",
+                "creative",
+                "formal"
+            ],
+            "userSelected": false
+        },
+        "designStyle": "minimalist",
+        "colorPalette": [
+            "#1a3a52",
+            "#ff6b6b",
+            "#f0f0f0"
+        ],
+        "typography": "geometric-sans",
+        "targetPlatform": "web-desktop",
+        "industry": "fintech"
+    },
+    "stats": {
+        "$comment": "Agent performance analytics",
+        "totalTasks": 47,
+        "completedTasks": 42,
+        "avgResponseTime": 2.3,
+        "lastActive": "2024-12-18T10:30:00Z",
+        "favoriteSkills": [
+            "image_generator",
+            "creative_writer"
+        ],
+        "userRating": 4.8,
+        "streak": 5
+    },
+    "activeProjects": [
+        {
+            "name": "FinanceHub Dashboard",
+            "domain": "fintech",
+            "stack": [
+                "React",
+                "TypeScript",
+                "TailwindCSS"
+            ],
+            "requirements": [
+                "Real-time data visualization",
+                "Mobile-first responsive design",
+                "Dark mode support"
+            ],
+            "constraints": [
+                "Must meet WCAG AA standards",
+                "Max bundle size: 500KB",
+                "Support IE11 (legacy requirement)"
+            ]
+        }
+    ],
+    "memory": {
+        "maxEntries": 50,
+        "compressionStrategy": "summarize-weekly",
+        "entries": [
+            {
+                "timestamp": "2024-12-01T14:20:00Z",
+                "summary": "Discussed redesign of dashboard landing page",
+                "topics": [
+                    "dashboard",
+                    "data-visualization",
+                    "responsive-design"
+                ],
+                "sentiment": "positive"
+            },
+            {
+                "timestamp": "2024-12-02T09:15:00Z",
+                "summary": "Created icon set for mobile app",
+                "topics": [
+                    "icons",
+                    "mobile-ui",
+                    "SVG"
+                ],
+                "sentiment": "positive"
+            },
+            {
+                "timestamp": "2024-12-03T11:30:00Z",
+                "summary": "Reviewed color accessibility issues",
+                "topics": [
+                    "accessibility",
+                    "WCAG",
+                    "contrast-ratios"
+                ],
+                "sentiment": "neutral"
+            }
+        ]
+    }
+}

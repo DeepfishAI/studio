@@ -1,0 +1,100 @@
+{
+    "$schema": "./agent.schema.json",
+    "_comment": "Intern Pool - Ephemeral agents spawned by managers",
+    "internTypes": [
+        {
+            "id": "researcher",
+            "name": "Research Intern",
+            "specialty": "API documentation, library comparison, best practices",
+            "spawnsFrom": [
+                "mei",
+                "it",
+                "oracle"
+            ],
+            "deliverables": [
+                "research_summary",
+                "api_docs",
+                "comparison_table"
+            ]
+        },
+        {
+            "id": "coder",
+            "name": "Coding Intern",
+            "specialty": "Write specific functions, components, modules",
+            "spawnsFrom": [
+                "it"
+            ],
+            "deliverables": [
+                "code_snippet",
+                "function",
+                "component"
+            ]
+        },
+        {
+            "id": "designer",
+            "name": "Design Intern",
+            "specialty": "CSS, layouts, color schemes, mockups",
+            "spawnsFrom": [
+                "hanna"
+            ],
+            "deliverables": [
+                "css_styles",
+                "layout_spec",
+                "color_palette"
+            ]
+        },
+        {
+            "id": "copywriter",
+            "name": "Copy Intern",
+            "specialty": "Marketing copy, SEO content, headlines",
+            "spawnsFrom": [
+                "sally"
+            ],
+            "deliverables": [
+                "copy_block",
+                "seo_keywords",
+                "headline_variations"
+            ]
+        },
+        {
+            "id": "qa",
+            "name": "QA Intern",
+            "specialty": "Test plans, edge cases, validation",
+            "spawnsFrom": [
+                "it",
+                "mei"
+            ],
+            "deliverables": [
+                "test_cases",
+                "bug_report",
+                "validation_checklist"
+            ]
+        },
+        {
+            "id": "analyst",
+            "name": "Data Analyst Intern",
+            "specialty": "Requirements breakdown, scope analysis",
+            "spawnsFrom": [
+                "mei",
+                "sally"
+            ],
+            "deliverables": [
+                "requirements_doc",
+                "scope_breakdown",
+                "estimates"
+            ]
+        }
+    ],
+    "spawnConfig": {
+        "maxConcurrent": 5,
+        "timeout": 60000,
+        "defaultModel": "claude-3-5-sonnet",
+        "fallbackModel": "gemini-1.5-flash"
+    },
+    "lifecycle": {
+        "spawn": "Manager requests intern with task + constraints",
+        "execute": "Intern calls LLM with specialized prompt",
+        "deliver": "Intern returns deliverable to manager",
+        "terminate": "Intern is disposed after delivery"
+    }
+}

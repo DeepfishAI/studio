@@ -1,0 +1,48 @@
+{
+    "$comment": "=== USER WORKSPACE MODULE ===",
+    "module_id": "workspace",
+    "name": "User Workspace",
+    "version": "1.0.0",
+    "type": "storage",
+    "cost": "FREE",
+    "status": "placeholder",
+    "description": "Manages user projects, files, and work output. Where user-created work lives.",
+    "storage_layers": {
+        "drafts": {
+            "location": "database",
+            "retention": "30 days",
+            "purpose": "Temporary work in progress"
+        },
+        "projects": {
+            "location": "cloud_storage (S3/GCS)",
+            "retention": "permanent",
+            "purpose": "Saved user projects"
+        },
+        "exports": {
+            "location": "user_download",
+            "retention": "none (user's local)",
+            "purpose": "Final deliverables"
+        }
+    },
+    "schema": {
+        "project": {
+            "id": "uuid",
+            "user_id": "string",
+            "name": "string",
+            "type": "enum: deck, code, document, app, other",
+            "storage_url": "string (S3 path)",
+            "created_at": "ISO8601",
+            "updated_at": "ISO8601",
+            "status": "enum: draft, saved, archived"
+        }
+    },
+    "operations": [
+        "create",
+        "read",
+        "update",
+        "delete",
+        "list",
+        "search",
+        "export"
+    ]
+}

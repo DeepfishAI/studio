@@ -1,0 +1,22 @@
+{
+    "$comment": "=== ANALYTICS MODULE ===",
+    "module_id": "analytics",
+    "name": "Usage Analytics",
+    "version": "1.0.0",
+    "type": "observability",
+    "cost": "FREE",
+    "status": "placeholder",
+    "description": "Track usage patterns, popular skills, agent performance.",
+    "metrics": [
+        "active_users",
+        "skill_usage",
+        "agent_calls",
+        "error_rates",
+        "response_times"
+    ],
+    "privacy": "Aggregated only, no PII stored",
+    "destinations": [
+        "database",
+        "external (mixpanel/amplitude)"
+    ]
+}

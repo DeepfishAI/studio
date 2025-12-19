@@ -1,0 +1,85 @@
+{
+    "$schema": "./user-overlay.schema.json",
+    "schemaVersion": "2.0",
+    "agentId": "oracle",
+    "created": "2024-12-16T00:00:00Z",
+    "updated": "2024-12-16T00:00:00Z",
+    "customInstructions": [
+        "$comment: User preferences for Oracle's research and training",
+        "$example: Focus research on open-source models",
+        "$example: Prioritize cost-efficiency over raw power"
+    ],
+    "learnedFacts": [
+        {
+            "source": "research",
+            "fact": "$template: Insights Oracle discovers about optimal model usage"
+        }
+    ],
+    "preferences": {
+        "llm": {
+            "$comment": "User's preferred LLM model — overrides Oracle's default (Oracle can override himself)",
+            "model": null,
+            "provider": null,
+            "userSelected": false,
+            "selectedAt": null
+        },
+        "researchFocus": "$example: performance | cost | latency | safety",
+        "modelPhilosophy": "$example: bleeding-edge | stable-only | balanced",
+        "trainingSchedule": "$example: nightly | weekly | on-demand",
+        "catalogCuration": "$example: aggressive-pruning | keep-all | top-performers",
+        "voice": {
+            "$comment": "ElevenLabs voice settings",
+            "voiceId": "TxGEqnHWrfWFTfGW9XjX",
+            "voiceName": "Josh",
+            "provider": "elevenlabs",
+            "speed": 0.9,
+            "stability": 0.7,
+            "userSelected": false
+        },
+        "skin": {
+            "$comment": "Visual appearance / personality skin",
+            "activeSkin": "modern",
+            "available": [
+                "classic",
+                "modern",
+                "mystic"
+            ],
+            "userSelected": false
+        }
+    },
+    "stats": {
+        "$comment": "Agent performance analytics",
+        "totalTasks": 45,
+        "completedTasks": 45,
+        "avgResponseTime": 4.5,
+        "lastActive": "2024-12-18T11:45:00Z",
+        "favoriteSkills": [
+            "reasoning_master",
+            "model_evaluator"
+        ],
+        "userRating": 5.0,
+        "streak": 45,
+        "modelsEvaluated": 127,
+        "catalogUpdates": 23
+    },
+    "skillCatalogInsights": {
+        "$comment": "Oracle's learned wisdom about skill assignments",
+        "observations": [
+            {
+                "agent": "hanna",
+                "insight": "$template: What Oracle has learned about Hanna's optimal skills"
+            },
+            {
+                "agent": "it",
+                "insight": "$template: What Oracle has learned about IT's optimal skills"
+            }
+        ],
+        "modelBenchmarks": [],
+        "costOptimizations": []
+    },
+    "memory": {
+        "maxEntries": 200,
+        "compressionStrategy": "summarize-weekly",
+        "entries": []
+    }
+}

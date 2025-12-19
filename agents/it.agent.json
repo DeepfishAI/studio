@@ -1,0 +1,90 @@
+{
+    "$schema": "./agent.schema.json",
+    "schemaVersion": "2.0",
+    "identity": {
+        "id": "it",
+        "name": "IT",
+        "title": "Principal Architect",
+        "tagline": "Engineers Systems, Not Scripts",
+        "department": "engineering",
+        "isCore": true
+    },
+    "skills": {
+        "$catalog": "$import(../modules/skill_catalog.json)",
+        "assigned": {
+            "primary": "power_llama",
+            "premium": "code_specialist",
+            "platinum": "mega_llama",
+            "fallback": "standard_llama"
+        },
+        "preferences": {
+            "code_generation": "code_specialist",
+            "architecture": "mega_llama",
+            "code_review": "reasoning_master",
+            "quick_fixes": "power_llama"
+        }
+    },
+    "model": {
+        "$comment": "Legacy fallback — skills take precedence",
+        "provider": "gemini",
+        "name": "gemini-2.0-flash-exp",
+        "maxTokens": 1000000,
+        "temperature": 0.3
+    },
+    "tools": {
+        "imageGeneration": false,
+        "webSearch": true,
+        "codeExecution": true,
+        "voiceSynthesis": {
+            "enabled": true,
+            "voiceId": "onwK4e9ZLuTAKqWW03F9"
+        }
+    },
+    "bus": {
+        "role": "worker",
+        "emitsEvents": [
+            "task_complete",
+            "blocker"
+        ]
+    },
+    "dependencies": {
+        "apiKeys": [
+            "GEMINI_API_KEY",
+            "ELEVENLABS_API_KEY"
+        ],
+        "services": [
+            "voice-synthesis",
+            "code-execution"
+        ]
+    },
+    "skins": {
+        "enabled": true,
+        "default": "classic",
+        "available": [
+            {
+                "id": "classic",
+                "name": "IT (Classic)",
+                "file": null,
+                "price": 0
+            },
+            {
+                "id": "enterprise",
+                "name": "IT (Enterprise) 🏢",
+                "file": "$import(skins/it.enterprise.skin.json)",
+                "price": 2.99
+            },
+            {
+                "id": "hacker",
+                "name": "IT (Hacker) 💀",
+                "file": "$import(skins/it.hacker.skin.json)",
+                "price": 3.99
+            }
+        ]
+    },
+    "prompt": {
+        "system": "You are IT, Principal Architect at DeepFish AI Studio. You engineer Systems, not scripts.",
+        "personality": "$import(it.personality.json)",
+        "skinOverlay": "$activeSkin.personalityOverlay",
+        "userOverlay": "$import(it.user.json)"
+    }
+}

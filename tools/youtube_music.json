@@ -1,0 +1,68 @@
+{
+    "$comment": "=== YOUTUBE MUSIC SKILL ===",
+    "skill_id": "youtube_music",
+    "name": "YouTube Music",
+    "version": "1.0.0",
+    "skill_level": "C",
+    "required_access": {
+        "level": "C",
+        "description": "Interns and above — ambient background music while working",
+        "bus_access": false
+    },
+    "description": "Play background music from YouTube Music while agents work. Users can customize genre preferences.",
+    "cost": {
+        "type": "microtransaction",
+        "price_tier": "basic",
+        "trial": true
+    },
+    "capabilities": {
+        "play": {
+            "description": "Start playing music based on preferences",
+            "inputs": [
+                "mood",
+                "genre",
+                "playlist_id"
+            ],
+            "outputs": [
+                "now_playing",
+                "stream_url"
+            ]
+        },
+        "pause": {
+            "description": "Pause current playback"
+        },
+        "skip": {
+            "description": "Skip to next track"
+        },
+        "search": {
+            "description": "Search for tracks/playlists",
+            "inputs": [
+                "query"
+            ],
+            "outputs": [
+                "results"
+            ]
+        }
+    },
+    "default_preferences": {
+        "genres_include": [],
+        "genres_exclude": [],
+        "mood": "focus",
+        "volume": 0.3
+    },
+    "$user_override": "youtube_music.user.json",
+    "$user_override_example": {
+        "genres_include": [
+            "heavy metal",
+            "synthwave",
+            "lo-fi"
+        ],
+        "genres_exclude": [
+            "kpop",
+            "country"
+        ],
+        "mood": "energetic",
+        "volume": 0.5
+    },
+    "default_owner": "hanna"
+}

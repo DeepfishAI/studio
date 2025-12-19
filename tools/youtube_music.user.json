@@ -1,0 +1,18 @@
+{
+    "$comment": "=== USER PREFERENCES FOR YOUTUBE MUSIC ===",
+    "$skill_ref": "youtube_music",
+    "genres_include": [
+        "heavy metal",
+        "industrial",
+        "synthwave"
+    ],
+    "genres_exclude": [
+        "kpop",
+        "country",
+        "pop"
+    ],
+    "mood": "energetic",
+    "volume": 0.6,
+    "favorite_playlists": [],
+    "blocked_artists": []
+}

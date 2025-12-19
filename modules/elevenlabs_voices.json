@@ -1,0 +1,130 @@
+{
+    "module_id": "elevenlabs_voices",
+    "type": "infrastructure",
+    "description": "ElevenLabs voice selection for agent TTS",
+    "$userFeature": "Users can select ANY voice for ANY agent from their profile page",
+    "api": {
+        "baseUrl": "https://api.elevenlabs.io",
+        "endpoints": {
+            "listVoices": "GET /v2/voices",
+            "sharedVoices": "GET /v1/shared-voices",
+            "getVoice": "GET /v1/voices/{voice_id}",
+            "textToSpeech": "POST /v1/text-to-speech/{voice_id}"
+        },
+        "authentication": {
+            "header": "xi-api-key",
+            "source": "ELEVENLABS_API_KEY"
+        }
+    },
+    "voiceLibrary": {
+        "$comment": "Users browse these on the agent profile page",
+        "categories": [
+            "premade",
+            "cloned",
+            "generated",
+            "professional"
+        ],
+        "filters": {
+            "gender": [
+                "male",
+                "female",
+                "neutral"
+            ],
+            "age": [
+                "young",
+                "middle_aged",
+                "old"
+            ],
+            "accent": [
+                "american",
+                "british",
+                "australian",
+                "indian"
+            ],
+            "use_case": [
+                "narration",
+                "conversational",
+                "characters"
+            ]
+        }
+    },
+    "defaultVoices": {
+        "$comment": "Pre-assigned voices — users can override",
+        "vesper": {
+            "voiceId": "pNInz6obpgDQGcFmaJgB",
+            "name": "Lily",
+            "description": "Warm, slightly flirty, professional",
+            "userCanChange": true
+        },
+        "mei": {
+            "voiceId": "EXAVITQu4vr4xnSDxMaL",
+            "name": "Sarah",
+            "description": "Clear, efficient, friendly",
+            "userCanChange": true
+        },
+        "hanna": {
+            "voiceId": "XB0fDUnXU5powFXDhCwa",
+            "name": "Charlotte",
+            "description": "Thoughtful, creative, warm",
+            "userCanChange": true
+        },
+        "it": {
+            "voiceId": "onwK4e9ZLuTAKqWW03F9",
+            "name": "Daniel",
+            "description": "Technical, precise, calm",
+            "userCanChange": true
+        },
+        "sally": {
+            "voiceId": "jBpfuIE2acCO8z3wKNLl",
+            "name": "Gigi",
+            "description": "Energetic, persuasive, upbeat",
+            "userCanChange": true
+        },
+        "oracle": {
+            "voiceId": "TxGEqnHWrfWFTfGW9XjX",
+            "name": "Josh",
+            "description": "Deep, wise, mysterious",
+            "userCanChange": true
+        }
+    },
+    "userSelection": {
+        "$comment": "How users change agent voices",
+        "location": "agent_profile_page",
+        "flow": [
+            "1. User opens agent profile",
+            "2. Clicks 'Change Voice' button",
+            "3. Modal opens with ElevenLabs voice library",
+            "4. User previews voices (play sample)",
+            "5. User selects voice",
+            "6. Saves to user.json for that agent"
+        ],
+        "storageLocation": "user.json → preferences.voice",
+        "apiIntegration": {
+            "browseVoices": "GET /v2/voices?page_size=20&category={filter}",
+            "previewVoice": "POST /v1/text-to-speech/{voice_id}/preview",
+            "saveSelection": "PATCH user.json"
+        }
+    },
+    "tierAccess": {
+        "free": {
+            "voicesAvailable": "premade",
+            "customVoices": false,
+            "voiceCloning": false
+        },
+        "pro": {
+            "voicesAvailable": "premade",
+            "customVoices": false,
+            "voiceCloning": false
+        },
+        "premium": {
+            "voicesAvailable": "all_shared",
+            "customVoices": true,
+            "voiceCloning": false
+        },
+        "platinum": {
+            "voicesAvailable": "all",
+            "customVoices": true,
+            "voiceCloning": true
+        }
+    }
+}

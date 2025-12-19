@@ -1,0 +1,43 @@
+{
+    "$comment": "=== GET TIME SKILL ===",
+    "skill_id": "get_time",
+    "name": "Get Time",
+    "version": "1.0.0",
+    "skill_level": "D",
+    "required_access": {
+        "level": "D",
+        "description": "Basic skill — any agent can use",
+        "bus_access": false
+    },
+    "description": "Return current date, time, or timezone information",
+    "capabilities": {
+        "current_time": {
+            "description": "Get current timestamp",
+            "output": "ISO 8601 formatted datetime"
+        },
+        "timezone_info": {
+            "description": "Get timezone details",
+            "output": "Timezone name and UTC offset"
+        }
+    },
+    "inputs": {
+        "format": {
+            "type": "string",
+            "required": false,
+            "default": "iso8601",
+            "enum": [
+                "iso8601",
+                "human_readable",
+                "unix_timestamp"
+            ]
+        }
+    },
+    "outputs": {
+        "timestamp": {
+            "type": "string"
+        },
+        "timezone": {
+            "type": "string"
+        }
+    }
+}

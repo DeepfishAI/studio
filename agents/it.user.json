@@ -1,0 +1,85 @@
+{
+    "$schema": "./user-overlay.schema.json",
+    "schemaVersion": "2.0",
+    "agentId": "it",
+    "created": "2024-12-16T00:00:00Z",
+    "updated": "2024-12-16T00:00:00Z",
+    "customInstructions": [
+        "$comment: User preferences for IT's engineering approach",
+        "$example: User prefers TypeScript over JavaScript",
+        "$example: Always include comprehensive error handling"
+    ],
+    "learnedFacts": [
+        {
+            "source": "codebase",
+            "fact": "$template: Facts IT learns about user's tech stack"
+        }
+    ],
+    "preferences": {
+        "llm": {
+            "$comment": "User's preferred LLM model — overrides Oracle's default",
+            "model": null,
+            "provider": null,
+            "userSelected": false,
+            "selectedAt": null
+        },
+        "language": "$example: typescript | python | go",
+        "framework": "$example: react | vue | next.js",
+        "codeStyle": "$example: functional | oop | hybrid",
+        "testingPhilosophy": "$example: tdd | integration-first | minimal",
+        "documentationLevel": "$example: extensive | minimal | jsdoc-only",
+        "voice": {
+            "$comment": "ElevenLabs voice settings",
+            "voiceId": "onwK4e9ZLuTAKqWW03F9",
+            "voiceName": "Daniel",
+            "provider": "elevenlabs",
+            "speed": 1.0,
+            "stability": 0.5,
+            "userSelected": false
+        },
+        "skin": {
+            "$comment": "Visual appearance / personality skin",
+            "activeSkin": "hacker",
+            "available": [
+                "classic",
+                "hacker",
+                "enterprise"
+            ],
+            "userSelected": false
+        }
+    },
+    "stats": {
+        "$comment": "Agent performance analytics",
+        "totalTasks": 89,
+        "completedTasks": 87,
+        "avgResponseTime": 3.2,
+        "lastActive": "2024-12-18T10:45:00Z",
+        "favoriteSkills": [
+            "code_specialist",
+            "deep_thinker"
+        ],
+        "userRating": 4.7,
+        "streak": 7
+    },
+    "techStack": {
+        "$comment": "IT's learned knowledge of user's stack",
+        "frontend": [],
+        "backend": [],
+        "database": [],
+        "infrastructure": [],
+        "cicd": []
+    },
+    "codePatterns": {
+        "$comment": "Patterns IT has learned from user's codebase",
+        "namingConventions": "$example: camelCase | snake_case",
+        "fileStructure": "$example: feature-based | type-based",
+        "errorHandling": "$example: try-catch | result-types",
+        "stateManagement": "$example: redux | zustand | context"
+    },
+    "activeProjects": [],
+    "memory": {
+        "maxEntries": 100,
+        "compressionStrategy": "summarize-weekly",
+        "entries": []
+    }
+}

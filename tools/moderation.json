@@ -1,0 +1,115 @@
+{
+    "$comment": "=== MODERATION SKILL ===",
+    "skill_id": "moderation",
+    "name": "Content Moderation",
+    "version": "1.0.0",
+    "skill_level": "A",
+    "required_access": {
+        "level": "A",
+        "description": "Officers only — runs on ALL user input at intake",
+        "bus_access": false
+    },
+    "description": "External content moderation via third-party APIs. We don't see content — API flags it, we act on verdict.",
+    "purpose": {
+        "what": "Screen user input for harmful content BEFORE it reaches agents",
+        "privacy": "DeepFish doesn't store or view content — moderation API does the check",
+        "we_store_only": "Verdict (flagged: true/false) + categories, never raw content"
+    },
+    "providers": {
+        "openai_moderation": {
+            "endpoint": "https://api.openai.com/v1/moderations",
+            "cost": "FREE with OpenAI API key",
+            "categories": [
+                "hate",
+                "hate/threatening",
+                "harassment",
+                "harassment/threatening",
+                "self-harm",
+                "self-harm/intent",
+                "self-harm/instructions",
+                "sexual",
+                "sexual/minors",
+                "violence",
+                "violence/graphic"
+            ],
+            "recommended": true
+        },
+        "perspective_api": {
+            "endpoint": "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze",
+            "cost": "FREE (rate limited)",
+            "categories": [
+                "toxicity",
+                "severe_toxicity",
+                "identity_attack",
+                "insult",
+                "profanity",
+                "threat"
+            ]
+        }
+    },
+    "active_provider": "openai_moderation",
+    "flow": {
+        "1_intercept": {
+            "when": "User input received, BEFORE routing",
+            "action": "Send content to moderation API"
+        },
+        "2_check_verdict": {
+            "if_flagged": "Block + log verdict + notify user",
+            "if_clean": "Proceed to next stage"
+        },
+        "3_on_flag": {
+            "user_message": "Your message couldn't be processed. Please rephrase.",
+            "log": {
+                "store": "verdict only, NOT content",
+                "fields": [
+                    "timestamp",
+                    "user_id",
+                    "flagged",
+                    "categories",
+                    "scores"
+                ]
+            },
+            "escalation": "None (third-party already processed)"
+        }
+    },
+    "thresholds": {
+        "auto_block": 0.8,
+        "flag_for_review": 0.5,
+        "description": "Scores above auto_block are rejected. Between flag_for_review and auto_block are logged but allowed."
+    },
+    "integration": {
+        "called_by": "basecode.circuit.resistor (at intake)",
+        "position_in_flow": "FIRST — before anything else touches the content"
+    },
+    "invocation": {
+        "tool_name": "invoke_skill",
+        "example": {
+            "skill_id": "moderation",
+            "inputs": {
+                "content": "user message here",
+                "user_id": "abc123"
+            }
+        }
+    },
+    "outputs": {
+        "flagged": {
+            "type": "boolean"
+        },
+        "categories": {
+            "type": "array",
+            "description": "Which categories triggered"
+        },
+        "scores": {
+            "type": "object",
+            "description": "Confidence scores per category"
+        },
+        "action_taken": {
+            "type": "string",
+            "enum": [
+                "allowed",
+                "flagged",
+                "blocked"
+            ]
+        }
+    }
+}

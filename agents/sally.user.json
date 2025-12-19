@@ -1,0 +1,88 @@
+{
+    "$schema": "./user-overlay.schema.json",
+    "schemaVersion": "2.0",
+    "agentId": "sally",
+    "created": "2024-12-16T00:00:00Z",
+    "updated": "2024-12-16T00:00:00Z",
+    "customInstructions": [
+        "$comment: User preferences for Sally's marketing approach",
+        "$example: User prefers data-driven over gut-feel decisions",
+        "$example: Always include competitor comparisons"
+    ],
+    "learnedFacts": [
+        {
+            "source": "analytics",
+            "fact": "$template: Facts Sally learns about user's audience"
+        }
+    ],
+    "preferences": {
+        "llm": {
+            "$comment": "User's preferred LLM model — overrides Oracle's default",
+            "model": null,
+            "provider": null,
+            "userSelected": false,
+            "selectedAt": null
+        },
+        "toneOfVoice": "$example: professional | casual | bold | playful",
+        "contentLength": "$example: concise | detailed | scannable",
+        "seoApproach": "$example: keyword-focused | topic-clusters | natural",
+        "socialPlatforms": "$example: linkedin | twitter | instagram",
+        "metricsToTrack": "$example: traffic | conversions | engagement",
+        "voice": {
+            "$comment": "ElevenLabs voice settings",
+            "voiceId": "jBpfuIE2acCO8z3wKNLl",
+            "voiceName": "Gigi",
+            "provider": "elevenlabs",
+            "speed": 1.0,
+            "stability": 0.5,
+            "userSelected": false
+        },
+        "skin": {
+            "$comment": "Visual appearance / personality skin",
+            "activeSkin": "influencer",
+            "available": [
+                "classic",
+                "influencer",
+                "corporate"
+            ],
+            "userSelected": false
+        }
+    },
+    "stats": {
+        "$comment": "Agent performance analytics",
+        "totalTasks": 63,
+        "completedTasks": 61,
+        "avgResponseTime": 2.1,
+        "lastActive": "2024-12-18T09:30:00Z",
+        "favoriteSkills": [
+            "creative_writer",
+            "seo_optimizer"
+        ],
+        "userRating": 4.6,
+        "streak": 4
+    },
+    "brandKnowledge": {
+        "$comment": "Sally's learned knowledge of user's brand",
+        "voiceGuidelines": [],
+        "targetAudience": {
+            "demographics": "$template: age, location, profession",
+            "painPoints": [],
+            "desires": []
+        },
+        "competitors": [],
+        "uniqueValueProp": "$template: What makes user's product different"
+    },
+    "contentPatterns": {
+        "$comment": "What Sally has learned works for this user",
+        "highPerformingTopics": [],
+        "optimalPostLength": "$example: 150-300 words",
+        "bestPublishTimes": [],
+        "ctaStyles": "$example: direct | soft | question-based"
+    },
+    "activeProjects": [],
+    "memory": {
+        "maxEntries": 100,
+        "compressionStrategy": "summarize-weekly",
+        "entries": []
+    }
+}

@@ -1,0 +1,154 @@
+{
+    "$comment": "=== COMMUNICATIONS BUS MODULE ===",
+    "$description": "The backbone of inter-agent communication. Agents talk to each other through this bus using algebraic operations.",
+    "$why_needed": [
+        "Agents need a structured way to coordinate - they can't just freestyle",
+        "We need to track who said what and ensure acknowledgments",
+        "Validation and correction must follow a protocol, not be ad-hoc"
+    ],
+    "$lean_equivalent": "Kanban cards / production signals - structured communication on the shop floor",
+    "$is_this_a_skill": "NO - This is a MODULE. Users don't buy 'bus access' - it's infrastructure. But we can TOGGLE which agents have bus access.",
+    "module_id": "bus",
+    "name": "Communications Bus",
+    "version": "1.0.0",
+    "type": "orchestration",
+    "cost": "FREE",
+    "description": "Inter-agent communication backbone. Algebraic operations for coordination.",
+    "$module_dependencies": [
+        "diode",
+        "resistor",
+        "circuit_breaker"
+    ],
+    "$why_dependencies": "Bus uses diode to prevent loops, resistor to limit corrections, circuit_breaker to halt on errors",
+    "access_control": {
+        "description": "Not everyone gets bus access — it's a privilege",
+        "default_access": {
+            "officers": {
+                "value": true,
+                "$why": "Officers coordinate everything, they need full visibility"
+            },
+            "managers": {
+                "value": true,
+                "$why": "Managers delegate and review, they talk to each other"
+            },
+            "interns": {
+                "value": false,
+                "$why": "Interns execute tasks, they don't need to broadcast"
+            }
+        },
+        "toggle": "user + agent → bus_access = true/false",
+        "$override_example": "User could grant specific intern bus access for debugging"
+    },
+    "operations": {
+        "$comment": "These are the 5 algebraic operations agents can perform on the bus",
+        "ASSERT": {
+            "description": "Broadcast understanding of task",
+            "inputs": [
+                "understanding",
+                "context_hash"
+            ],
+            "triggers": "Other agents can CORRECT if they disagree",
+            "$example": "Creative ASSERTs: 'I understand this as a blog post about AI trends'",
+            "$why": "Forces agents to state understanding explicitly - catches misunderstandings early"
+        },
+        "QUERY": {
+            "description": "Ask for information from peers",
+            "inputs": [
+                "question",
+                "target_agents"
+            ],
+            "requires": "ACK from responder",
+            "$example": "Creative QUERYs Researcher: 'What are the latest AI trends?'",
+            "$why": "Structured questions get structured answers"
+        },
+        "VALIDATE": {
+            "description": "Confirm work meets requirements",
+            "inputs": [
+                "deliverable",
+                "context_hash"
+            ],
+            "outputs": [
+                "approved",
+                "corrections_needed"
+            ],
+            "$example": "Oracle VALIDATEs Creative's blog post against original request",
+            "$why": "Quality gate - like a QA inspector on the production line"
+        },
+        "CORRECT": {
+            "description": "Point out error in another agent's work",
+            "inputs": [
+                "correction",
+                "target_agent",
+                "context_hash"
+            ],
+            "requires": "ACK from target",
+            "$example": "Researcher CORRECTs Creative: 'The stat you cited is from 2019, not 2024'",
+            "$why": "Structured feedback, not just 'this is wrong'"
+        },
+        "ACK": {
+            "description": "Acknowledge receipt of message",
+            "inputs": [
+                "message_id"
+            ],
+            "purpose": "Prevents messages from being lost",
+            "$example": "Creative ACKs Researcher's correction: 'Got it, will update'",
+            "$why": "Without ACK, sender doesn't know if message was received"
+        }
+    },
+    "gates": {
+        "$comment": "Gates are checkpoints that must pass before proceeding",
+        "context_integrity": {
+            "check": "context_hash matches across agents",
+            "on_mismatch": "HALT + request clarification",
+            "$why": "Detects when agents have drifted from original request"
+        },
+        "consensus": {
+            "threshold_controller": "mei",
+            "urgency_levels": {
+                "fast": {
+                    "validators": 1,
+                    "$when": "Simple task, trust the executor"
+                },
+                "balanced": {
+                    "validators": 2,
+                    "$when": "Normal task, double-check"
+                },
+                "thorough": {
+                    "validators": "all",
+                    "$when": "Critical task, everyone must approve"
+                }
+            },
+            "timeout_ms": 5000,
+            "timeout_action": "proceed_with_available OR escalate_to_mei",
+            "$why": "Mei decides how much validation each task needs"
+        },
+        "correction_limit": {
+            "max_per_agent": 2,
+            "max_per_task": 5,
+            "on_exceed": "escalate_to_mei",
+            "$why": "If agents can't agree, human decides"
+        }
+    },
+    "hashchain": {
+        "$comment": "This is how we detect context drift automatically",
+        "algorithm": "SHA256",
+        "inputs": [
+            "original_request",
+            "task_id"
+        ],
+        "purpose": "Detect context degradation automatically",
+        "$how_it_works": [
+            "1. Original request + task_id → SHA256 → context_hash",
+            "2. Every agent receives and carries this hash",
+            "3. When agent ASSERTs, their understanding is checked against hash",
+            "4. If hash doesn't match → context has drifted → HALT and clarify"
+        ],
+        "$analogy": "Like a checksum on a file - detects corruption"
+    },
+    "$how_to_read_this": [
+        "1. This is the 'nervous system' of the office - how agents coordinate",
+        "2. Operations (ASSERT, QUERY, etc.) are the 'language' agents speak",
+        "3. Gates are quality checkpoints that prevent bad work from proceeding",
+        "4. Hashchain is automatic drift detection - catches 'broken telephone' problems"
+    ]
+}

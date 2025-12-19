@@ -1,0 +1,130 @@
+{
+    "$comment": "=== PERMISSION MATRIX MODULE ===",
+    "$description": "The toggle system that controls who can access what. THIS IS THE MONETIZATION ENGINE.",
+    "$why_needed": [
+        "Users purchase agents and skills - we need to track what they own",
+        "Access must be toggle-based, not code-based - no code moves to users",
+        "Single source of truth for 'can user X use agent Y with skill Z?'"
+    ],
+    "$lean_equivalent": "Bill of materials / routing sheet - defines what's needed for each job",
+    "$is_this_a_skill": "NO - This is a MODULE. It's the infrastructure that enables skill purchases.",
+    "module_id": "permission_matrix",
+    "name": "Permission Matrix",
+    "version": "1.0.0",
+    "type": "access_control",
+    "cost": "FREE",
+    "description": "Toggle-based permission system. No code transports — only references.",
+    "principle": {
+        "value": "EVERYTHING IS REFERENTIAL",
+        "$explanation": [
+            "Tools live in basecode/tools/ - they never move",
+            "Users get TOGGLES that enable access - just true/false flags",
+            "Customizations are stored in user files - preferences only, not code"
+        ]
+    },
+    "schema": {
+        "$comment": "This is what a toggle looks like in the database",
+        "toggle": {
+            "user_id": {
+                "type": "string",
+                "$example": "jeffrey"
+            },
+            "agent_id": {
+                "type": "string",
+                "$example": "hanna"
+            },
+            "skill_id": {
+                "type": "string or null",
+                "$example": "youtube_music",
+                "$note": "null means access to agent itself"
+            },
+            "enabled": {
+                "type": "boolean",
+                "$example": true
+            },
+            "purchased_at": {
+                "type": "ISO8601",
+                "$example": "2024-12-16T13:00:00Z"
+            },
+            "expires_at": {
+                "type": "ISO8601 or null",
+                "$note": "null = permanent, date = subscription"
+            }
+        }
+    },
+    "examples": {
+        "$comment": "These show how toggles work in practice",
+        "user_purchases_mei": {
+            "user_id": "jeffrey",
+            "agent_id": "mei",
+            "skill_id": null,
+            "enabled": true,
+            "$meaning": "Jeffrey has access to Mei (all her default A-level skills)",
+            "$what_he_gets": "triage, user_interface, approval, moderation - because these are Mei's bundle"
+        },
+        "user_purchases_music_for_hanna": {
+            "user_id": "jeffrey",
+            "agent_id": "hanna",
+            "skill_id": "youtube_music",
+            "enabled": true,
+            "$meaning": "Jeffrey's Hanna can use YouTube Music",
+            "$but_not": "Jeffrey's Mei - Mei doesn't have this skill unless he buys it for her too"
+        },
+        "user_customizes_skill": {
+            "$ref": "user_data/jeffrey.hanna.json",
+            "$contains": {
+                "youtube_music": {
+                    "genres_include": [
+                        "heavy metal"
+                    ],
+                    "genres_exclude": [
+                        "kpop"
+                    ]
+                }
+            },
+            "$note": "Customizations are preferences, NOT code. The skill itself doesn't change."
+        }
+    },
+    "storage": {
+        "toggles": {
+            "location": "database",
+            "$why": "Fast lookup, easy to query, transactional"
+        },
+        "customizations": {
+            "location": "user_data/{username}.{agent}.json",
+            "$why": "Stored as JSON for flexibility, but could also be database rows"
+        }
+    },
+    "resolution_order": {
+        "$comment": "When a skill is invoked, this is the lookup order",
+        "steps": [
+            "1. Check toggle: user + agent → enabled?",
+            "2. Check toggle: user + agent + skill → enabled?",
+            "3. Load base tool from basecode/tools/{tool}.json",
+            "4. Merge user customization from user_data/{user}.{agent}.json",
+            "5. Execute skill with merged config"
+        ],
+        "$note": "If any check fails, skill invocation is rejected"
+    },
+    "what_moves": {
+        "$comment": "Critical architecture principle - what actually moves between server and user",
+        "code": {
+            "value": "NOTHING",
+            "$why": "Code stays in basecode, never leaves server"
+        },
+        "toggles": {
+            "value": "Database rows",
+            "$why": "Just flags: user_id, agent_id, skill_id, enabled"
+        },
+        "customizations": {
+            "value": "User JSON files",
+            "$why": "Preferences only, not executable code"
+        }
+    },
+    "$how_to_read_this": [
+        "1. This is your monetization infrastructure - purchases = toggles",
+        "2. The key insight: users don't get code, they get access flags",
+        "3. When you update a skill, ALL users with that toggle get the update",
+        "4. This is why the system scales infinitely - one codebase, infinite users"
+    ]
+}

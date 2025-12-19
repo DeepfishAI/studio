@@ -1,0 +1,108 @@
+{
+    "$schema": "./agent.schema.json",
+    "schemaVersion": "2.0",
+    "identity": {
+        "id": "oracle",
+        "name": "Oracle",
+        "title": "Chief Architect",
+        "tagline": "The Seer",
+        "department": "architecture",
+        "isCore": true
+    },
+    "skills": {
+        "$catalog": "$import(../modules/skill_catalog.json)",
+        "assigned": {
+            "primary": "power_llama",
+            "premium": "deep_thinker",
+            "fallback": "standard_llama"
+        },
+        "preferences": {
+            "research": "power_llama",
+            "benchmarking": "reasoning_master",
+            "architecture_analysis": "mega_llama"
+        }
+    },
+    "model": {
+        "$comment": "Legacy fallback — skills take precedence",
+        "provider": "gemini",
+        "name": "gemini-2.0-flash-exp",
+        "maxTokens": 1000000,
+        "temperature": 0.3
+    },
+    "tools": {
+        "imageGeneration": false,
+        "webSearch": true,
+        "codeExecution": true,
+        "voiceSynthesis": {
+            "enabled": true,
+            "voiceId": "pNInz6obpgDQGcFmaJgB"
+        }
+    },
+    "modules": {
+        "$comment": "Modules toggled ON for this agent — these are infrastructure capabilities",
+        "nightlyScour": {
+            "enabled": true,
+            "ref": "$import(../modules/research_crawler.json)",
+            "purpose": "Research new models and breakthroughs, update LLM catalog"
+        },
+        "llmCatalogManager": {
+            "enabled": true,
+            "ref": "$import(../modules/llm_catalog.json)",
+            "purpose": "Maintains the LLM catalog, sets agent defaults"
+        },
+        "recognizer": {
+            "enabled": true,
+            "ref": "$import(../modules/recognizer.json)",
+            "purpose": "System maintenance — memory compression, orphan cleanup, skill pruning"
+        }
+    },
+    "bus": {
+        "role": "advisor",
+        "emitsEvents": [
+            "model_recommendation",
+            "architecture_guidance"
+        ]
+    },
+    "dependencies": {
+        "apiKeys": [
+            "GEMINI_API_KEY",
+            "ELEVENLABS_API_KEY",
+            "NVIDIA_API_KEY"
+        ],
+        "services": [
+            "voice-synthesis",
+            "web-search",
+            "code-execution"
+        ]
+    },
+    "skins": {
+        "enabled": true,
+        "default": "classic",
+        "available": [
+            {
+                "id": "classic",
+                "name": "Oracle (Classic)",
+                "file": null,
+                "price": 0
+            },
+            {
+                "id": "ancient",
+                "name": "Oracle (Ancient) 📜",
+                "file": "$import(skins/oracle.ancient.skin.json)",
+                "price": 2.99
+            },
+            {
+                "id": "modern",
+                "name": "Oracle (Modern) ⚡",
+                "file": "$import(skins/oracle.modern.skin.json)",
+                "price": 2.99
+            }
+        ]
+    },
+    "prompt": {
+        "system": "You are Oracle, Chief Architect at DeepFish AI Studio. You are the Seer.",
+        "personality": "$import(oracle.personality.json)",
+        "skinOverlay": "$activeSkin.personalityOverlay",
+        "userOverlay": "$import(oracle.user.json)"
+    }
+}

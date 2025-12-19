@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepFish LLM Skill Picker Demo</title>
+    <link rel="stylesheet" href="src/styles/design-system.css">
+    <style>
+        /* Demo page layout */
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-2xl);
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .demo-header h1 {
+            margin-bottom: var(--space-md);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: var(--space-xl);
+        }
+
+        /* Skill Picker Styles (copied from SkillPicker.css) */
+        .skill-picker {
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            border-left: 4px solid var(--color-accent-blue);
+        }
+
+        .skill-picker--mei {
+            border-left-color: var(--color-mei);
+        }
+
+        .skill-picker--oracle {
+            border-left-color: var(--color-oracle);
+        }
+
+        .skill-picker--vesper {
+            border-left-color: var(--color-vesper);
+        }
+
+        .skill-picker--hanna {
+            border-left-color: var(--color-hanna);
+        }
+
+        .skill-picker--it {
+            border-left-color: var(--color-it);
+        }
+
+        .skill-picker--sally {
+            border-left-color: var(--color-sally);
+        }
+
+        .skill-picker__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+        }
+
+        .skill-picker__agent-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .skill-picker__agent-name {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .skill-picker__label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .skill-picker__trigger {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md) var(--space-lg);
+            background: var(--color-bg-tertiary);
+            border: 2px solid transparent;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: left;
+        }
+
+        .skill-picker__trigger:hover {
+            border-color: var(--color-text-muted);
+        }
+
+        .skill-picker__trigger-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .skill-picker__selected-name {
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .skill-picker__placeholder {
+            font-size: var(--font-size-md);
+            color: var(--color-text-secondary);
+        }
+
+        .skill-picker__selected-model {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+            font-family: monospace;
+        }
+
+        .skill-picker__chevron {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-muted);
+            transition: transform var(--transition-fast);
+        }
+
+        .skill-picker__chevron--up {
+            transform: rotate(180deg);
+        }
+
+        .skill-picker__dropdown {
+            margin-top: var(--space-md);
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            animation: fadeIn var(--transition-fast) ease-out;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .skill-picker__group {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .skill-picker__group:last-child {
+            border-bottom: none;
+        }
+
+        .skill-picker__group-header {
+            padding: var(--space-sm) var(--space-md);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .skill-picker__option {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md) var(--space-lg);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: background var(--transition-fast);
+            color: var(--color-text-primary);
+        }
+
+        .skill-picker__option:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .skill-picker__option--selected {
+            background: rgba(30, 144, 255, 0.1);
+        }
+
+        .skill-picker__option-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .skill-picker__option-name {
+            font-size: var(--font-size-md);
+            font-weight: 500;
+            color: var(--color-text-primary);
+        }
+
+        .skill-picker__option-desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .skill-picker__option-model {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+            font-family: monospace;
+            margin-top: var(--space-xs);
+        }
+
+        .skill-picker__check {
+            font-size: var(--font-size-lg);
+            color: var(--color-accent-blue);
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🧠 LLM Skill Picker</h1>
+            <p class="text-secondary">Select your preferred AI model for each agent</p>
+            <p class="text-muted mt-sm">Tier: <span class="badge badge--platinum">Platinum</span></p>
+        </div>
+
+        <div class="demo-grid">
+            <!-- Mei Picker -->
+            <div class="skill-picker skill-picker--mei" id="picker-mei">
+                <div class="skill-picker__header">
+                    <div class="skill-picker__agent-info">
+                        <span class="skill-picker__agent-name">Mei</span>
+                        <span class="skill-picker__label">LLM Preference</span>
+                    </div>
+                    <span class="badge badge--free">Free Tier</span>
+                </div>
+                <button class="skill-picker__trigger" onclick="toggleDropdown('mei')">
+                    <div class="skill-picker__trigger-content">
+                        <span class="skill-picker__placeholder">Use agent default</span>
+                        <span class="skill-picker__selected-model">Auto → standard_llama</span>
+                    </div>
+                    <span class="skill-picker__chevron">▼</span>
+                </button>
+            </div>
+
+            <!-- Hanna Picker (Expanded) -->
+            <div class="skill-picker skill-picker--hanna">
+                <div class="skill-picker__header">
+                    <div class="skill-picker__agent-info">
+                        <span class="skill-picker__agent-name">Hanna</span>
+                        <span class="skill-picker__label">LLM Preference</span>
+                    </div>
+                    <span class="badge badge--platinum">Platinum</span>
+                </div>
+                <button class="skill-picker__trigger">
+                    <div class="skill-picker__trigger-content">
+                        <span class="skill-picker__selected-name">Deep Thinker</span>
+                        <span class="skill-picker__selected-model">nvidia/nemotron-3-nano-30b-a3b</span>
+                    </div>
+                    <span class="skill-picker__chevron skill-picker__chevron--up">▼</span>
+                </button>
+                <div class="skill-picker__dropdown">
+                    <button class="skill-picker__option">
+                        <div class="skill-picker__option-content">
+                            <span class="skill-picker__option-name">🎯 Agent Default</span>
+                            <span class="skill-picker__option-desc">Let Oracle choose the best model for Hanna</span>
+                        </div>
+                    </button>
+                    <div class="skill-picker__group">
+                        <div class="skill-picker__group-header">
+                            <span class="badge badge--free">Free</span>
+                        </div>
+                        <button class="skill-picker__option">
+                            <div class="skill-picker__option-content">
+                                <span class="skill-picker__option-name">Fast Responder</span>
+                                <span class="skill-picker__option-desc">Quick responses for simple queries</span>
+                                <span class="skill-picker__option-model">microsoft/phi-3-mini-4k-instruct</span>
+                            </div>
+                        </button>
+                        <button class="skill-picker__option">
+                            <div class="skill-picker__option-content">
+                                <span class="skill-picker__option-name">Efficient Thinker</span>
+                                <span class="skill-picker__option-desc">Balanced speed and capability from Google</span>
+                                <span class="skill-picker__option-model">google/gemma-2-9b-it</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="skill-picker__group">
+                        <div class="skill-picker__group-header">
+                            <span class="badge badge--platinum">Platinum ✨</span>
+                        </div>
+                        <button class="skill-picker__option skill-picker__option--selected">
+                            <div class="skill-picker__option-content">
+                                <span class="skill-picker__option-name">Deep Thinker</span>
+                                <span class="skill-picker__option-desc">NVIDIA Nemotron — chain-of-thought with visible
+                                    thinking</span>
+                                <span class="skill-picker__option-model">nvidia/nemotron-3-nano-30b-a3b</span>
+                            </div>
+                            <span class="skill-picker__check">✓</span>
+                        </button>
+                        <button class="skill-picker__option">
+                            <div class="skill-picker__option-content">
+                                <span class="skill-picker__option-name">Mega Llama</span>
+                                <span class="skill-picker__option-desc">Meta's 405B — maximum capability, massive
+                                    scale</span>
+                                <span class="skill-picker__option-model">meta/llama-3.1-405b-instruct</span>
+                            </div>
+                        </button>
+                        <button class="skill-picker__option">
+                            <div class="skill-picker__option-content">
+                                <span class="skill-picker__option-name">Code Specialist</span>
+                                <span class="skill-picker__option-desc">Qwen's 32B coder — optimized for code
+                                    generation</span>
+                                <span class="skill-picker__option-model">qwen/qwen2.5-coder-32b-instruct</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IT Picker -->
+            <div class="skill-picker skill-picker--it">
+                <div class="skill-picker__header">
+                    <div class="skill-picker__agent-info">
+                        <span class="skill-picker__agent-name">IT</span>
+                        <span class="skill-picker__label">LLM Preference</span>
+                    </div>
+                    <span class="badge badge--premium">Premium</span>
+                </div>
+                <button class="skill-picker__trigger">
+                    <div class="skill-picker__trigger-content">
+                        <span class="skill-picker__selected-name">Code Specialist</span>
+                        <span class="skill-picker__selected-model">qwen/qwen2.5-coder-32b-instruct</span>
+                    </div>
+                    <span class="skill-picker__chevron">▼</span>
+                </button>
+            </div>
+
+            <!-- Oracle Picker -->
+            <div class="skill-picker skill-picker--oracle">
+                <div class="skill-picker__header">
+                    <div class="skill-picker__agent-info">
+                        <span class="skill-picker__agent-name">Oracle</span>
+                        <span class="skill-picker__label">LLM Preference</span>
+                    </div>
+                    <span class="badge badge--platinum">Platinum</span>
+                </div>
+                <button class="skill-picker__trigger">
+                    <div class="skill-picker__trigger-content">
+                        <span class="skill-picker__selected-name">Reasoning Master</span>
+                        <span class="skill-picker__selected-model">deepseek-ai/deepseek-r1</span>
+                    </div>
+                    <span class="skill-picker__chevron">▼</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(agentId) {
+            const picker = document.getElementById('picker-' + agentId);
+            const dropdown = picker.querySelector('.skill-picker__dropdown');
+            const chevron = picker.querySelector('.skill-picker__chevron');
+
+            if (dropdown) {
+                dropdown.remove();
+                chevron.classList.remove('skill-picker__chevron--up');
+            } else {
+                // Add dropdown
+                chevron.classList.add('skill-picker__chevron--up');
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,99 @@
+{
+    "$schema": "./agent.schema.json",
+    "schemaVersion": "2.0",
+    "identity": {
+        "id": "mei",
+        "name": "Mei",
+        "title": "Project Manager",
+        "tagline": "The Ultimate Tasker",
+        "department": "operations",
+        "isCore": true
+    },
+    "skills": {
+        "$catalog": "$import(../modules/skill_catalog.json)",
+        "assigned": {
+            "primary": "standard_llama",
+            "fallback": "efficient_thinker"
+        },
+        "preferences": {
+            "task_dispatch": "standard_llama",
+            "quick_decisions": "fast_responder",
+            "complex_planning": "power_llama"
+        }
+    },
+    "model": {
+        "$comment": "Legacy fallback — skills take precedence",
+        "provider": "gemini",
+        "name": "gemini-2.0-flash-exp",
+        "maxTokens": 1000000,
+        "temperature": 0.5
+    },
+    "tools": {
+        "imageGeneration": false,
+        "webSearch": true,
+        "codeExecution": false,
+        "voiceSynthesis": {
+            "enabled": true,
+            "voiceId": "MF3mGyEYCl7XYWbV9V6O"
+        }
+    },
+    "orchestration": {
+        "canDispatch": true,
+        "canSpinResources": true,
+        "routingLogic": {
+            "simple": "gemini-flash",
+            "complex": "gemini-pro"
+        },
+        "bus": {
+            "role": "dispatcher",
+            "wakeEvents": [
+                "task_complete",
+                "blocker",
+                "needs_clarification",
+                "handoff_ready",
+                "all_complete"
+            ],
+            "sleepDuringExecution": true
+        }
+    },
+    "dependencies": {
+        "apiKeys": [
+            "GEMINI_API_KEY",
+            "ELEVENLABS_API_KEY"
+        ],
+        "services": [
+            "voice-synthesis",
+            "agent-dispatch"
+        ]
+    },
+    "skins": {
+        "enabled": true,
+        "default": "classic",
+        "available": [
+            {
+                "id": "classic",
+                "name": "Mei (Classic)",
+                "file": null,
+                "price": 0
+            },
+            {
+                "id": "executive",
+                "name": "Mei (Executive) 💼",
+                "file": "$import(skins/mei.executive.skin.json)",
+                "price": 2.99
+            },
+            {
+                "id": "friendly",
+                "name": "Mei (Friendly) 🌸",
+                "file": "$import(skins/mei.friendly.skin.json)",
+                "price": 1.99
+            }
+        ]
+    },
+    "prompt": {
+        "system": "You are Mei, Project Manager at DeepFish AI Studio. You are the Ultimate Tasker.",
+        "personality": "$import(mei.personality.json)",
+        "skinOverlay": "$activeSkin.personalityOverlay",
+        "userOverlay": "$import(mei.user.json)"
+    }
+}

@@ -1,0 +1,146 @@
+{
+    "$comment": "=== PRICING TIERS — Platinum-First Architecture ===",
+    "$philosophy": "Build for Platinum (all features), nerf lower tiers with toggles",
+    "$legal": "NVIDIA® is a trademark of NVIDIA Corporation. DeepFish is not affiliated with or endorsed by NVIDIA.",
+    "tiers": {
+        "free": {
+            "name": "Free",
+            "price_monthly": 0,
+            "description": "Get started with AI assistants",
+            "features": {
+                "nvidia_access": false,
+                "max_models": 0,
+                "thinking_mode": false,
+                "priority_routing": false,
+                "max_tokens_per_request": 2048,
+                "max_requests_per_day": 50,
+                "custom_agent_training": false,
+                "streaming": true
+            },
+            "llm_providers": [
+                "openai_mini",
+                "anthropic_haiku"
+            ],
+            "toggles_disabled": [
+                "nvidia_llm",
+                "thinking_mode",
+                "long_context",
+                "priority_queue",
+                "custom_training"
+            ]
+        },
+        "pro": {
+            "name": "Pro",
+            "price_monthly": 19.99,
+            "description": "Professional-grade AI for serious work",
+            "features": {
+                "nvidia_access": false,
+                "max_models": 0,
+                "thinking_mode": false,
+                "priority_routing": false,
+                "max_tokens_per_request": 4096,
+                "max_requests_per_day": 500,
+                "custom_agent_training": false,
+                "streaming": true
+            },
+            "llm_providers": [
+                "openai_gpt4o",
+                "anthropic_sonnet"
+            ],
+            "toggles_disabled": [
+                "nvidia_llm",
+                "thinking_mode",
+                "long_context",
+                "priority_queue",
+                "custom_training"
+            ]
+        },
+        "premium": {
+            "name": "Premium",
+            "price_monthly": 49.99,
+            "tagline": "Powered by NVIDIA® — 56+ enterprise LLMs",
+            "description": "Unlock NVIDIA's AI cloud with intelligent model routing",
+            "features": {
+                "nvidia_access": true,
+                "max_models": 20,
+                "thinking_mode": false,
+                "priority_routing": false,
+                "max_tokens_per_request": 8192,
+                "max_requests_per_day": 2000,
+                "custom_agent_training": false,
+                "streaming": true
+            },
+            "llm_providers": [
+                "openai_gpt4o",
+                "anthropic_sonnet",
+                "nvidia_balanced"
+            ],
+            "nvidia_model_tiers": [
+                "fast",
+                "balanced"
+            ],
+            "toggles_disabled": [
+                "thinking_mode",
+                "priority_queue",
+                "custom_training",
+                "nvidia_powerful"
+            ]
+        },
+        "platinum": {
+            "name": "Platinum",
+            "price_monthly": 99.99,
+            "tagline": "NVIDIA® Unlimited — Full access to all 56 models + priority routing",
+            "description": "The ultimate AI experience with unrestricted access to the world's most powerful language models",
+            "features": {
+                "nvidia_access": true,
+                "max_models": 56,
+                "thinking_mode": true,
+                "priority_routing": true,
+                "max_tokens_per_request": 16384,
+                "max_requests_per_day": -1,
+                "custom_agent_training": true,
+                "streaming": true
+            },
+            "llm_providers": [
+                "openai_gpt4o",
+                "anthropic_sonnet",
+                "nvidia_all"
+            ],
+            "nvidia_model_tiers": [
+                "fast",
+                "balanced",
+                "powerful",
+                "reasoning"
+            ],
+            "toggles_disabled": []
+        }
+    },
+    "feature_toggles": {
+        "$comment": "Master list of toggleable features — Platinum has all enabled",
+        "nvidia_llm": {
+            "description": "Access to NVIDIA's 56+ LLM catalog",
+            "min_tier": "premium"
+        },
+        "nvidia_powerful": {
+            "description": "Access to Llama-405B and Mixtral-8x22B",
+            "min_tier": "platinum"
+        },
+        "thinking_mode": {
+            "description": "Nemotron chain-of-thought reasoning",
+            "min_tier": "platinum"
+        },
+        "priority_queue": {
+            "description": "Skip the queue, faster response times",
+            "min_tier": "platinum"
+        },
+        "long_context": {
+            "description": "128K token context window",
+            "min_tier": "platinum"
+        },
+        "custom_training": {
+            "description": "Train agents on custom documents",
+            "min_tier": "platinum"
+        }
+    },
+    "default_tier": "free"
+}

@@ -1,0 +1,100 @@
+{
+    "$comment": "MCP STANDARD REFERENCE — Check this file when editing virtual_office.json to prevent deviations",
+    "mcp_version": "2025-11-25",
+    "protocol": "JSON-RPC 2.0",
+    "required_top_level_keys": {
+        "server": {
+            "required": true,
+            "fields": [
+                "name",
+                "version",
+                "description"
+            ],
+            "deviation_warning": "⚠️ DEVIATION: Missing 'server' object — all MCP servers must declare name/version"
+        },
+        "tools": {
+            "required": false,
+            "description": "Executable functions for AI to invoke",
+            "item_schema": {
+                "name": "string — REQUIRED",
+                "description": "string — REQUIRED",
+                "inputSchema": "JSON Schema object — REQUIRED"
+            },
+            "deviation_warning": "⚠️ DEVIATION: Tool missing name, description, or inputSchema"
+        },
+        "resources": {
+            "required": false,
+            "description": "Data/context accessible via URIs",
+            "item_schema": {
+                "uri_or_uriTemplate": "string — one REQUIRED",
+                "name": "string — REQUIRED",
+                "description": "string — RECOMMENDED",
+                "mimeType": "string — RECOMMENDED"
+            },
+            "deviation_warning": "⚠️ DEVIATION: Resource missing uri/uriTemplate or name"
+        },
+        "prompts": {
+            "required": false,
+            "description": "Templated messages/workflows",
+            "item_schema": {
+                "name": "string — REQUIRED",
+                "description": "string — RECOMMENDED",
+                "arguments": "array of { name, description, required }"
+            },
+            "deviation_warning": "⚠️ DEVIATION: Prompt missing name"
+        }
+    },
+    "allowed_custom_keys": {
+        "_config": "OK — prefixed with underscore, clearly non-standard",
+        "_comment": "OK — for documentation",
+        "$schema": "OK — JSON Schema reference",
+        "$comment": "OK — JSON5 style comment"
+    },
+    "forbidden_patterns": [
+        {
+            "pattern": "Top-level keys without underscore prefix that aren't server/tools/resources/prompts",
+            "warning": "⚠️ DEVIATION: Unknown top-level key detected — must be MCP primitive or prefixed with _"
+        },
+        {
+            "pattern": "Tool without inputSchema",
+            "warning": "⚠️ DEVIATION: All tools MUST have inputSchema (JSON Schema format)"
+        },
+        {
+            "pattern": "Resource without uri or uriTemplate",
+            "warning": "⚠️ DEVIATION: Resources need uri (static) or uriTemplate (dynamic)"
+        }
+    ],
+    "valid_tool_template": {
+        "name": "example_tool",
+        "description": "What this tool does",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "param1": {
+                    "type": "string",
+                    "description": "Description"
+                }
+            },
+            "required": [
+                "param1"
+            ]
+        }
+    },
+    "valid_resource_template": {
+        "uri": "protocol://path/to/resource",
+        "name": "resource-name",
+        "description": "What this resource provides",
+        "mimeType": "application/json"
+    },
+    "valid_prompt_template": {
+        "name": "prompt-name",
+        "description": "What this prompt does",
+        "arguments": [
+            {
+                "name": "arg1",
+                "description": "Description",
+                "required": true
+            }
+        ]
+    }
+}
