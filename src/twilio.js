@@ -1,18 +1,59 @@
 /**
- * Twilio Voice Module
+ * Twilio Voice Module with ElevenLabs Integration
  * Handles incoming phone calls to DeepFish
  * Vesper answers and routes callers to their chosen agent
+ * Uses ElevenLabs for premium TTS voices
  */
 
 import twilio from 'twilio';
 import { getAgent } from './agent.js';
-import { chat, isLlmAvailable } from './llm.js';
+import { isLlmAvailable } from './llm.js';
+import { writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, statSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { v4 as uuidv4 } from 'uuid';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const ROOT = join(__dirname, '..');
 
 const { VoiceResponse } = twilio.twiml;
 
 // Environment variables
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+
+// Audio files directory
+const AUDIO_DIR = join(ROOT, 'output', 'voice_audio');
+
+// Ensure audio directory exists
+if (!existsSync(AUDIO_DIR)) {
+    mkdirSync(AUDIO_DIR, { recursive: true });
+}
+
+// ElevenLabs voice IDs for each agent
+const ELEVENLABS_VOICES = {
+    vesper: 'pNInz6obpgDQGcFmaJgB',   // Lily - warm, professional
+    mei: 'EXAVITQu4vr4xnSDxMaL',      // Sarah - clear, efficient
+    hanna: 'XB0fDUnXU5powFXDhCwa',    // Charlotte - thoughtful, creative
+    it: 'onwK4e9ZLuTAKqWW03F9',       // Daniel - technical, calm
+    sally: 'jBpfuIE2acCO8z3wKNLl',    // Gigi - energetic, upbeat
+    oracle: 'TxGEqnHWrfWFTfGW9XjX'    // Josh - deep, mysterious
+};
+
+// Fallback to Polly if ElevenLabs unavailable
+const POLLY_VOICES = {
+    vesper: 'Polly.Joanna',
+    mei: 'Polly.Salli',
+    hanna: 'Polly.Kendra',
+    it: 'Polly.Matthew',
+    sally: 'Polly.Kimberly',
+    oracle: 'Polly.Brian'
+};
+
+// In-memory audio cache (audioId -> { path, createdAt })
+const audioCache = new Map();
 
 // Initialize Twilio client (for outbound if needed)
 let twilioClient = null;
@@ -30,6 +71,119 @@ function getTwilioClient() {
 export function isTwilioEnabled() {
     return !!(TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN);
 }
+
+/**
+ * Check if ElevenLabs is configured
+ */
+export function isElevenLabsEnabled() {
+    return !!ELEVENLABS_API_KEY;
+}
+
+/**
+ * Generate audio using ElevenLabs TTS
+ * Returns audioId that can be used to serve the file
+ */
+async function generateElevenLabsAudio(text, agentId) {
+    const voiceId = ELEVENLABS_VOICES[agentId] || ELEVENLABS_VOICES.vesper;
+
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        method: 'POST',
+        headers: {
+            'xi-api-key': ELEVENLABS_API_KEY,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            text: text,
+            model_id: 'eleven_monolingual_v1',
+            voice_settings: {
+                stability: 0.5,
+                similarity_boost: 0.75
+            }
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`ElevenLabs API error: ${response.status} - ${error}`);
+    }
+
+    const audioBuffer = await response.arrayBuffer();
+    const audioId = uuidv4();
+    const audioPath = join(AUDIO_DIR, `${audioId}.mp3`);
+
+    writeFileSync(audioPath, Buffer.from(audioBuffer));
+
+    // Cache the audio info
+    audioCache.set(audioId, {
+        path: audioPath,
+        createdAt: Date.now()
+    });
+
+    console.log(`[ElevenLabs] Generated audio: ${audioId} for agent ${agentId}`);
+
+    return audioId;
+}
+
+/**
+ * Serve audio file for Twilio to play
+ * GET /api/voice/audio/:audioId
+ */
+export function serveAudio(req, res) {
+    const { audioId } = req.params;
+
+    // Security: only allow alphanumeric + hyphen
+    if (!/^[a-f0-9-]+$/i.test(audioId)) {
+        return res.status(400).send('Invalid audio ID');
+    }
+
+    const audioPath = join(AUDIO_DIR, `${audioId}.mp3`);
+
+    if (!existsSync(audioPath)) {
+        console.error(`[Voice] Audio not found: ${audioId}`);
+        return res.status(404).send('Audio not found');
+    }
+
+    res.setHeader('Content-Type', 'audio/mpeg');
+    res.sendFile(audioPath);
+
+    // Schedule cleanup after serving (give Twilio time to cache)
+    setTimeout(() => {
+        try {
+            if (existsSync(audioPath)) {
+                unlinkSync(audioPath);
+                audioCache.delete(audioId);
+                console.log(`[Voice] Cleaned up audio: ${audioId}`);
+            }
+        } catch (err) {
+            console.error(`[Voice] Cleanup error:`, err);
+        }
+    }, 60000); // Clean up after 1 minute
+}
+
+/**
+ * Clean up old audio files (call periodically)
+ */
+export function cleanupOldAudio() {
+    const maxAge = 5 * 60 * 1000; // 5 minutes
+    const now = Date.now();
+
+    try {
+        const files = readdirSync(AUDIO_DIR);
+        for (const file of files) {
+            const filePath = join(AUDIO_DIR, file);
+            const stats = statSync(filePath);
+            if (now - stats.mtimeMs > maxAge) {
+                unlinkSync(filePath);
+                console.log(`[Voice] Cleaned up old audio: ${file}`);
+            }
+        }
+    } catch (err) {
+        console.error('[Voice] Cleanup error:', err);
+    }
+}
+
+// Run cleanup every 5 minutes
+setInterval(cleanupOldAudio, 5 * 60 * 1000);
 
 /**
  * Agent name mapping for speech recognition
@@ -75,17 +229,45 @@ function parseAgentFromSpeech(speechResult) {
 }
 
 /**
+ * Get base URL for audio serving
+ */
+function getBaseUrl(req) {
+    // Use X-Forwarded headers if behind proxy (Railway)
+    const proto = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    return `${proto}://${host}`;
+}
+
+/**
+ * Add speech to TwiML - uses ElevenLabs if available, Polly as fallback
+ */
+async function addSpeech(response, text, agentId, req) {
+    if (isElevenLabsEnabled()) {
+        try {
+            const audioId = await generateElevenLabsAudio(text, agentId);
+            const audioUrl = `${getBaseUrl(req)}/api/voice/audio/${audioId}`;
+            response.play(audioUrl);
+            return;
+        } catch (err) {
+            console.error(`[ElevenLabs] Error, falling back to Polly:`, err.message);
+        }
+    }
+
+    // Fallback to Polly
+    response.say({
+        voice: POLLY_VOICES[agentId] || 'Polly.Joanna'
+    }, text);
+}
+
+/**
  * Handle incoming call - Vesper answers
  * POST /api/voice/incoming
  */
-export function handleIncomingCall(req, res) {
+export async function handleIncomingCall(req, res) {
     const response = new VoiceResponse();
 
     // Vesper's greeting
-    response.say({
-        voice: 'Polly.Joanna',
-        language: 'en-US'
-    }, 'DeepFish studios... Vesper speaking.');
+    await addSpeech(response, 'DeepFish studios... Vesper speaking.', 'vesper', req);
 
     // Pause for effect (Vesper's style)
     response.pause({ length: 1 });
@@ -100,6 +282,7 @@ export function handleIncomingCall(req, res) {
         hints: 'Mei, Hanna, IT, Sally, Oracle, project manager, creative, developer, marketing'
     });
 
+    // For gather, we still use Polly since we need inline TTS
     gather.say({
         voice: 'Polly.Joanna'
     }, 'Who would you like to speak with today, honey? You can ask for Mei, Hanna, IT, Sally, or Oracle.');
@@ -126,9 +309,7 @@ export async function handleRouteCall(req, res) {
 
     if (!agentId) {
         // Didn't understand, ask again
-        response.say({
-            voice: 'Polly.Joanna'
-        }, "I didn't catch that, sweetie. Could you say that again?");
+        await addSpeech(response, "I didn't catch that, sweetie. Could you say that again?", 'vesper', req);
 
         const gather = response.gather({
             input: 'speech',
@@ -150,9 +331,7 @@ export async function handleRouteCall(req, res) {
     const agent = getAgent(agentId);
 
     // Vesper transfers
-    response.say({
-        voice: 'Polly.Joanna'
-    }, `Alright, connecting you to ${agent.name}. One moment...`);
+    await addSpeech(response, `Alright, connecting you to ${agent.name}. One moment...`, 'vesper', req);
 
     response.pause({ length: 1 });
 
@@ -179,9 +358,7 @@ export async function handleAgentConversation(req, res) {
     // If this is the first message to agent, give their greeting
     if (!speechResult) {
         const greeting = getAgentGreeting(agentId);
-        response.say({
-            voice: getAgentVoice(agentId)
-        }, greeting);
+        await addSpeech(response, greeting, agentId, req);
     } else {
         // Process their message through the agent
         console.log(`[Voice:${agentId}] User said: "${speechResult}"`);
@@ -195,16 +372,12 @@ export async function handleAgentConversation(req, res) {
                 agentResponse = getAgentFallback(agentId, speechResult);
             }
 
-            // Speak the agent's response
-            response.say({
-                voice: getAgentVoice(agentId)
-            }, agentResponse);
+            // Speak the agent's response with their ElevenLabs voice
+            await addSpeech(response, agentResponse, agentId, req);
 
         } catch (err) {
             console.error(`[Voice:${agentId}] Error:`, err);
-            response.say({
-                voice: getAgentVoice(agentId)
-            }, "I'm having trouble thinking right now. Could you try again?");
+            await addSpeech(response, "I'm having trouble thinking right now. Could you try again?", agentId, req);
         }
     }
 
@@ -217,30 +390,15 @@ export async function handleAgentConversation(req, res) {
         language: 'en-US'
     });
 
-    // If they don't say anything, end call gracefully
+    // If they don't say anything, end call gracefully (using Polly for inline)
     response.say({
-        voice: getAgentVoice(agentId)
+        voice: POLLY_VOICES[agentId] || 'Polly.Joanna'
     }, "Are you still there? If you're done, you can hang up. Otherwise, I'm still listening.");
 
     response.redirect(`/api/voice/agent/${agentId}`);
 
     res.type('text/xml');
     res.send(response.toString());
-}
-
-/**
- * Get AWS Polly voice for each agent
- */
-function getAgentVoice(agentId) {
-    const voices = {
-        vesper: 'Polly.Joanna',
-        mei: 'Polly.Salli',
-        hanna: 'Polly.Kendra',
-        it: 'Polly.Matthew',
-        sally: 'Polly.Kimberly',
-        oracle: 'Polly.Brian'
-    };
-    return voices[agentId] || 'Polly.Joanna';
 }
 
 /**

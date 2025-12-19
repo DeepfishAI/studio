@@ -13,7 +13,7 @@ import * as Billing from './billing.js';
 import * as Memory from './memory.js';
 import { isLlmAvailable, getAvailableProviders } from './llm.js';
 import { getApiKey } from './config.js';
-import { isTwilioEnabled, handleIncomingCall, handleRouteCall, handleAgentConversation } from './twilio.js';
+import { isTwilioEnabled, isElevenLabsEnabled, handleIncomingCall, handleRouteCall, handleAgentConversation, serveAudio } from './twilio.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -543,6 +543,12 @@ app.post('/api/voice/route', handleRouteCall);
  */
 app.post('/api/voice/agent/:agentId', handleAgentConversation);
 
+/**
+ * Serve generated audio for Twilio
+ * GET /api/voice/audio/:audioId
+ */
+app.get('/api/voice/audio/:audioId', serveAudio);
+
 // Start server
 app.listen(PORT, () => {
     console.log(`🐟 DeepFish API Server running on http://localhost:${PORT}`);
@@ -550,6 +556,8 @@ app.listen(PORT, () => {
     console.log(`📋 Mei is ready to manage projects`);
     console.log(`💳 Billing: ${Billing.isBillingEnabled() ? 'ENABLED' : 'DISABLED (configure Stripe keys)'}`);
     console.log(`🧠 Memory: ENABLED`);
+    console.log(`📞 Twilio: ${isTwilioEnabled() ? 'ENABLED' : 'DISABLED'}`);
+    console.log(`🔊 ElevenLabs Voice: ${isElevenLabsEnabled() ? 'ENABLED' : 'DISABLED (using Polly fallback)'}`);
 
     // LLM Provider diagnostics
     const llmAvailable = isLlmAvailable();
