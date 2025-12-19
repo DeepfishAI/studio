@@ -13,6 +13,7 @@ import * as Billing from './billing.js';
 import * as Memory from './memory.js';
 import { isLlmAvailable, getAvailableProviders } from './llm.js';
 import { getApiKey } from './config.js';
+import { isTwilioEnabled, handleIncomingCall, handleRouteCall, handleAgentConversation } from './twilio.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,6 +25,7 @@ const mei = new Mei();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // For Twilio webhooks
 
 // Active chats (in-memory for now)
 const activeChats = new Map();
@@ -518,6 +520,28 @@ app.post('/api/memory/:agentId', (req, res) => {
         res.status(500).json({ error: 'Failed to add memory', details: error.message });
     }
 });
+
+// ============================================
+// TWILIO VOICE ROUTES
+// ============================================
+
+/**
+ * Incoming call - Vesper answers
+ * Twilio webhook: POST /api/voice/incoming
+ */
+app.post('/api/voice/incoming', handleIncomingCall);
+
+/**
+ * Route caller to selected agent
+ * Twilio webhook: POST /api/voice/route
+ */
+app.post('/api/voice/route', handleRouteCall);
+
+/**
+ * Agent conversation
+ * Twilio webhook: POST /api/voice/agent/:agentId
+ */
+app.post('/api/voice/agent/:agentId', handleAgentConversation);
 
 // Start server
 app.listen(PORT, () => {
