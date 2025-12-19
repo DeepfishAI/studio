@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { billingApi } from '../services/billing'
 import '../styles/store.css'
 
-// DLC-style skill catalog with 12 purchasable items
+// DLC-style skill catalog with 12 purchasable items - ALL $0.99 FOR TESTING
 const STORE_CATALOG = [
     // Premium Skills
     {
@@ -12,7 +12,7 @@ const STORE_CATALOG = [
         name: 'Code Master Pro',
         category: 'Skills',
         description: 'Generate production-ready code in 20+ languages. Includes refactoring, optimization, and documentation.',
-        price: 29,
+        price: 0.99,
         icon: '⚡',
         rarity: 'epic',
         features: ['Multi-language support', 'Auto-documentation', 'Code review'],
@@ -23,7 +23,7 @@ const STORE_CATALOG = [
         name: 'Deep Web Research',
         category: 'Skills',
         description: 'Real-time web search with source verification. Your agents can research any topic.',
-        price: 19,
+        price: 0.99,
         icon: '🔍',
         rarity: 'rare',
         features: ['Live search', 'Source citations', 'Fact checking']
@@ -33,7 +33,7 @@ const STORE_CATALOG = [
         name: 'Vision Studio',
         category: 'Skills',
         description: 'Generate stunning AI images, logos, and graphics. Perfect for branding.',
-        price: 39,
+        price: 0.99,
         icon: '🎨',
         rarity: 'epic',
         features: ['DALL-E 3 access', 'Logo generation', 'Brand kit'],
@@ -44,7 +44,7 @@ const STORE_CATALOG = [
         name: 'Voice Synthesis',
         category: 'Skills',
         description: 'Give your agents a voice. Text-to-speech with 50+ premium voices.',
-        price: 24,
+        price: 0.99,
         icon: '🔊',
         rarity: 'rare',
         features: ['50+ voices', 'Emotion control', 'Audio export']
@@ -54,7 +54,7 @@ const STORE_CATALOG = [
         name: 'Browser Automation',
         category: 'Skills',
         description: 'Let agents control your browser. Fill forms, scrape data, automate workflows.',
-        price: 49,
+        price: 0.99,
         icon: '🤖',
         rarity: 'legendary',
         features: ['Browser control', 'Form filling', 'Data extraction']
@@ -64,7 +64,7 @@ const STORE_CATALOG = [
         name: 'Persistent Memory',
         category: 'Skills',
         description: 'Agents remember everything across sessions. Build long-term relationships.',
-        price: 34,
+        price: 0.99,
         icon: '🧠',
         rarity: 'epic',
         features: ['Session memory', 'Preference learning', 'Context retention']
@@ -75,7 +75,7 @@ const STORE_CATALOG = [
         name: 'Creative Team Pack',
         category: 'Agents',
         description: 'Unlock Hanna (Designer) + Sally (Copywriter). The ultimate creative duo.',
-        price: 49,
+        price: 0.99,
         icon: '🎭',
         rarity: 'legendary',
         features: ['2 Premium Agents', 'Creative workflows', 'Brand consistency'],
@@ -86,7 +86,7 @@ const STORE_CATALOG = [
         name: 'Tech Team Pack',
         category: 'Agents',
         description: 'Unlock IT (Developer) + Oracle (Researcher). Build and research faster.',
-        price: 49,
+        price: 0.99,
         icon: '💻',
         rarity: 'legendary',
         features: ['2 Premium Agents', 'Code generation', 'Deep research']
@@ -97,7 +97,7 @@ const STORE_CATALOG = [
         name: 'API Access',
         category: 'Modules',
         description: 'Programmatic access to all your agents. Build custom integrations.',
-        price: 79,
+        price: 0.99,
         icon: '🔌',
         rarity: 'legendary',
         features: ['REST API', 'Webhooks', 'SDK access']
@@ -107,7 +107,7 @@ const STORE_CATALOG = [
         name: 'White Label',
         category: 'Modules',
         description: 'Remove DeepFish branding. Add your own logo and colors.',
-        price: 149,
+        price: 0.99,
         icon: '🏷️',
         rarity: 'legendary',
         features: ['Custom branding', 'Custom domain', 'Embeddable']
@@ -117,7 +117,7 @@ const STORE_CATALOG = [
         name: 'Agent Training Kit',
         category: 'Modules',
         description: 'Upload documents to train your agents. They learn your business.',
-        price: 39,
+        price: 0.99,
         icon: '📚',
         rarity: 'epic',
         features: ['Document upload', 'Custom knowledge', 'Fine-tuning']
@@ -127,7 +127,7 @@ const STORE_CATALOG = [
         name: 'Parallel Processing',
         category: 'Modules',
         description: 'Run multiple agents simultaneously. 10x your throughput.',
-        price: 59,
+        price: 0.99,
         icon: '⚡',
         rarity: 'epic',
         features: ['5 parallel agents', 'Priority queue', 'Batch processing']
@@ -259,8 +259,8 @@ function StorePage() {
                         One subscription, unlimited power.
                     </p>
                     <div className="store-bundle__price">
-                        <span className="store-bundle__original">$499/mo</span>
-                        <span className="store-bundle__sale">$199/mo</span>
+                        <span className="store-bundle__original">$9.99/mo</span>
+                        <span className="store-bundle__sale">$0.99/mo</span>
                     </div>
                     <Link to="/app/pricing" className="btn btn--primary btn--lg">
                         View Plans

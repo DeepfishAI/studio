@@ -1,0 +1,117 @@
+{
+    "products": {
+        "pro": {
+            "name": "Pro Plan",
+            "description": "For serious creators",
+            "price": 0.99,
+            "price_id": "price_pro_placeholder",
+            "features": [
+                "4 Premium Agents",
+                "Basic Skills",
+                "Email Support"
+            ]
+        },
+        "premium": {
+            "name": "Premium Plan",
+            "description": "For growing teams",
+            "price": 0.99,
+            "price_id": "price_premium_placeholder",
+            "features": [
+                "All Agents",
+                "All Skills",
+                "Priority Support"
+            ]
+        },
+        "platinum": {
+            "name": "Platinum Plan",
+            "description": "Unlimited everything",
+            "price": 0.99,
+            "price_id": "price_platinum_placeholder",
+            "features": [
+                "Everything",
+                "API Access",
+                "White Label",
+                "Dedicated Support"
+            ]
+        }
+    },
+    "skills": {
+        "code_master": {
+            "name": "Code Master Pro",
+            "description": "Generate production-ready code in 20+ languages",
+            "price": 0.99,
+            "price_id": "price_skill_code_placeholder",
+            "icon": "⚡"
+        },
+        "web_research": {
+            "name": "Deep Web Research",
+            "description": "Real-time web search with source verification",
+            "price": 0.99,
+            "price_id": "price_skill_research_placeholder",
+            "icon": "🔍"
+        },
+        "image_gen": {
+            "name": "Vision Studio",
+            "description": "Generate stunning AI images and graphics",
+            "price": 0.99,
+            "price_id": "price_skill_image_placeholder",
+            "icon": "🎨"
+        },
+        "voice_tts": {
+            "name": "Voice Synthesis",
+            "description": "Text-to-speech with 50+ premium voices",
+            "price": 0.99,
+            "price_id": "price_skill_voice_placeholder",
+            "icon": "🔊"
+        },
+        "browser_auto": {
+            "name": "Browser Automation",
+            "description": "Let agents control the browser for you",
+            "price": 0.99,
+            "price_id": "price_skill_browser_placeholder",
+            "icon": "🌐"
+        },
+        "memory": {
+            "name": "Persistent Memory",
+            "description": "Agents remember across sessions",
+            "price": 0.99,
+            "price_id": "price_skill_memory_placeholder",
+            "icon": "🧠"
+        },
+        "api_access": {
+            "name": "API Access",
+            "description": "Programmatic access to all agents",
+            "price": 0.99,
+            "price_id": "price_module_api_placeholder",
+            "icon": "🔌"
+        }
+    },
+    "bundles": {
+        "creative_pack": {
+            "name": "Creative Team Pack",
+            "description": "Hanna (Designer) + Sally (Copywriter)",
+            "price": 0.99,
+            "price_id": "price_bundle_creative_placeholder",
+            "icon": "🎭"
+        },
+        "tech_pack": {
+            "name": "Tech Team Pack",
+            "description": "IT (Developer) + Oracle (Researcher)",
+            "price": 0.99,
+            "price_id": "price_bundle_tech_placeholder",
+            "icon": "💻"
+        },
+        "full_pack": {
+            "name": "Everything Bundle",
+            "description": "All agents, skills, and modules",
+            "price": 0.99,
+            "price_id": "price_bundle_full_placeholder",
+            "icon": "🐋"
+        }
+    },
+    "_meta": {
+        "test_mode": true,
+        "note": "All prices are $0.99 placeholders. Replace price_id values with real Stripe price IDs before going live.",
+        "updated": "2025-12-19"
+    }
+}
