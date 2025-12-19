@@ -11,6 +11,8 @@ import { getAgent } from './agent.js';
 import { createTaskContext, BusOps, getTaskTranscript } from './bus.js';
 import * as Billing from './billing.js';
 import * as Memory from './memory.js';
+import { isLlmAvailable, getAvailableProviders } from './llm.js';
+import { getApiKey } from './config.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -524,5 +526,13 @@ app.listen(PORT, () => {
     console.log(`📋 Mei is ready to manage projects`);
     console.log(`💳 Billing: ${Billing.isBillingEnabled() ? 'ENABLED' : 'DISABLED (configure Stripe keys)'}`);
     console.log(`🧠 Memory: ENABLED`);
+
+    // LLM Provider diagnostics
+    const llmAvailable = isLlmAvailable();
+    const providers = getAvailableProviders();
+    const anthropicKey = getApiKey('anthropic');
+    console.log(`🤖 LLM Available: ${llmAvailable ? 'YES' : 'NO'}`);
+    console.log(`🤖 Providers: ${providers.length > 0 ? providers.join(', ') : 'NONE'}`);
+    console.log(`🔑 Anthropic Key: ${anthropicKey ? `${anthropicKey.substring(0, 10)}...` : 'NOT SET'}`);
 });
 

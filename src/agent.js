@@ -125,7 +125,8 @@ export class Agent {
      * Injects learned facts into the system prompt
      */
     async process(input) {
-        if (this.llmAvailable) {
+        // Check LLM availability dynamically at request time, not cached
+        if (isLlmAvailable()) {
             try {
                 // Inject learned facts into the prompt
                 const factsSection = getFactsForPrompt(this.agentId, input);

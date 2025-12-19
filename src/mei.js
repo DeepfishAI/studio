@@ -139,8 +139,8 @@ export class Mei {
         const agent = route ? this.agents.find(a => a.id === route.route) : null;
         const agentName = agent?.name || (route?.route) || null;
 
-        // If LLM available, use it
-        if (this.llmAvailable) {
+        // If LLM available, use it (check dynamically, not cached)
+        if (isLlmAvailable()) {
             try {
                 // Build context for Mei
                 let context = input;
