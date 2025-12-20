@@ -15,12 +15,10 @@
 ### Verification Command (Local):
 
 The local verification command should be run from:
-
-Folder: 
-C:\REPOS\DF.1.251216.2033
- (the project root)
+Folder: C:\REPOS\DF.1.251216.2033  (the project root)
 Device: Your local machine (ATLANTIS or wherever you have the repo cloned)
 Shell: PowerShell or any terminal
+
 ```bash
 
 node -e "import('./src/config.js').then(c => { 
