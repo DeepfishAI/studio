@@ -716,8 +716,10 @@ app.get('/api/stream', (req, res) => {
 /**
  * Incoming call - Vesper answers
  * Twilio webhook: POST /api/voice/incoming
+ * ALSO: POST /api/voice/webhook (alias for Twilio config)
  */
 app.post('/api/voice/incoming', handleIncomingCall);
+app.post('/api/voice/webhook', handleIncomingCall); // Alias for Twilio
 
 /**
  * Route caller to selected agent
