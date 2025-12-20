@@ -135,7 +135,7 @@ export class Agent {
         if (isLlmAvailable()) {
             try {
                 // Inject learned facts into the prompt
-                const factsSection = getFactsForPrompt(this.agentId, input);
+                const factsSection = await getFactsForPrompt(this.agentId, input);
                 const fullPrompt = this.systemPrompt + factsSection;
 
                 const response = await chat(fullPrompt, input, {

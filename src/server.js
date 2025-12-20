@@ -546,7 +546,7 @@ app.get('/api/training/:agentId/facts', (req, res) => {
  * POST /api/training/:agentId/facts
  * Body: { text, source?, sourceFile? }
  */
-app.post('/api/training/:agentId/facts', (req, res) => {
+app.post('/api/training/:agentId/facts', async (req, res) => {
     try {
         const { agentId } = req.params;
         const { text, source = 'upload', sourceFile = 'manual-input' } = req.body;
@@ -617,7 +617,7 @@ app.get('/api/memory/:agentId', (req, res) => {
  * POST /api/memory/:agentId
  * Body: { content, type? }
  */
-app.post('/api/memory/:agentId', (req, res) => {
+app.post('/api/memory/:agentId', async (req, res) => {
     try {
         const { agentId } = req.params;
         const { content, type = 'conversation' } = req.body;

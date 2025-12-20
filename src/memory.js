@@ -7,36 +7,53 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import Redis from 'ioredis';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const AGENTS_DIR = join(__dirname, '..', 'agents');
 
+// Redis Connection
+let redis = null;
+if (process.env.REDIS_PUBLIC_URL || process.env.REDIS_URL) {
+    const redisUrl = process.env.REDIS_PUBLIC_URL || process.env.REDIS_URL;
+    redis = new Redis(redisUrl);
+    console.log('[Memory] 🧠 Redis Persistence Layer Active');
+}
+
 // ============================================
-// USER.JSON OPERATIONS
+// USER.JSON OPERATIONS (Async/Redis)
 // ============================================
 
 /**
- * Load an agent's user.json file
+ * Load an agent's user.json file (Redis First -> Disk Fallback)
  * @param {string} agentId - Agent identifier
- * @returns {object} The user.json contents
+ * @returns {Promise<object>} The user.json contents
  */
-export function loadUserJson(agentId) {
-    const path = join(AGENTS_DIR, `${agentId}.user.json`);
-    if (!existsSync(path)) {
-        console.error(`[Memory] No user.json found for agent: ${agentId}`);
-        return null;
+export async function loadUserJson(agentId) {
+    // 1. Try Redis
+    if (redis) {
+        try {
+            const data = await redis.get(`agent:config:${agentId}`);
+            if (data) return JSON.parse(data);
+        } catch (err) {
+            console.error(`[Memory] Redis load error for ${agentId}:`, err.message);
+        }
     }
+
+    // 2. Fallback to Disk
+    const path = join(AGENTS_DIR, `${agentId}.user.json`);
+    if (!existsSync(path)) return {}; // Return empty if not found on disk
+
     try {
         return JSON.parse(readFileSync(path, 'utf-8'));
     } catch (err) {
-        console.error(`[Memory] Failed to load user.json for ${agentId}:`, err.message);
-        return null;
+        return {};
     }
 }
 
 /**
- * Save an agent's user.json file
+ * Save an agent's user.json file (Redis + Disk)
  * @param {string} agentId - Agent identifier
  * @param {object} data - The data to save
  */
