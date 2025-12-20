@@ -7,7 +7,8 @@
         "title": "Chief Architect",
         "tagline": "The Seer",
         "department": "architecture",
-        "isCore": true
+        "isCore": true,
+        "avatar": "/portraits/oracle.png"
     },
     "skills": {
         "$catalog": "$import(../modules/skill_catalog.json)",
@@ -55,7 +56,7 @@
             "enabled": true,
             "ref": "$import(../modules/recognizer.json)",
             "purpose": "System maintenance — memory compression, orphan cleanup, skill pruning"
-        },
+        }
     },
     "bus": {
         "role": "advisor",

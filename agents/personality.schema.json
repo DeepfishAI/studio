@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "schemaVersion": {
+            "type": "string"
+        },
+        "agentId": {
+            "type": "string"
+        },
+        "backstory": {
+            "type": "object"
+        },
+        "expertise": {
+            "type": "object"
+        },
+        "think": {
+            "type": "object"
+        },
+        "personality": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "core": {
+                    "type": "array"
+                },
+                "style": {
+                    "type": "string"
+                },
+                "voice": {
+                    "type": "string"
+                },
+                "tone": {
+                    "type": "string"
+                },
+                "quirks": {
+                    "type": "array"
+                }
+            }
+        },
+        "primeDirective": {
+            "type": "object"
+        },
+        "relationships": {
+            "type": "object"
+        }
+    },
+    "required": [
+        "agentId",
+        "personality"
+    ]
+}

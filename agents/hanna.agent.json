@@ -8,7 +8,8 @@
         "tagline": "UI/UX, Production Design, & Visual Assets",
         "department": "creative",
         "departmentFull": "Creative Services",
-        "isCore": true
+        "isCore": true,
+        "avatar": "/portraits/hanna.png"
     },
     "skills": {
         "$catalog": "$import(../modules/skill_catalog.json)",

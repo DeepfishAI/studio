@@ -6,15 +6,30 @@ export default function LandingPage() {
     const [email, setEmail] = useState('');
     const [joined, setJoined] = useState(false);
 
-    const handleJoin = (e) => {
+    const handleJoin = async (e) => {
         e.preventDefault();
-        // In real backend, we'd POST to /api/leads
-        console.log('Lead captured:', email);
-        setJoined(true);
-        setTimeout(() => {
-            // Auto-redirect to app as "demo" for now
-            navigate('/app');
-        }, 2000);
+
+        try {
+            await fetch('/api/leads', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            console.log('Lead captured:', email);
+            setJoined(true);
+
+            // Redirect to Verification Page (Simulating Email Link Click)
+            setTimeout(() => {
+                navigate(`/verify?email=${encodeURIComponent(email)}`);
+            }, 2000);
+
+        } catch (err) {
+            console.error('Failed to join:', err);
+            // Fallback
+            setJoined(true);
+            setTimeout(() => navigate('/app'), 2000);
+        }
     };
 
     return (
@@ -97,16 +112,18 @@ export default function LandingPage() {
                 }
             `}</style>
 
+            <img src="/logo_beta.png" alt="DeepFish AI" style={{ width: '120px', marginBottom: '20px' }} />
             <div className="beta-tag">BETA v0.9 — EARLY ACCESS</div>
 
             <h1 className="hero-title">
-                Build Your Workforce.<br />
-                Own Your Code.
+                Stop Prompting.<br />
+                Start Managing.
             </h1>
 
             <p className="hero-subtitle">
-                The first AI Studio that respects your sovereignty.
-                Spin up autonomous agents, assign them skills, and let them build.
+                You don't need another chatbot. You need a department.
+                <br />
+                Spin up autonomous specialists, assign real work, and scale your creative output.
             </p>
 
             {!joined ? (

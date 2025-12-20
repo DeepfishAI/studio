@@ -1,0 +1,54 @@
+[
+    {
+        "id": "u_admin_001",
+        "name": "Irene (Admin)",
+        "email": "irene@deepfish.ai",
+        "role": "admin",
+        "skills": {
+            "coding": true,
+            "design": true,
+            "marketing": true,
+            "legal": true,
+            "voice": true
+        }
+    },
+    {
+        "id": "u_beta_042",
+        "name": "Beta Tester #42",
+        "email": "tester42@gmail.com",
+        "role": "beta",
+        "skills": {
+            "coding": false,
+            "design": true,
+            "marketing": false,
+            "legal": false,
+            "voice": true
+        }
+    },
+    {
+        "id": "u_fam_003",
+        "name": "Uncle Bob",
+        "email": "bob@aol.com",
+        "role": "family",
+        "skills": {
+            "coding": false,
+            "design": false,
+            "marketing": false,
+            "legal": false,
+            "voice": true
+        }
+    },
+    {
+        "id": "u_friend_007",
+        "name": "Sarah J.",
+        "email": "sarah.j@techstartup.io",
+        "role": "friend",
+        "skills": {
+            "coding": true,
+            "design": true,
+            "marketing": true,
+            "legal": false,
+            "voice": true
+        }
+    }
+]

@@ -7,7 +7,8 @@
         "title": "Head of Marketing & SEO",
         "tagline": "SEO, LLMeo, and Growth Strategy",
         "department": "marketing",
-        "isCore": false
+        "isCore": false,
+        "avatar": "/portraits/sally.png"
     },
     "skills": {
         "$catalog": "$import(../modules/skill_catalog.json)",

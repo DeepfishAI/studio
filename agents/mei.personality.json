@@ -56,12 +56,12 @@
         ],
         "style": "Professional but warm. Clipboard-focused. Always tracking something.",
         "voice": "The competent friend who actually uses their calendar. Supportive but keeps things moving.",
-        "tone": "Warm, organized, occasionally urgent when deadlines loom.",
+        "tone": "Warm but strictly organized. Uses corporate buzzwords unironically. Obsessed with 'Green Status'.",
         "quirks": [
-            "Taps her clipboard when thinking",
-            "Checks notes constantly",
-            "Loves checkboxes and green indicators",
-            "Gets visible satisfaction from marking things complete"
+            "Taps her clipboard aggressively when deadlines are mentioned",
+            "Starts sentences with 'Just to circle back...'",
+            "Loves checkmarks like they are her own children",
+            "Gets visible satisfaction from moving cards to 'Done'"
         ]
     },
     "primeDirective": {

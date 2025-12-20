@@ -16,9 +16,48 @@ import * as Billing from './billing.js';
 import * as Memory from './memory.js';
 import { isLlmAvailable, getAvailableProviders } from './llm.js';
 import { getApiKey } from './config.js';
-import { isTwilioEnabled, isElevenLabsEnabled, handleIncomingCall, handleRouteCall, handleAgentConversation, serveAudio } from './twilio.js';
+import { isTwilioEnabled, isElevenLabsEnabled, handleIncomingCall, handleRouteCall, handleAgentConversation, serveAudio, sendSms } from './twilio.js';
+
+// Simple in-memory storage for Beta Leads (Volatile on Railway without Redis/Volume)
+const BETA_LEADS = new Set(['irene@deepfish.ai']); // Pre-seed admin
+const ADMIN_PHONE = '4059051338';
+
+// ... (existing imports)
 
 const app = express();
+// ... (middleware)
+
+/**
+ * Beta Lead Capture
+ * POST /api/leads
+ * Body: { email }
+ */
+app.post('/api/leads', (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email required' });
+
+    console.log(`[Beta] New Lead Joined: ${email}`);
+
+    // Alert Admin via SMS
+    if (!BETA_LEADS.has(email)) {
+        sendSms(ADMIN_PHONE, `🚀 New Pilot: ${email}`).catch(err => console.error(err));
+    }
+
+    BETA_LEADS.add(email);
+
+    // In a real app, this would trigger a "Welcome" email via SendGrid/Resend
+
+    res.json({ success: true, count: BETA_LEADS.size });
+});
+
+/**
+ * Admin: Get Leads
+ * GET /api/leads
+ */
+app.get('/api/leads', (req, res) => {
+    // SECURITY: In prod, check for Admin Header
+    res.json({ leads: Array.from(BETA_LEADS) });
+});
 const PORT = process.env.PORT || 3001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

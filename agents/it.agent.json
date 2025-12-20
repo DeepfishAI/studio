@@ -7,7 +7,8 @@
         "title": "Principal Architect",
         "tagline": "Engineers Systems, Not Scripts",
         "department": "engineering",
-        "isCore": true
+        "isCore": true,
+        "avatar": "/portraits/it.png"
     },
     "skills": {
         "$catalog": "$import(../modules/skill_catalog.json)",

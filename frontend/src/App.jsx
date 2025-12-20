@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Layout from './components/Layout'
 import LandingPage from './pages/LandingPage'
+import VerificationPage from './pages/VerificationPage'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import ChatPage from './pages/ChatPage'
@@ -14,6 +15,7 @@ import CheckoutCanceledPage from './pages/CheckoutCanceledPage'
 import WorkspacePage from './pages/WorkspacePage'
 import TogglesPage from './pages/TogglesPage'
 import StorePage from './pages/StorePage'
+import AdminPage from './pages/AdminPage'
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useAuth()
@@ -49,6 +51,10 @@ function AppRoutes() {
         <Routes>
             {/* Public landing page */}
             <Route path="/" element={<LandingPage />} />
+            <Route path="/verify" element={<VerificationPage />} />
+
+            {/* Admin Switchboard */}
+            <Route path="/admin" element={<AdminPage />} />
 
             {/* Login page */}
             <Route

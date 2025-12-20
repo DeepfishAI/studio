@@ -71,6 +71,34 @@ function getTwilioClient() {
 }
 
 /**
+ * Send an SMS message
+ * @param {string} to - Phone number to send to
+ * @param {string} body - Message body
+ */
+export async function sendSms(to, body) {
+    const client = getTwilioClient();
+    const from = process.env.TWILIO_PHONE_NUMBER;
+
+    if (!client || !from) {
+        console.warn('[Twilio] SMS skipped: Not configured (TWILIO_ACCOUNT_SID, AUTH_TOKEN, or PHONE_NUMBER missing)');
+        return false;
+    }
+
+    try {
+        const message = await client.messages.create({
+            body,
+            from,
+            to
+        });
+        console.log(`[Twilio] SMS sent to ${to}: ${message.sid}`);
+        return true;
+    } catch (err) {
+        console.error(`[Twilio] SMS failed: ${err.message}`);
+        return false;
+    }
+}
+
+/**
  * Check if Twilio is configured
  */
 export function isTwilioEnabled() {
