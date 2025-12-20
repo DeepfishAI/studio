@@ -78,23 +78,9 @@ function PricingPage() {
     const [currentTier, setCurrentTier] = useState('free')
 
     const handleSubscribe = async (tierId) => {
-        if (tierId === 'free' || tierId === currentTier) return
-
-        setLoading(tierId)
-        setError(null)
-
-        try {
-            const userId = user?.email || 'demo-user'
-            const email = user?.email || 'demo@deepfish.app'
-
-            const { checkoutUrl } = await billingApi.createCheckout(userId, email, tierId)
-
-            // Redirect to Stripe Checkout
-            window.location.href = checkoutUrl
-        } catch (err) {
-            setError(err.message || 'Failed to start checkout')
-            setLoading(null)
-        }
+        // BETA OVERRIDE: Payment system disabled
+        alert(`BETA ACCESS: You have been temporarily upgraded to ${tierId.toUpperCase()} for free! No credit card required.`);
+        setCurrentTier(tierId); // Mock UI update
     }
 
     return (

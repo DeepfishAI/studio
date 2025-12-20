@@ -18,6 +18,16 @@ function Layout() {
                     <span className="sidebar__logo-icon">🐟</span>
                     <span className="sidebar__logo-text">DeepFish</span>
                 </Link>
+                <div style={{
+                    padding: '0 24px',
+                    marginBottom: '16px',
+                    fontSize: '11px',
+                    color: '#FF3366',
+                    fontWeight: 600,
+                    letterSpacing: '0.05em'
+                }}>
+                    BETA v0.9
+                </div>
 
                 {/* Quick Actions */}
                 <div className="sidebar__section">
@@ -121,6 +131,15 @@ function Layout() {
                             🚪
                         </button>
                     </div>
+                </div>
+                <div style={{
+                    padding: '12px 24px',
+                    fontSize: '10px',
+                    color: '#4a5568',
+                    textAlign: 'center',
+                    borderTop: '1px solid var(--color-surface-hover)'
+                }}>
+                    Prices subject to change. <br /> Beta Access.
                 </div>
             </aside>
 
