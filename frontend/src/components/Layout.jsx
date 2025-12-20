@@ -145,6 +145,37 @@ function Layout() {
 
             {/* Main Content */}
             <main className="main-content">
+                <header className="app-header" style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                    padding: '10px 20px',
+                    background: 'var(--color-bg-secondary)',
+                    borderBottom: '1px solid var(--color-surface-border)',
+                    fontSize: '0.9rem',
+                    color: 'var(--color-text-secondary)'
+                }}>
+                    <span style={{ marginRight: '15px' }}>
+                        Connected as <span style={{ color: 'var(--color-text-primary)', fontWeight: 'bold' }}>{user?.email}</span>
+                    </span>
+                    <button
+                        onClick={logout}
+                        style={{
+                            background: 'none',
+                            border: '1px solid var(--color-surface-border)',
+                            color: 'var(--color-text-muted)',
+                            cursor: 'pointer',
+                            padding: '5px 10px',
+                            borderRadius: '4px',
+                            fontSize: '0.8rem',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => { e.target.style.color = '#FF3366'; e.target.style.borderColor = '#FF3366'; }}
+                        onMouseOut={(e) => { e.target.style.color = 'var(--color-text-muted)'; e.target.style.borderColor = 'var(--color-surface-border)'; }}
+                    >
+                        Logout
+                    </button>
+                </header>
                 <Outlet />
             </main>
         </div>
