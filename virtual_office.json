@@ -752,6 +752,65 @@
                         "analyst",
                         "graphic_designer"
                     ]
+                },
+                {
+                    "$comment": "Direct agent name routing for voice calls",
+                    "trigger": [
+                        "mei",
+                        "may",
+                        "project manager",
+                        "project management",
+                        "manage",
+                        "coordinator"
+                    ],
+                    "route": "mei"
+                },
+                {
+                    "trigger": [
+                        "hanna",
+                        "hannah",
+                        "creative",
+                        "art",
+                        "design",
+                        "draw",
+                        "drawing"
+                    ],
+                    "route": "hanna"
+                },
+                {
+                    "trigger": [
+                        "it",
+                        "tech",
+                        "technical",
+                        "developer",
+                        "code",
+                        "coding",
+                        "programming",
+                        "bug",
+                        "fix"
+                    ],
+                    "route": "it"
+                },
+                {
+                    "trigger": [
+                        "sally",
+                        "marketing",
+                        "sales",
+                        "social media",
+                        "campaign",
+                        "ads"
+                    ],
+                    "route": "sally"
+                },
+                {
+                    "trigger": [
+                        "oracle",
+                        "strategy",
+                        "wisdom",
+                        "guidance",
+                        "advice"
+                    ],
+                    "route": "oracle"
                 }
             ]
         },
