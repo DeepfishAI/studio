@@ -31,7 +31,14 @@ We implemented a Dual-Write strategy in `bus.js`:
 - **Read:** Try Memory first (fast), failover to Redis (persistent).
 - **Write:** Write to Memory (instant), async write to Redis (durable).
 - **The specific tech:** Used `ioredis` to interface with the `REDIS_URL`.
-- **Benefit:** This decoupling means the *Brain* (State) is now separate from the *Body* (Node.js Process). The Body can die and be replaced, but the Brain survives.
+- **Benefit:** This decoupling means the *Brain* (State) is now separate from the *Body* (Node.js Process). The Body can die and be replaced, but the Body survives.
+
+### 4. Voice & Telephony (Twilio / ElevenLabs)
+**Problem:** The voice system was hard-disabled in `twilio.js`, and Vesper's phone routing was dumber than her chat routing.
+**Fix:**
+- Removed the hardcoded `return false` in `isElevenLabsEnabled`.
+- Replaced `parseAgentFromSpeech` (brittle keywords) with `vesper.detectIntent` (centralized, config-driven logic).
+- Vesper now uses `virtual_office.json` rules to route calls, meaning if you add a "Writer" agent there, she can route to it immediately without code changes.
 
 ---
 *End of Session Note: This architecture now supports the "3 Meis" value proposition—parallel compute instances that share state via Redis but execute independently.*

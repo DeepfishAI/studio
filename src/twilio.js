@@ -8,6 +8,7 @@
 import twilio from 'twilio';
 import { getAgent } from './agent.js';
 import { isLlmAvailable } from './llm.js';
+import { Vesper } from './vesper.js';
 import { writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, statSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -18,6 +19,9 @@ const __dirname = dirname(__filename);
 const ROOT = join(__dirname, '..');
 
 const { VoiceResponse } = twilio.twiml;
+
+// Initialize Vesper for routing logic
+const vesper = new Vesper();
 
 // Environment variables
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
@@ -74,11 +78,10 @@ export function isTwilioEnabled() {
 
 /**
  * Check if ElevenLabs is configured
- * TEMPORARILY DISABLED - fix later, using Polly fallback for now
+ * ENABLED if API key is present
  */
 export function isElevenLabsEnabled() {
-    // return !!ELEVENLABS_API_KEY;  // Disabled for now
-    return false;
+    return !!ELEVENLABS_API_KEY;
 }
 
 /**
@@ -188,49 +191,6 @@ export function cleanupOldAudio() {
 setInterval(cleanupOldAudio, 5 * 60 * 1000);
 
 /**
- * Agent name mapping for speech recognition
- */
-const AGENT_KEYWORDS = {
-    'may': 'mei',
-    'mei': 'mei',
-    'maya': 'mei',
-    'project': 'mei',
-    'manager': 'mei',
-    'hanna': 'hanna',
-    'hannah': 'hanna',
-    'creative': 'hanna',
-    'design': 'hanna',
-    'it': 'it',
-    'tech': 'it',
-    'developer': 'it',
-    'code': 'it',
-    'architect': 'it',
-    'sally': 'sally',
-    'marketing': 'sally',
-    'seo': 'sally',
-    'oracle': 'oracle',
-    'skills': 'oracle',
-    'training': 'oracle'
-};
-
-/**
- * Parse spoken text to find agent
- */
-function parseAgentFromSpeech(speechResult) {
-    if (!speechResult) return null;
-
-    const lower = speechResult.toLowerCase();
-
-    for (const [keyword, agentId] of Object.entries(AGENT_KEYWORDS)) {
-        if (lower.includes(keyword)) {
-            return agentId;
-        }
-    }
-
-    return null;
-}
-
-/**
  * Get base URL for audio serving
  */
 function getBaseUrl(req) {
@@ -284,10 +244,10 @@ export async function handleIncomingCall(req, res) {
         hints: 'Mei, Hanna, IT, Sally, Oracle, project manager, creative, developer, marketing'
     });
 
-    // For gather, we still use Polly since we need inline TTS
+    // For gather, we still use Polly since we need inline TTS and ElevenLabs is async/expensive for repeats
     gather.say({
         voice: 'Polly.Joanna'
-    }, 'Who would you like to speak with today, honey? You can ask for Mei, Hanna, IT, Sally, or Oracle.');
+    }, 'Who would you like to speak with today? You can ask for Mei, Hanna, IT, Sally, or Oracle.');
 
     // If no input, ask again
     response.redirect('/api/voice/incoming');
@@ -306,12 +266,12 @@ export async function handleRouteCall(req, res) {
 
     console.log(`[Voice] Speech received: "${speechResult}"`);
 
-    // Parse which agent they want
-    const agentId = parseAgentFromSpeech(speechResult);
+    // Use Vesper to detect intent (matches keywords against virtual_office.json)
+    const intent = await vesper.detectIntent(speechResult);
 
-    if (!agentId) {
+    if (!intent.agentId) {
         // Didn't understand, ask again
-        await addSpeech(response, "I didn't catch that, sweetie. Could you say that again?", 'vesper', req);
+        await addSpeech(response, "I didn't quite catch that, sweetie. Could you say that again?", 'vesper', req);
 
         const gather = response.gather({
             input: 'speech',
@@ -330,17 +290,18 @@ export async function handleRouteCall(req, res) {
     }
 
     // Get agent info
-    const agent = getAgent(agentId);
+    const agent = intent.agent;
 
-    // Vesper transfers
-    await addSpeech(response, `Alright, connecting you to ${agent.name}. One moment...`, 'vesper', req);
+    // Vesper transfers (with intelligence about WHY)
+    // "Connecting you to Hanna... she's the creative one."
+    await addSpeech(response, `Connecting you to ${agent.name}... One moment calling...`, 'vesper', req);
 
     response.pause({ length: 1 });
 
     // Redirect to agent conversation
     response.redirect({
         method: 'POST'
-    }, `/api/voice/agent/${agentId}`);
+    }, `/api/voice/agent/${agent.id}`);
 
     res.type('text/xml');
     res.send(response.toString());
@@ -395,7 +356,7 @@ export async function handleAgentConversation(req, res) {
     // If they don't say anything, end call gracefully (using Polly for inline)
     response.say({
         voice: POLLY_VOICES[agentId] || 'Polly.Joanna'
-    }, "Are you still there? If you're done, you can hang up. Otherwise, I'm still listening.");
+    }, "Are you still there?");
 
     response.redirect(`/api/voice/agent/${agentId}`);
 
