@@ -146,6 +146,26 @@ export default function LandingPage() {
                 </div>
             )}
 
+            {joined && (
+                <div className="share-section" style={{ marginTop: '30px', animation: 'fadeIn 1s' }}>
+                    <p style={{ fontSize: '0.9rem', color: '#888', marginBottom: '15px' }}>Help us disrupt the industry.</p>
+                    <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+                        <button
+                            onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent("Just joined the DeepFish AI studio beta. The autonomous agent workforce is here. 🐟✨ #DeepFishAI #AI")}&url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                            style={{ padding: '8px 16px', background: 'rgba(29, 161, 242, 0.15)', color: '#1DA1F2', border: '1px solid rgba(29, 161, 242, 0.3)', borderRadius: '20px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}
+                        >
+                            Tweet
+                        </button>
+                        <button
+                            onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                            style={{ padding: '8px 16px', background: 'rgba(10, 102, 194, 0.15)', color: '#0A66C2', border: '1px solid rgba(10, 102, 194, 0.3)', borderRadius: '20px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}
+                        >
+                            Share
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className="footer">
                 Prices subject to change during Beta. • DeepFish AI © 2025
             </div>

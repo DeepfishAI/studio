@@ -9,6 +9,9 @@ function ChatPage() {
     const [messages, setMessages] = useState([])
     const [input, setInput] = useState('')
     const [isTyping, setIsTyping] = useState(false)
+    const [history, setHistory] = useState([])
+    const [historyIndex, setHistoryIndex] = useState(-1)
+    const [tempInput, setTempInput] = useState('')
     const [chatId, setChatId] = useState(null)
     const [useRealApi, setUseRealApi] = useState(false)
     const messagesEndRef = useRef(null)
@@ -64,6 +67,11 @@ function ChatPage() {
         }
 
         setMessages(prev => [...prev, userMessage])
+
+        // Add to history (limit to last 50)
+        setHistory(prev => [input.trim(), ...prev].slice(0, 50))
+        setHistoryIndex(-1)
+
         const userInput = input.trim()
         setInput('')
         setIsTyping(true)
@@ -193,6 +201,28 @@ function ChatPage() {
                         if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault()
                             handleSubmit(e)
+                        }
+                        // Up Arrow: Previous command
+                        else if (e.key === 'ArrowUp') {
+                            e.preventDefault()
+                            if (history.length > 0) {
+                                const newIndex = Math.min(historyIndex + 1, history.length - 1)
+                                if (historyIndex === -1) setTempInput(input)
+                                setHistoryIndex(newIndex)
+                                setInput(history[newIndex])
+                            }
+                        }
+                        // Down Arrow: Next command
+                        else if (e.key === 'ArrowDown') {
+                            e.preventDefault()
+                            if (historyIndex > 0) {
+                                const newIndex = historyIndex - 1
+                                setHistoryIndex(newIndex)
+                                setInput(history[newIndex])
+                            } else if (historyIndex === 0) {
+                                setHistoryIndex(-1)
+                                setInput(tempInput)
+                            }
                         }
                     }}
                     rows={1}
