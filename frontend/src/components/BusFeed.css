@@ -1,0 +1,93 @@
+.bus-feed {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2rem;
+}
+
+.bus-feed__header {
+    background: #1e293b;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #334155;
+}
+
+.bus-feed__header h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.live-indicator {
+    color: #10b981;
+    font-size: 0.75rem;
+    font-weight: 700;
+    animation: pulse 2s infinite;
+}
+
+.bus-feed__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.bus-message {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    padding: 0.5rem;
+    border-left: 3px solid #64748b;
+}
+
+.bus-message__meta {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.bus-message__type {
+    font-weight: 700;
+}
+
+.bus-message__body {
+    color: #e2e8f0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Type variations */
+.bus-message--voice_input { border-left-color: #f59e0b; }
+.bus-message--voice_output { border-left-color: #3b82f6; }
+.bus-message--assert { border-left-color: #8b5cf6; }
+.bus-message--query { border-left-color: #ec4899; }
+.bus-message--connected { border-left-color: #10b981; }
+
+.tag--VOICE_INPUT { color: #f59e0b; }
+.tag--VOICE_OUTPUT { color: #3b82f6; }
+
+.bus-feed__empty {
+    color: #64748b;
+    text-align: center;
+    margin-top: 2rem;
+    font-style: italic;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}

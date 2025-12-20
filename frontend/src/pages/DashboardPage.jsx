@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { agents } from '../data/agents'
+import BusFeed from '../components/BusFeed'
 
 function DashboardPage() {
     const { user } = useAuth()
@@ -90,8 +91,13 @@ function DashboardPage() {
                         </div>
                     ))}
                 </div>
+                    ))}
             </div>
         </div>
+
+            {/* Live Operations Feed */ }
+    <BusFeed />
+        </div >
     )
 }
 

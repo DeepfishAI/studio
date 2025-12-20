@@ -8,7 +8,7 @@ import cors from 'cors';
 import { Vesper } from './vesper.js';
 import { Mei } from './mei.js';
 import { getAgent } from './agent.js';
-import { createTaskContext, BusOps, getTaskTranscript } from './bus.js';
+import { createTaskContext, BusOps, getTaskTranscript, eventBus } from './bus.js';
 import * as Billing from './billing.js';
 import * as Memory from './memory.js';
 import { isLlmAvailable, getAvailableProviders } from './llm.js';
@@ -524,6 +524,49 @@ app.post('/api/memory/:agentId', (req, res) => {
         console.error('[Memory] Add memory error:', error);
         res.status(500).json({ error: 'Failed to add memory', details: error.message });
     }
+});
+
+// ============================================
+// REAL-TIME BUS STREAM (SSE)
+// ============================================
+
+/**
+ * Subscribe to the bus stream
+ * GET /api/stream
+ */
+app.get('/api/stream', (req, res) => {
+    // SSE Headers
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    const clientId = uuidv4();
+    console.log(`[Stream] Client connected: ${clientId}`);
+
+    // Send initial connection message
+    res.write(`data: ${JSON.stringify({ type: 'CONNECTED', clientId })}\n\n`);
+
+    // Listener for bus events
+    const busListener = (message) => {
+        // Send message to client
+        res.write(`data: ${JSON.stringify(message)}\n\n`);
+    };
+
+    // Attach listener to global eventBus
+    eventBus.on('bus_message', busListener);
+
+    // Initial heartbeat to keep connection alive
+    const heartbeat = setInterval(() => {
+        res.write(': heartbeat\n\n');
+    }, 15000);
+
+    // Cleanup on close
+    req.on('close', () => {
+        console.log(`[Stream] Client disconnected: ${clientId}`);
+        eventBus.off('bus_message', busListener);
+        clearInterval(heartbeat);
+    });
 });
 
 // ============================================
