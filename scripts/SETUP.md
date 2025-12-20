@@ -36,7 +36,7 @@ schtasks /Create /XML "C:\REPOS\DF.1.251216.2033\scripts\git-auto-sync-task.xml"
 1. Clone the repo:
 ```powershell
 cd C:\REPOS
-git clone https://github.com/JiffyAviation/DF.1.251216.2033
+git clone https://github.com/DeepfishAI/Studio
 ```
 
 2. Open **Task Scheduler** → **Import Task...**

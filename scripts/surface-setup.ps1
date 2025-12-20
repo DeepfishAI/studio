@@ -4,7 +4,7 @@
 Write-Host "=== DeepFish Auto-Sync Setup ===" -ForegroundColor Cyan
 
 $repoPath = "C:\REPOS\DF.1.251216.2033"
-$repoUrl = "https://github.com/JiffyAviation/DF.1.251216.2033.git"
+$repoUrl = "https://github.com/DeepfishAI/Studio.git"
 
 # Step 1: Create REPOS folder if needed
 if (-not (Test-Path "C:\REPOS")) {

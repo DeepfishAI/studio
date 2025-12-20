@@ -12,7 +12,7 @@ This session established the **DeepFish Agent System** — a modular, JSON-drive
 
 ## Repository Location
 
-**GitHub:** https://github.com/JiffyAviation/DF.1.251216.2033
+**GitHub:** https://github.com/DeepfishAI/Studio
 **Local:** `C:\Users\Irene\.gemini\antigravity\scratch\virtual-office\`
 
 **Versioning Scheme:**

@@ -5,7 +5,7 @@
 ### 1. Connect GitHub Repository
 ```
 Railway Dashboard → New Project → Deploy from GitHub
-→ Select: JiffyAviation/DF.1.251216.2033
+→ Select: DeepfishAI/Studio
 → Branch: main
 ```
 
@@ -56,7 +56,7 @@ The frontend should be deployed separately to Vercel:
 ### 1. Connect to Vercel
 ```
 Vercel Dashboard → New Project
-→ Import: JiffyAviation/DF.1.251216.2033
+→ Import: DeepfishAI/Studio
 → Root Directory: frontend
 → Framework: Vite
 ```
