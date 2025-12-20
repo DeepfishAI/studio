@@ -49,3 +49,16 @@ We implemented a Dual-Write strategy in `bus.js`:
 
 ---
 *End of Session Note: This architecture now supports the "3 Meis" value proposition—parallel compute instances that share state via Redis but execute independently.*
+
+### 6. App Store Readiness (PWA)
+**Goal:** Prepare for Google Play / Microsoft Store distribution.
+**Action:**
+- Created `manifest.json`.
+- Linked in `index.html`.
+- **Next:** Use PWABuilder.com to package the URL once deployed.
+
+### 7. Core Wiring Repair
+**Problem:** Mei (Project Manager) was "brain dead" — she generated `[[DISPATCH]]` text but didn't actually fire the event.
+**Fix:**
+- Updated `src/mei.js` to import `eventBus` and emit `DISPATCH` events.
+- Updated `mei.agent.json` to wake on `VOICE_INPUT`.

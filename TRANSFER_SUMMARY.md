@@ -265,16 +265,18 @@ Build all features for Platinum, nerf lower tiers with toggles:
 - `ddcc119` — feat(voice): log calls to redis bus
 - `67e8351` — feat(frontend): add live bus feed dashboard
 - `98c3683` — fix(frontend): repair dashboard syntax error
+- `3592991` — feat(pwa): add manifest for app store support
+- `ac546aa` — fix(core): wire mei to bus and enable voice events
 
 ---
 
 ## 🟢 Current Status
-- **Core:** Active & Persistent (Redis).
+- **Core:** Active, Persistent (Redis), & **WIRED**. Mei now actually dispatches tasks.
 - **Voice:** Active (ElevenLabs + Intelligent Routing).
-- **Frontend:** Active (React + Live Bus Feed).
+- **Frontend:** Active (React + Live Dashboard) + **PWA Ready**.
 - **Deployment:** Pushed to GitHub `DeepfishAI/Studio`. Railway auto-deploying.
 
 ## 🟡 Immediate Actions for User
 1.  **Railway Config:** Set `ELEVENLABS_API_KEY` in Railway Variables.
-2.  **frontend/ Build:** Verify Railway builds the React app correctly.
-3.  **DNS:** Configure `studio.deepfish.app`.
+2.  **DNS:** Configure `studio.deepfish.app`.
+3.  **App Store:** Submit URL to PWABuilder.com (optional).
