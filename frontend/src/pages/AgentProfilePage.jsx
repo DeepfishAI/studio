@@ -3,6 +3,7 @@ import { useParams, Link, useLocation } from 'react-router-dom'
 import { getAgent } from '../data/agents'
 import SkillPicker from '../components/SkillPicker'
 import { trainingApi } from '../services/training'
+import { configApi } from '../services/configApi'
 
 // Full LLM Model Catalog - The agent's BRAIN (not skills, not modules)
 // In production, this would come from llm-resolver.js / llm_catalog.json
@@ -45,6 +46,11 @@ function AgentProfilePage() {
     const [isUploading, setIsUploading] = useState(false)
     const [selectedLlmSkill, setSelectedLlmSkill] = useState(null)
     const [userTier] = useState('platinum') // In production, get from user context
+
+    // Customization State
+    const [customNickname, setCustomNickname] = useState('')
+    const [customInstructions, setCustomInstructions] = useState('')
+    const [isSaving, setIsSaving] = useState(false)
 
     // Load facts from backend on mount
     useEffect(() => {
@@ -250,6 +256,59 @@ function AgentProfilePage() {
                     <p style={{ fontStyle: 'italic', color: 'var(--color-text-secondary)' }}>
                         "{agent.catchphrase}"
                     </p>
+                </div>
+            </section>
+
+            <section className="agent-profile__section">
+                <h2 className="agent-profile__section-title">⚙️ Customization</h2>
+                <div className="card">
+                    <div className="form-group">
+                        <label className="form-label">Nickname (Override)</label>
+                        <input
+                            type="text"
+                            className="form-input"
+                            placeholder={agent.name}
+                            value={customNickname}
+                            onChange={(e) => setCustomNickname(e.target.value)}
+                        />
+                        <p className="form-hint">Call them something else in chat.</p>
+                    </div>
+
+                    <div className="form-group" style={{ marginTop: 'var(--space-4)' }}>
+                        <label className="form-label">Custom Instructions</label>
+                        <textarea
+                            className="form-textarea"
+                            rows="4"
+                            placeholder="e.g., Always explain things like I'm 5 years old..."
+                            value={customInstructions}
+                            onChange={(e) => setCustomInstructions(e.target.value)}
+                        />
+                        <p className="form-hint">
+                            These instructions are appended to every prompt.
+                        </p>
+                    </div>
+
+                    <button
+                        className="btn btn--primary"
+                        style={{ marginTop: 'var(--space-4)' }}
+                        onClick={async () => {
+                            setIsSaving(true)
+                            try {
+                                await configApi.updateConfig(agent.id, {
+                                    nickname: customNickname,
+                                    customInstructions
+                                })
+                                alert('Settings saved!')
+                            } catch (err) {
+                                alert('Failed to save settings')
+                            } finally {
+                                setIsSaving(false)
+                            }
+                        }}
+                        disabled={isSaving}
+                    >
+                        {isSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
                 </div>
             </section>
 

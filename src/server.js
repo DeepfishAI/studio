@@ -5,6 +5,9 @@
 
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { Vesper } from './vesper.js';
 import { Mei } from './mei.js';
 import { getAgent } from './agent.js';
@@ -17,6 +20,8 @@ import { isTwilioEnabled, isElevenLabsEnabled, handleIncomingCall, handleRouteCa
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Initialize agents
 const vesper = new Vesper();
@@ -596,6 +601,43 @@ app.post('/api/voice/agent/:agentId', handleAgentConversation);
  * GET /api/voice/audio/:audioId
  */
 app.get('/api/voice/audio/:audioId', serveAudio);
+
+// ============================================
+// AGENT CONFIGURATION
+// ============================================
+
+/**
+ * Update Agent User Config (Overlay)
+ * POST /api/agents/:agentId/config
+ * Body: { nickname, role, voice, customInstructions }
+ */
+app.post('/api/agents/:agentId/config', (req, res) => {
+    try {
+        const { agentId } = req.params;
+        const config = req.body;
+
+        // Load existing user.json or create empty
+        const userPath = path.join(__dirname, '..', 'agents', `${agentId}.user.json`);
+        let userConfig = {};
+
+        if (fs.existsSync(userPath)) {
+            userConfig = JSON.parse(fs.readFileSync(userPath, 'utf-8'));
+        }
+
+        // Merge updates
+        userConfig = { ...userConfig, ...config, lastUpdated: new Date().toISOString() };
+
+        // Save
+        fs.writeFileSync(userPath, JSON.stringify(userConfig, null, 4));
+
+        console.log(`[Config] Updated user config for ${agentId}`);
+        res.json({ success: true, config: userConfig });
+
+    } catch (error) {
+        console.error('[Config] Update failed:', error);
+        res.status(500).json({ error: 'Failed to update config' });
+    }
+});
 
 // Start server
 app.listen(PORT, () => {

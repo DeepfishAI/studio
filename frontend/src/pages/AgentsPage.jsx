@@ -34,10 +34,10 @@ function AgentsPage() {
                             {agent.description}
                         </p>
                         <div className="agent-card__actions">
-                            <Link to={`/chat/${agent.id}`} className="btn btn--primary btn--sm">
+                            <Link to={`/app/chat/${agent.id}`} className="btn btn--primary btn--sm">
                                 💬 Start Chat
                             </Link>
-                            <Link to={`/agents/${agent.id}`} className="btn btn--secondary btn--sm">
+                            <Link to={`/app/agents/${agent.id}`} className="btn btn--secondary btn--sm">
                                 View Profile
                             </Link>
                         </div>
