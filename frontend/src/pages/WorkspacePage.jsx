@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import MonacoEditorPanel from '../components/MonacoEditorPanel'
 import CodePreview from '../components/CodePreview'
 import FileTree from '../components/FileTree'
@@ -144,8 +144,44 @@ function WorkspacePage() {
         setViewMode('code')
     }
 
+    // Resizing Logic
+    const [leftSidebarWidth, setLeftSidebarWidth] = useState(320)
+    const [rightSidebarWidth, setRightSidebarWidth] = useState(320)
+    const [isDraggingRight, setIsDraggingRight] = useState(false)
+    const [isDraggingLeft, setIsDraggingLeft] = useState(false)
+
+    const startResizingRight = (e) => { e.preventDefault(); setIsDraggingRight(true); }
+    const startResizingLeft = (e) => { e.preventDefault(); setIsDraggingLeft(true); }
+    const stopResizing = () => { setIsDraggingRight(false); setIsDraggingLeft(false); }
+
+    const resize = (e) => {
+        if (isDraggingRight) {
+            const newWidth = window.innerWidth - e.clientX;
+            if (newWidth > 200 && newWidth < 800) setRightSidebarWidth(newWidth);
+        }
+        if (isDraggingLeft) {
+            const newWidth = e.clientX;
+            if (newWidth > 200 && newWidth < 600) setLeftSidebarWidth(newWidth);
+        }
+    };
+
+    // Global listeners for dragging
+    React.useEffect(() => {
+        window.addEventListener("mousemove", resize);
+        window.addEventListener("mouseup", stopResizing);
+        return () => {
+            window.removeEventListener("mousemove", resize);
+            window.removeEventListener("mouseup", stopResizing);
+        };
+    }, [isDraggingRight, isDraggingLeft]);
+
     return (
-        <div className="workspace-page">
+        <div
+            className="workspace-page"
+            style={{
+                gridTemplateColumns: `${leftSidebarWidth}px auto 1fr auto ${rightSidebarWidth}px`
+            }}
+        >
             {/* Left: Files & Assets */}
             <div className="workspace-panel workspace-panel--files">
                 <div className="workspace-panel__header">
@@ -167,6 +203,21 @@ function WorkspacePage() {
                     onAddAsset={handleAddAsset}
                 />
             </div>
+
+            {/* Left Resize Handle */}
+            <div
+                className="workspace-resizer"
+                onMouseDown={startResizingLeft}
+                style={{
+                    width: '4px',
+                    cursor: 'col-resize',
+                    background: isDraggingLeft ? 'var(--color-accent-blue)' : 'var(--color-bg-tertiary)',
+                    height: '100%',
+                    position: 'relative',
+                    zIndex: 10,
+                    transition: 'background 0.2s'
+                }}
+            />
 
             {/* Center: Code Editor OR Preview */}
             <div className="workspace-panel workspace-panel--editor">
@@ -222,7 +273,22 @@ function WorkspacePage() {
                 )}
             </div>
 
-            {/* Right: Chat Panel (like VSCode) */}
+            {/* Right Resize Handle */}
+            <div
+                className="workspace-resizer"
+                onMouseDown={startResizingRight}
+                style={{
+                    width: '4px',
+                    cursor: 'col-resize',
+                    background: isDraggingRight ? 'var(--color-accent-blue)' : 'var(--color-bg-tertiary)',
+                    height: '100%',
+                    position: 'relative',
+                    zIndex: 10,
+                    transition: 'background 0.2s'
+                }}
+            />
+
+            {/* Right: Chat Panel (Resizable) */}
             <div className="workspace-panel workspace-panel--chat">
                 <div className="workspace-panel__header">
                     <h3>💬 Agent Chat</h3>
