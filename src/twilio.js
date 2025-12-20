@@ -117,7 +117,7 @@ export function isElevenLabsEnabled() {
  * Generate audio using ElevenLabs TTS
  * Returns audioId that can be used to serve the file
  */
-async function generateElevenLabsAudio(text, agentId) {
+export async function generateElevenLabsAudio(text, agentId) {
     // Load agent to get their voice ID
     const agent = getAgent(agentId);
     // Try to get voice ID from profile, fallback to Vesper's default (Lily), fallback to whatever

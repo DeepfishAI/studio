@@ -14,6 +14,8 @@ function ChatPage() {
     const [tempInput, setTempInput] = useState('')
     const [chatId, setChatId] = useState(null)
     const [useRealApi, setUseRealApi] = useState(false)
+    const [voiceEnabled, setVoiceEnabled] = useState(false)
+    const audioRef = useRef(new Audio())
     const messagesEndRef = useRef(null)
 
     // Default to Mei if no agent specified
@@ -103,6 +105,11 @@ function ChatPage() {
             }
             setMessages(prev => [...prev, agentResponse])
 
+            // Speak if enabled
+            if (voiceEnabled) {
+                playVoice(responseText, respondingAgentId)
+            }
+
         } catch (error) {
             console.error('[Chat] Error:', error)
             const agentResponse = {
@@ -115,6 +122,20 @@ function ChatPage() {
             setMessages(prev => [...prev, agentResponse])
         } finally {
             setIsTyping(false)
+        }
+    }
+
+    const playVoice = async (text, agentId) => {
+        try {
+            const { url } = await api.generateTts(text, agentId)
+            const audioUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${url}`
+
+            // Stop current audio if playing
+            audioRef.current.pause()
+            audioRef.current.src = audioUrl
+            audioRef.current.play().catch(e => console.warn('[Voice] Playback failed:', e))
+        } catch (error) {
+            console.error('[Voice] TTS error:', error)
         }
     }
 
@@ -147,9 +168,26 @@ function ChatPage() {
                         )}
                     </div>
                 </div>
-                <Link to={`/agents/${currentAgent.id}`} className="btn btn--secondary btn--sm">
-                    View Profile
-                </Link>
+                <div className="chat-header__actions">
+                    <button
+                        className={`btn btn--circle ${voiceEnabled ? 'btn--success' : 'btn--secondary'}`}
+                        onClick={() => {
+                            setVoiceEnabled(!voiceEnabled)
+                            if (!voiceEnabled) {
+                                // Greet when enabling
+                                playVoice(messages[messages.length - 1]?.text || "Voice enabled.", currentAgent.id)
+                            } else {
+                                audioRef.current.pause()
+                            }
+                        }}
+                        title={voiceEnabled ? "Mute" : "Enable Voice"}
+                    >
+                        {voiceEnabled ? '🔊' : '🔇'}
+                    </button>
+                    <Link to={`/agents/${currentAgent.id}`} className="btn btn--secondary btn--sm">
+                        View Profile
+                    </Link>
+                </div>
             </header>
 
             {/* Messages */}

@@ -16,7 +16,7 @@ import * as Billing from './billing.js';
 import * as Memory from './memory.js';
 import { isLlmAvailable, getAvailableProviders } from './llm.js';
 import { getApiKey } from './config.js';
-import { isTwilioEnabled, isElevenLabsEnabled, handleIncomingCall, handleRouteCall, handleAgentConversation, serveAudio, sendSms } from './twilio.js';
+import { isTwilioEnabled, isElevenLabsEnabled, handleIncomingCall, handleRouteCall, handleAgentConversation, serveAudio, sendSms, generateElevenLabsAudio } from './twilio.js';
 import Redis from 'ioredis';
 
 // Redis Client (Automatic Recovery System)
@@ -738,6 +738,24 @@ app.post('/api/voice/agent/:agentId', handleAgentConversation);
  * GET /api/voice/audio/:audioId
  */
 app.get('/api/voice/audio/:audioId', serveAudio);
+
+/**
+ * Generate TTS for Web App
+ * POST /api/voice/tts
+ * Body: { text, agentId }
+ */
+app.post('/api/voice/tts', async (req, res) => {
+    try {
+        const { text, agentId } = req.body;
+        if (!text) return res.status(400).json({ error: 'Text is required' });
+
+        const audioId = await generateElevenLabsAudio(text, agentId || 'vesper');
+        res.json({ audioId, url: `/api/voice/audio/${audioId}` });
+    } catch (error) {
+        console.error('[API /voice/tts] Error:', error);
+        res.status(500).json({ error: 'Failed to generate audio', details: error.message });
+    }
+});
 
 // ============================================
 // AGENT CONFIGURATION

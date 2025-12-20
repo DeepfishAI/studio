@@ -158,6 +158,26 @@ export const api = {
         const response = await fetch(`${API_BASE}/api/user/tier`)
         return response.json()
     },
+
+    /**
+     * Generate TTS audio for a given text
+     */
+    async generateTts(text, agentId) {
+        try {
+            const response = await fetch(`${API_BASE}/api/voice/tts`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, agentId }),
+            })
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            return response.json()
+        } catch (error) {
+            console.error('[API] generateTts error:', error)
+            throw error
+        }
+    },
 }
 
 export default api
