@@ -9,6 +9,7 @@ import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { chat, isLlmAvailable } from './llm.js';
+import { eventBus } from './bus.js';  // <-- WIRED to the nervous system
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -302,6 +303,16 @@ export class Vesper {
         const intent = await this.detectIntent(input, c);
 
         if (intent.agentId) {
+            // FIRE EVENT TO BUS - "I am transferring this call"
+            eventBus.emit('bus_message', {
+                type: 'ROUTE_CALL',
+                sender: 'vesper',
+                target: intent.agentId,
+                content: input,
+                reason: intent.reason,
+                timestamp: new Date().toISOString()
+            });
+
             if (c) {
                 return `${c.text('Sounds like you need')} ${c.accent(intent.agent.name)}${c.text('.')}\n` +
                     `${c.dim(`(${intent.reason})`)}\n\n` +

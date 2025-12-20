@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { chat, isLlmAvailable } from './llm.js';
 import { getFactsForPrompt } from './memory.js';
+import { eventBus } from './bus.js'; // <-- WIRED to the nervous system
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -104,6 +105,11 @@ function buildSystemPrompt(profile) {
         primeNever.forEach(p => prompt += `- ${p}\n`);
     }
 
+    prompt += `\n\nCRITICAL OUTPUT FORMATTING:\n`;
+    prompt += `1. When you finish a task, end with: [[COMPLETE: summary of what you did]]\n`;
+    prompt += `2. If you are stuck or need help, end with: [[BLOCKER: reason]]\n`;
+    prompt += `3. Otherwise, just converse normally.\n`;
+
     return prompt;
 }
 
@@ -135,6 +141,28 @@ export class Agent {
                 const response = await chat(fullPrompt, input, {
                     maxTokens: 512
                 });
+
+                // PARSE COMPLETION TAGS
+                // [[COMPLETE: ...]] or [[BLOCKER: ...]]
+                const completeMatch = response.match(/\[\[COMPLETE:\s*(.+?)\]\]/i);
+                const blockerMatch = response.match(/\[\[BLOCKER:\s*(.+?)\]\]/i);
+
+                if (completeMatch) {
+                    eventBus.emit('bus_message', {
+                        type: 'TASK_COMPLETE',
+                        agentId: this.agentId,
+                        result: completeMatch[1].trim(),
+                        timestamp: new Date().toISOString()
+                    });
+                } else if (blockerMatch) {
+                    eventBus.emit('bus_message', {
+                        type: 'BLOCKER',
+                        agentId: this.agentId,
+                        reason: blockerMatch[1].trim(),
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
                 return response;
             } catch (err) {
                 console.error(`[${this.name}] LLM error:`, err.message);
