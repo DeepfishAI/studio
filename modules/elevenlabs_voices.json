@@ -51,38 +51,38 @@
     "defaultVoices": {
         "$comment": "Pre-assigned voices — users can override",
         "vesper": {
-            "voiceId": "pNInz6obpgDQGcFmaJgB",
-            "name": "Lily",
+            "voiceId": "GCPLhb1XrVwcoKUJYcvz",
+            "name": "Vesper Custom",
             "description": "Warm, slightly flirty, professional",
             "userCanChange": true
         },
         "mei": {
-            "voiceId": "EXAVITQu4vr4xnSDxMaL",
-            "name": "Sarah",
+            "voiceId": "ngiiW8FFLIdMew1cqwSB",
+            "name": "Mei Custom",
             "description": "Clear, efficient, friendly",
             "userCanChange": true
         },
         "hanna": {
-            "voiceId": "XB0fDUnXU5powFXDhCwa",
-            "name": "Charlotte",
+            "voiceId": "fCqNx624ZlenYx5PXk6M",
+            "name": "Hanna Custom",
             "description": "Thoughtful, creative, warm",
             "userCanChange": true
         },
         "it": {
-            "voiceId": "onwK4e9ZLuTAKqWW03F9",
-            "name": "Daniel",
+            "voiceId": "LSEq6jBkWbldjNhcDwT1",
+            "name": "IT Custom",
             "description": "Technical, precise, calm",
             "userCanChange": true
         },
         "sally": {
-            "voiceId": "jBpfuIE2acCO8z3wKNLl",
-            "name": "Gigi",
+            "voiceId": "Nggzl2QAXh3OijoXD116",
+            "name": "Sally Custom",
             "description": "Energetic, persuasive, upbeat",
             "userCanChange": true
         },
         "oracle": {
-            "voiceId": "TxGEqnHWrfWFTfGW9XjX",
-            "name": "Josh",
+            "voiceId": "oR4uRy4fHDUGGISL0Rev",
+            "name": "Oracle Custom",
             "description": "Deep, wise, mysterious",
             "userCanChange": true
         }

@@ -29,12 +29,12 @@
         "escalationThreshold": "$example: blockers-only | all-decisions",
         "voice": {
             "$comment": "ElevenLabs voice settings",
-            "voiceId": "EXAVITQu4vr4xnSDxMaL",
-            "voiceName": "Sarah",
+            "voiceId": "ngiiW8FFLIdMew1cqwSB",
+            "voiceName": "Mei Custom",
             "provider": "elevenlabs",
             "speed": 1.0,
             "stability": 0.5,
-            "userSelected": false
+            "userSelected": true
         },
         "skin": {
             "$comment": "Visual appearance / personality skin",
