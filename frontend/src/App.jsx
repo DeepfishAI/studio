@@ -1,43 +1,25 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Layout from './components/Layout'
-import LandingPage from './pages/LandingPage'
-import VerificationPage from './pages/VerificationPage'
-import LoginPage from './pages/LoginPage'
-import DashboardPage from './pages/DashboardPage'
-import ChatPage from './pages/ChatPage'
-import AgentsPage from './pages/AgentsPage'
-import AgentProfilePage from './pages/AgentProfilePage'
-import PricingPage from './pages/PricingPage'
-import BillingPage from './pages/BillingPage'
-import CheckoutSuccessPage from './pages/CheckoutSuccessPage'
-import CheckoutCanceledPage from './pages/CheckoutCanceledPage'
-import WorkspacePage from './pages/WorkspacePage'
-import TogglesPage from './pages/TogglesPage'
-import StorePage from './pages/StorePage'
-import AdminPage from './pages/AdminPage'
+// ... (imports)
 
-function ProtectedRoute({ children }) {
-    const { user, loading } = useAuth()
-
-    if (loading) {
-        return (
-            <div className="loading-screen">
-                <div className="loading-spinner"></div>
-                <p>Loading...</p>
-            </div>
-        )
-    }
-
-    if (!user) {
-        return <Navigate to="/login" replace />
-    }
-
-    return children
-}
+// ...
 
 function AppRoutes() {
     const { user, loading } = useAuth()
+    const navigate = useNavigate()
+
+    // Redirect to landing page on refresh
+    useEffect(() => {
+        const navEntries = performance.getEntriesByType('navigation')
+        if (navEntries.length > 0 && navEntries[0].type === 'reload') {
+            navigate('/')
+        } else if (window.performance && window.performance.navigation.type === 1) {
+            // Fallback for older browsers
+            navigate('/')
+        }
+    }, [navigate])
 
     if (loading) {
         return (
