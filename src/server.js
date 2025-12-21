@@ -278,6 +278,35 @@ app.post('/api/agents/:agentId/config', (req, res) => {
     }
 });
 
+// SSE Endpoint for Real-Time Bus Events
+app.get('/api/events', (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    const sendEvent = (data) => {
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+    };
+
+    // Send initial connection status
+    sendEvent({ type: 'connected', timestamp: new Date().toISOString() });
+
+    // Listener for bus messages
+    const messageHandler = (msg) => {
+        sendEvent(msg);
+    };
+
+    // Subscribe to all bus messages
+    eventBus.on('bus_message', messageHandler);
+
+    // Cleanup on client disconnect
+    req.on('close', () => {
+        eventBus.off('bus_message', messageHandler);
+        res.end();
+    });
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`🐟 DeepFish API Server running on http://localhost:${PORT}`);
