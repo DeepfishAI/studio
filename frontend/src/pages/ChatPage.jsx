@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
 import { agents, getAgent } from '../data/agents'
 import api from '../services/api'
 import AgentContextMenu from '../components/AgentContextMenu'
@@ -283,7 +284,13 @@ function ChatPage() {
                             />
                         )}
                         <div>
-                            <div className="message__content">{message.text}</div>
+                            <div className="message__content">
+                                {message.type === 'agent' ? (
+                                    <ReactMarkdown>{message.text}</ReactMarkdown>
+                                ) : (
+                                    message.text
+                                )}
+                            </div>
                             <div className="message__time">{message.time}</div>
                         </div>
                     </div>

@@ -106,6 +106,15 @@ function buildSystemPrompt(profile) {
         primeNever.forEach(p => prompt += `- ${p}\n`);
     }
 
+    // STRICT FORMATTING RULES
+    prompt += `
+\nFORMATTING RULES:
+1. You MUST use Markdown for structure (headers, bold, lists).
+2. You MUST be concise.
+3. If listing items (tasks, goals, suggestions), limit them to the TOP 3 most important.
+4. Use carriage returns (newlines) to separate paragraphs. Walls of text are forbidden.
+`;
+
     return prompt;
 }
 
