@@ -203,7 +203,7 @@ export default function LandingPage() {
             <p className="hero-subtitle">
                 You don't need another chatbot. You need a workgroup.
                 <br />
-                Spin up autonomous specialists who run in parallel. Assign real work, and scale your creative output.
+                Spin up autonomous specialists, assign real work, and scale your creative output.
             </p>
 
             {!joined ? (
@@ -252,7 +252,7 @@ export default function LandingPage() {
             )}
 
             <div className="footer">
-                Early access onlyPrices subject to change in Beta. • DeepFish AI © 2025
+                Early access only • Prices subject to change in Beta. • DeepFish AI © 2025
             </div>
         </div>
     );
