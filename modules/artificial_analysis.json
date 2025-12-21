@@ -1,0 +1,55 @@
+{
+    "$comment": "=== ARTIFICIAL ANALYSIS MODULE — Market Intelligence ===",
+    "$reference": "Provides access to the Artificial Analysis API for LLM benchmarks and pricing",
+    "module_id": "artificial_analysis",
+    "type": "intelligence",
+    "version": "1.0.0",
+    "status": "active",
+    "capabilities": {
+        "benchmarking": {
+            "name": "Live Benchmarks (v1)",
+            "description": "Fetch latest ELO scores and speed metrics",
+            "endpoint": "https://artificialanalysis.ai/v1/benchmarks",
+            "required_headers": [
+                "x-api-key"
+            ]
+        },
+        "pricing": {
+            "name": "Market Pricing (v1)",
+            "description": "Retrieve current pricing for standard models",
+            "endpoint": "https://artificialanalysis.ai/v1/pricing",
+            "required_headers": [
+                "x-api-key"
+            ]
+        },
+        "models_v2": {
+            "name": "All Models (v2)",
+            "description": "Comprehensive list of models with evaluations (Intelligence, Coding, Math)",
+            "endpoint": "https://artificialanalysis.ai/api/v2/data/llms/models",
+            "required_headers": [
+                "x-api-key"
+            ]
+        },
+        "providers_v2": {
+            "name": "Providers (v2)",
+            "description": "Provider performance data (throughput, latency)",
+            "endpoint": "https://artificialanalysis.ai/api/v2/data/llms/providers",
+            "required_headers": [
+                "x-api-key"
+            ]
+        },
+        "text_to_image": {
+            "name": "Text to Image",
+            "description": "ELO ratings for image generation models",
+            "endpoint": "https://artificialanalysis.ai/api/v2/data/media/text-to-image",
+            "required_headers": [
+                "x-api-key"
+            ]
+        }
+    },
+    "integration": {
+        "provider": "Artificial Analysis",
+        "auth_header": "x-api-key",
+        "env_var": "ARTIFICIAL_ANALYSIS_API_KEY"
+    }
+}

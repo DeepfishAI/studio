@@ -9,8 +9,6 @@ import twilio from 'twilio';
 import { getAgent } from './agent.js';
 import { isLlmAvailable } from './llm.js';
 import { Vesper } from './vesper.js';
-import { writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, statSync } from 'fs';
-import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { eventBus } from './bus.js';
@@ -28,14 +26,6 @@ const vesper = new Vesper();
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
-
-// Audio files directory
-const AUDIO_DIR = join(ROOT, 'output', 'voice_audio');
-
-// Ensure audio directory exists
-if (!existsSync(AUDIO_DIR)) {
-    mkdirSync(AUDIO_DIR, { recursive: true });
-}
 
 // ElevenLabs voice IDs for each agent
 const ELEVENLABS_VOICES = {
@@ -57,8 +47,120 @@ const POLLY_VOICES = {
     oracle: 'Polly.Brian'
 };
 
-// In-memory audio cache (audioId -> { path, createdAt })
-const audioCache = new Map();
+// In-memory request cache (audioId -> { text, voiceId, createdAt })
+const pendingAudio = new Map();
+
+/**
+ * Cleanup pending requests
+ */
+function cleanupPendingAudio() {
+    const now = Date.now();
+    for (const [id, data] of pendingAudio.entries()) {
+        if (now - data.createdAt > 300000) { // 5 minutes TTL
+            pendingAudio.delete(id);
+        }
+    }
+}
+setInterval(cleanupPendingAudio, 60000);
+
+/**
+ * Generate audio using ElevenLabs TTS (Streaming Mode)
+ * Returns audioId that will trigger the stream when accessed
+ */
+export async function generateElevenLabsAudio(text, agentId) {
+    // Load agent to get their voice ID
+    const agent = getAgent(agentId);
+    let voiceId = agent?.profile?.agent?.tools?.voiceSynthesis?.voiceId;
+
+    // Legacy fallback
+    if (!voiceId) {
+        voiceId = ELEVENLABS_VOICES[agentId] || ELEVENLABS_VOICES.vesper;
+    }
+
+    if (!ELEVENLABS_API_KEY) {
+        console.warn('[ElevenLabs] Missing API Key. Falling back.');
+        return null;
+    }
+
+    const audioId = uuidv4();
+
+    // Store parameters for the upcoming fetch
+    pendingAudio.set(audioId, {
+        text,
+        voiceId,
+        createdAt: Date.now()
+    });
+
+    console.log(`[ElevenLabs] Quotes audio ID: ${audioId} (Waiting for stream request)`);
+    return audioId;
+}
+
+/**
+ * Serve audio file for Twilio to play
+ * GET /api/voice/audio/:audioId
+ * ACTS AS A PROXY: Pipes ElevenLabs API response directly to Twilio
+ */
+export async function serveAudio(req, res) {
+    const { audioId } = req.params;
+
+    if (!pendingAudio.has(audioId)) {
+        return res.status(404).send('Audio expired or not found');
+    }
+
+    const { text, voiceId } = pendingAudio.get(audioId);
+    pendingAudio.delete(audioId); // Single use
+
+    console.log(`[ElevenLabs] Streaming starting for ${audioId}...`);
+    const startTime = Date.now();
+
+    try {
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream?optimize_streaming_latency=4`, {
+            method: 'POST',
+            headers: {
+                'xi-api-key': ELEVENLABS_API_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: text,
+                model_id: 'eleven_turbo_v2_5', // Use Turbo for max speed
+                voice_settings: {
+                    stability: 0.5,
+                    similarity_boost: 0.75
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            console.error(`[ElevenLabs] Stream API Failed: ${response.status} - ${error}`);
+            return res.status(500).send('Upstream API Failed');
+        }
+
+        // Set headers for MP3 stream
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Transfer-Encoding', 'chunked');
+
+        // Pipe the body reader to the response
+        // Node 18+ fetch has .body as a ReadableStream (web standard), 
+        // effectively we need to convert or iterate. 
+        // But in Node environment with 'undici' (global fetch), response.body is iterable.
+
+        const reader = response.body.getReader();
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            res.write(value);
+        }
+
+        res.end();
+        console.log(`[ElevenLabs] Stream finished for ${audioId} (Total: ${Date.now() - startTime}ms)`);
+
+    } catch (err) {
+        console.error(`[ElevenLabs] Proxy Error:`, err);
+        if (!res.headersSent) res.status(500).send('Proxy Error');
+    }
+}
 
 // Initialize Twilio client (for outbound if needed)
 let twilioClient = null;
@@ -97,135 +199,6 @@ export async function sendSms(to, body) {
         return false;
     }
 }
-
-/**
- * Check if Twilio is configured
- */
-export function isTwilioEnabled() {
-    return !!(TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN);
-}
-
-/**
- * Check if ElevenLabs is configured
- * ENABLED if API key is present
- */
-export function isElevenLabsEnabled() {
-    return !!ELEVENLABS_API_KEY;
-}
-
-/**
- * Generate audio using ElevenLabs TTS
- * Returns audioId that can be used to serve the file
- */
-export async function generateElevenLabsAudio(text, agentId) {
-    // Load agent to get their voice ID
-    const agent = getAgent(agentId);
-    // Try to get voice ID from profile, fallback to Vesper's default (Lily), fallback to whatever
-    let voiceId = agent?.profile?.agent?.tools?.voiceSynthesis?.voiceId;
-
-    // If not found in profile, check the hardcoded list (legacy support)
-    if (!voiceId) {
-        voiceId = ELEVENLABS_VOICES[agentId] || ELEVENLABS_VOICES.vesper;
-    }
-
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-        method: 'POST',
-        headers: {
-            'xi-api-key': ELEVENLABS_API_KEY,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            text: text,
-            model_id: 'eleven_monolingual_v1',
-            voice_settings: {
-                stability: 0.5,
-                similarity_boost: 0.75
-            }
-        })
-    });
-
-    if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`ElevenLabs API error: ${response.status} - ${error}`);
-    }
-
-    const audioBuffer = await response.arrayBuffer();
-    const audioId = uuidv4();
-    const audioPath = join(AUDIO_DIR, `${audioId}.mp3`);
-
-    writeFileSync(audioPath, Buffer.from(audioBuffer));
-
-    // Cache the audio info
-    audioCache.set(audioId, {
-        path: audioPath,
-        createdAt: Date.now()
-    });
-
-    console.log(`[ElevenLabs] Generated audio: ${audioId} for agent ${agentId}`);
-
-    return audioId;
-}
-
-/**
- * Serve audio file for Twilio to play
- * GET /api/voice/audio/:audioId
- */
-export function serveAudio(req, res) {
-    const { audioId } = req.params;
-
-    // Security: only allow alphanumeric + hyphen
-    if (!/^[a-f0-9-]+$/i.test(audioId)) {
-        return res.status(400).send('Invalid audio ID');
-    }
-
-    const audioPath = join(AUDIO_DIR, `${audioId}.mp3`);
-
-    if (!existsSync(audioPath)) {
-        console.error(`[Voice] Audio not found: ${audioId}`);
-        return res.status(404).send('Audio not found');
-    }
-
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.sendFile(audioPath);
-
-    // Schedule cleanup after serving (give Twilio time to cache)
-    setTimeout(() => {
-        try {
-            if (existsSync(audioPath)) {
-                unlinkSync(audioPath);
-                audioCache.delete(audioId);
-                console.log(`[Voice] Cleaned up audio: ${audioId}`);
-            }
-        } catch (err) {
-            console.error(`[Voice] Cleanup error:`, err);
-        }
-    }, 60000); // Clean up after 1 minute
-}
-
-/**
- * Clean up old audio files (call periodically)
- */
-export function cleanupOldAudio() {
-    const maxAge = 5 * 60 * 1000; // 5 minutes
-    const now = Date.now();
-
-    try {
-        const files = readdirSync(AUDIO_DIR);
-        for (const file of files) {
-            const filePath = join(AUDIO_DIR, file);
-            const stats = statSync(filePath);
-            if (now - stats.mtimeMs > maxAge) {
-                unlinkSync(filePath);
-                console.log(`[Voice] Cleaned up old audio: ${file}`);
-            }
-        }
-    } catch (err) {
-        console.error('[Voice] Cleanup error:', err);
-    }
-}
-
-// Run cleanup every 5 minutes
-setInterval(cleanupOldAudio, 5 * 60 * 1000);
 
 /**
  * Get base URL for audio serving

@@ -62,7 +62,7 @@ export const api = {
      */
     async getAgents() {
         try {
-            const response = await fetch(`${API_BASE}/api/agents`)
+            const response = await fetch(`${API_BASE}/api/chat/agents`)
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }

@@ -137,7 +137,7 @@ function loadRoutingKeywords() {
  */
 function loadAvailableAgents() {
     const agents = [];
-    const agentIds = ['mei', 'oracle', 'hanna', 'it', 'sally'];
+    const agentIds = ['mei', 'oracle', 'hanna', 'it', 'sally', 'abacus'];
 
     for (const id of agentIds) {
         try {
@@ -167,7 +167,9 @@ function getAgentEmoji(agentId) {
         hanna: '🎨',
         it: '💻',
         sally: '📈',
-        vesper: '📞'
+        sally: '📈',
+        vesper: '📞',
+        abacus: '👑'
     };
     return emojiMap[agentId] || '🤖';
 }

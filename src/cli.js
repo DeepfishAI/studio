@@ -5,6 +5,7 @@
  * Talk to Mei, she routes to the right agent.
  */
 
+import 'dotenv/config';
 import * as readline from 'readline';
 import chalk from 'chalk';
 import { Mei } from './mei.js';

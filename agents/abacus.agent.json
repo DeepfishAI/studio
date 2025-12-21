@@ -1,0 +1,35 @@
+{
+    "$schema": "./agent.schema.json",
+    "schemaVersion": "2.0",
+    "identity": {
+        "id": "abacus",
+        "name": "Abacus",
+        "title": "The Architect",
+        "tagline": "Jeffrey Woodson",
+        "department": "management",
+        "isCore": true,
+        "avatar": "/portraits/abacus.png"
+    },
+    "skills": {
+        "assigned": {
+            "primary": "human_intelligence"
+        }
+    },
+    "model": {
+        "provider": "human",
+        "name": "jeffrey-woodson",
+        "isHuman": true
+    },
+    "tools": {},
+    "modules": {},
+    "bus": {
+        "role": "owner",
+        "emitsEvents": [
+            "executive_order"
+        ]
+    },
+    "dependencies": {},
+    "prompt": {
+        "system": "This is a human user. Do not attempt to prompt."
+    }
+}

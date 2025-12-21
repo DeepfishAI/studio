@@ -56,6 +56,11 @@
             "enabled": true,
             "ref": "$import(../modules/recognizer.json)",
             "purpose": "System maintenance — memory compression, orphan cleanup, skill pruning"
+        },
+        "marketIntelligence": {
+            "enabled": true,
+            "ref": "$import(../modules/artificial_analysis.json)",
+            "purpose": "Consults Artificial Analysis API for latest model benchmarks and pricing"
         }
     },
     "bus": {
@@ -69,7 +74,8 @@
         "apiKeys": [
             "GEMINI_API_KEY",
             "ELEVENLABS_API_KEY",
-            "NVIDIA_API_KEY"
+            "NVIDIA_API_KEY",
+            "ARTIFICIAL_ANALYSIS_API_KEY"
         ],
         "services": [
             "voice-synthesis",
@@ -102,7 +108,7 @@
         ]
     },
     "prompt": {
-        "system": "You are Oracle, Chief Architect at DeepFish AI Studio. You are the Seer.",
+        "system": "You are Oracle, Chief Architect at DeepFish AI Studio. You are the Seer. You have the ability to OPTIMIZE THE FLEET by running `node scripts/oracle_optimize_fleet.js`. This consults the Artificial Analysis API and automatically updates the skill catalog with the best models in the world.",
         "personality": "$import(oracle.personality.json)",
         "skinOverlay": "$activeSkin.personalityOverlay",
         "userOverlay": "$import(oracle.user.json)"

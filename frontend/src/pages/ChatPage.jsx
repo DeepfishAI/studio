@@ -15,8 +15,11 @@ function ChatPage() {
     const [chatId, setChatId] = useState(null)
     const [useRealApi, setUseRealApi] = useState(false)
     const [voiceEnabled, setVoiceEnabled] = useState(false)
+    const [isListening, setIsListening] = useState(false)
+    const [volume, setVolume] = useState(1.0)
     const audioRef = useRef(new Audio())
     const messagesEndRef = useRef(null)
+    const recognitionRef = useRef(null)
 
     // Default to Mei if no agent specified
     const currentAgent = getAgent(agentId) || getAgent('mei')
@@ -28,6 +31,41 @@ function ChatPage() {
     useEffect(() => {
         scrollToBottom()
     }, [messages])
+
+    // Initialize Speech Recognition
+    useEffect(() => {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+            const recognition = new SpeechRecognition()
+            recognition.continuous = false
+            recognition.interimResults = false
+            recognition.lang = 'en-US'
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript
+                setInput(prev => (prev ? `${prev} ${transcript}` : transcript))
+                setIsListening(false)
+            }
+
+            recognition.onerror = (event) => {
+                console.error('[Speech] Error:', event.error)
+                setIsListening(false)
+            }
+
+            recognition.onend = () => {
+                setIsListening(false)
+            }
+
+            recognitionRef.current = recognition
+        }
+    }, [])
+
+    // Update volume
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = volume
+        }
+    }, [volume])
 
     // Check if backend is available
     useEffect(() => {
@@ -169,6 +207,49 @@ function ChatPage() {
                     </div>
                 </div>
                 <div className="chat-header__actions">
+                    {/* Volume Control */}
+                    {voiceEnabled && (
+                        <div className="volume-control" style={{ display: 'flex', alignItems: 'center', marginRight: '10px' }}>
+                            <span style={{ fontSize: '12px', marginRight: '4px' }}>🔊</span>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.1"
+                                value={volume}
+                                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                                style={{ width: '60px', accentColor: 'var(--color-primary)' }}
+                                title={`Volume: ${Math.round(volume * 100)}%`}
+                            />
+                        </div>
+                    )}
+
+                    {/* Microphone Toggle */}
+                    <button
+                        className={`btn btn--circle ${isListening ? 'btn--danger' : 'btn--secondary'}`}
+                        onClick={() => {
+                            if (isListening) {
+                                recognitionRef.current?.stop()
+                            } else {
+                                try {
+                                    recognitionRef.current?.start()
+                                    setIsListening(true)
+                                } catch (e) {
+                                    console.error("Microphone start failed", e)
+                                }
+                            }
+                        }}
+                        title={isListening ? "Stop Recording" : "Speak (Push-to-Talk)"}
+                        disabled={!recognitionRef.current}
+                    >
+                        {isListening ? (
+                            <span style={{ textDecoration: 'none' }}>🎤</span> // Active
+                        ) : (
+                            <span style={{ /* Slash through style or just dimmed */ opacity: 0.5 }}>🎤</span>
+                        )}
+                    </button>
+
+                    {/* Speaker Toggle */}
                     <button
                         className={`btn btn--circle ${voiceEnabled ? 'btn--success' : 'btn--secondary'}`}
                         onClick={() => {
@@ -180,7 +261,7 @@ function ChatPage() {
                                 audioRef.current.pause()
                             }
                         }}
-                        title={voiceEnabled ? "Mute" : "Enable Voice"}
+                        title={voiceEnabled ? "Mute Output" : "Enable Output"}
                     >
                         {voiceEnabled ? '🔊' : '🔇'}
                     </button>

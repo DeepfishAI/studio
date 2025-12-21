@@ -84,13 +84,13 @@
             "description": "Ensures llm_catalog.json matches reality",
             "schedule": "daily",
             "checks": [
-                "All listed models still exist at provider",
-                "API endpoints are reachable",
-                "Pricing tiers are current"
+                "Run `node scripts/oracle_optimize_fleet.js`",
+                "Consult Artificial Analysis API for top models",
+                "Update skill_catalog.json with new leaders"
             ],
-            "action_on_failure": "mark_model_unavailable",
-            "enabled": false,
-            "$note": "Requires API calls to providers — enable when ready"
+            "action_on_failure": "log_error_and_notify_oracle",
+            "enabled": true,
+            "$note": "Automated by Oracle Fleet Optimizer"
         }
     },
     "audit_log": {

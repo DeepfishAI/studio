@@ -30,8 +30,8 @@
             "$comment": "Each LLM is a skill that can be assigned to any agent",
             "fast_responder": {
                 "name": "Fast Responder",
-                "description": "Quick responses for simple queries",
-                "llm": "microsoft/phi-3-mini-4k-instruct",
+                "description": "Optimized by Oracle: Gemini 2.5 Flash-Lite Preview (Sep '25) (Reasoning) for max speed",
+                "llm": "gemini-2-5-flash-lite-preview-09-2025-reasoning",
                 "tier": "free",
                 "keywords": [
                     "quick",
@@ -114,8 +114,8 @@
             },
             "power_llama": {
                 "name": "Power Llama",
-                "description": "Meta's strong reasoning for complex tasks",
-                "llm": "meta/llama-3.1-70b-instruct",
+                "description": "Optimized by Oracle: The current market leader Gemini 2.5 Flash-Lite Preview (Sep '25) (Reasoning)",
+                "llm": "gemini-2-5-flash-lite-preview-09-2025-reasoning",
                 "tier": "premium",
                 "keywords": [
                     "complex",
@@ -218,8 +218,8 @@
             },
             "reasoning_master": {
                 "name": "Reasoning Master",
-                "description": "DeepSeek R1 — advanced reasoning with thinking trace",
-                "llm": "deepseek-ai/deepseek-r1",
+                "description": "Optimized by Oracle: Gemini 2.5 Flash-Lite Preview (Sep '25) (Reasoning) for superior logic",
+                "llm": "gemini-2-5-flash-lite-preview-09-2025-reasoning",
                 "tier": "platinum",
                 "thinking_mode": true,
                 "keywords": [
@@ -240,8 +240,8 @@
             },
             "code_specialist": {
                 "name": "Code Specialist",
-                "description": "Qwen's 32B coder — optimized for code generation and review",
-                "llm": "qwen/qwen2.5-coder-32b-instruct",
+                "description": "Optimized by Oracle: Gemini 2.5 Flash-Lite Preview (Sep '25) (Reasoning) for top coding performance",
+                "llm": "gemini-2-5-flash-lite-preview-09-2025-reasoning",
                 "tier": "platinum",
                 "keywords": [
                     "code",
