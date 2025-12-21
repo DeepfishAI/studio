@@ -102,24 +102,43 @@ export default function BusFeed() {
                 )}
 
                 {messages.map((msg, i) => {
-                    const isUser = msg.sender === 'user' || msg.agentId === 'user';
+                    const agentId = msg.agentId || msg.sender || 'system';
+                    const isUser = agentId === 'user';
+                    const content = msg.content || msg.text || msg.message || msg.reason || JSON.stringify(msg);
+
+                    // Get agent emoji based on ID
+                    const getEmoji = (id) => {
+                        const emojis = {
+                            user: '👤',
+                            mei: '👩‍💼',
+                            vesper: '📞',
+                            hanna: '🎨',
+                            it: '💻',
+                            sally: '📈',
+                            oracle: '🔮',
+                            system: '⚙️'
+                        };
+                        return emojis[id] || '🤖';
+                    };
+
                     return (
                         <div key={i} className={`bus-message ${isUser ? 'bus-message--user' : 'bus-message--agent'}`}>
                             <div className="bus-message__avatar">
-                                {isUser ? '👤' : (msg.agentId === 'mei' ? '👩‍💼' : '🤖')}
+                                {getEmoji(agentId)}
                             </div>
                             <div className="bus-message__content">
                                 <div className="bus-message__meta">
-                                    <span className="bus-message__name">{msg.agentId}</span>
+                                    <span className="bus-message__name">{agentId}</span>
+                                    {msg.type && <span className="bus-message__type">[{msg.type}]</span>}
                                     <span className="bus-message__time">
                                         {new Date(msg.timestamp || Date.now()).toLocaleTimeString()}
                                     </span>
                                 </div>
                                 <div className="bus-message__text">
-                                    {typeof msg.content === 'string' ? (
-                                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                    {typeof content === 'string' ? (
+                                        <ReactMarkdown>{content}</ReactMarkdown>
                                     ) : (
-                                        <pre>{JSON.stringify(msg.content, null, 2)}</pre>
+                                        <pre>{JSON.stringify(content, null, 2)}</pre>
                                     )}
                                 </div>
                             </div>
