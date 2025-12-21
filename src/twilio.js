@@ -70,10 +70,10 @@ export function isElevenLabsEnabled() {
 const ELEVENLABS_VOICES = {
     vesper: 'GCPLhb1XrVwcoKUJYcvz',   // Custom Vesper voice
     mei: '1a0nAYA3FcNQcMMfbddY',      // Chinese-accented female (from Voice Library)
-    hanna: 'XB0fDUnXU5powFXDhCwa',    // Charlotte - thoughtful, creative
-    it: 'onwK4e9ZLuTAKqWW03F9',       // Daniel - technical, calm
-    sally: 'jBpfuIE2acCO8z3wKNLl',    // Gigi - energetic, upbeat
-    oracle: 'TxGEqnHWrfWFTfGW9XjX'    // Josh - deep, mysterious
+    hanna: 'fCqNx624ZlenYx5PXk6M',    // Custom Hanna voice
+    it: 'LSEq6jBkWbldjNhcDwT1',       // Custom IT voice
+    sally: 'Nggzl2QAXh3OijoXD116',    // Custom Sally voice
+    oracle: 'oR4uRy4fHDUGGISL0Rev'    // Custom Oracle voice
 };
 
 // Fallback to Polly if ElevenLabs unavailable
@@ -503,7 +503,7 @@ function getAgentGreeting(agentId) {
         mei: "Hi there! Mei here, your project manager. What are we working on today?",
         hanna: "Hey! Hanna speaking, Creative Director. What kind of visual magic can I help you with?",
         it: "IT here. Principal Architect. What system do you need built?",
-        sally: "Hey! Sally here, Marketing and SEO. Let's talk growth strategy.",
+        sally: "Hey hi Sally, what's up?",
         oracle: "I have been expecting your call. I am Oracle. What wisdom do you seek?"
     };
     return greetings[agentId] || "Hello! How can I help you today?";

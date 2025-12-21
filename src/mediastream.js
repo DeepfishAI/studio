@@ -21,10 +21,10 @@ const ELEVENLABS_WS_URL = 'wss://api.elevenlabs.io/v1/text-to-speech';
 const VOICE_IDS = {
     vesper: 'GCPLhb1XrVwcoKUJYcvz',
     mei: '1a0nAYA3FcNQcMMfbddY',
-    hanna: 'XB0fDUnXU5powFXDhCwa',
-    it: 'onwK4e9ZLuTAKqWW03F9',
-    sally: 'jBpfuIE2acCO8z3wKNLl',
-    oracle: 'TxGEqnHWrfWFTfGW9XjX'
+    hanna: 'fCqNx624ZlenYx5PXk6M',
+    it: 'LSEq6jBkWbldjNhcDwT1',
+    sally: 'Nggzl2QAXh3OijoXD116',
+    oracle: 'oR4uRy4fHDUGGISL0Rev'
 };
 
 /**
