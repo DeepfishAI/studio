@@ -69,7 +69,7 @@ export function isElevenLabsEnabled() {
 // ElevenLabs voice IDs for each agent
 const ELEVENLABS_VOICES = {
     vesper: 'GCPLhb1XrVwcoKUJYcvz',   // Custom Vesper voice
-    mei: '1a0nAYA3FcNQcMMfbddY',      // Chinese-accented female (from Voice Library)
+    mei: 'ngiiW8FFLIdMew1cqwSB',      // Custom Mei voice
     hanna: 'fCqNx624ZlenYx5PXk6M',    // Custom Hanna voice
     it: 'LSEq6jBkWbldjNhcDwT1',       // Custom IT voice
     sally: 'Nggzl2QAXh3OijoXD116',    // Custom Sally voice
