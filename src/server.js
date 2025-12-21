@@ -153,11 +153,12 @@ import trainingRoutes from './routes/training.js';
 // app.set('redis', redis); happens after app init
 
 // ... (Middleware)
-const frontendUrl = process.env.FRONTEND_URL || '*';
+// CORS: Allow all origins for now to prevent blocking legitimate clients (www vs root, vercel previews)
 app.use(cors({
-    origin: frontendUrl,
+    origin: true, // Reflects the request origin
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-secret']
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-secret'],
+    credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
