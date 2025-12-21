@@ -19,6 +19,9 @@ import * as Memory from './memory.js';
 import { isLlmAvailable, getAvailableProviders } from './llm.js';
 import { getApiKey } from './config.js';
 import { isTwilioEnabled, isElevenLabsEnabled, handleIncomingCall, handleRouteCall, handleAgentConversation, serveAudio, sendSms, generateElevenLabsAudio, handleConference } from './twilio.js';
+import { handleMediaStream } from './mediastream.js';
+import { WebSocketServer } from 'ws';
+import { createServer } from 'http';
 import Redis from 'ioredis';
 
 // Redis Client (Automatic Recovery System)
@@ -341,8 +344,32 @@ app.get('/api/projects', async (req, res) => {
     }
 });
 
-// Start server
-app.listen(PORT, () => {
+// Create HTTP server for WebSocket upgrade
+const server = createServer(app);
+
+// WebSocket server for Twilio Media Streams
+const wss = new WebSocketServer({ noServer: true });
+
+wss.on('connection', (ws, req) => {
+    console.log('[WebSocket] New connection from:', req.url);
+    handleMediaStream(ws, req);
+});
+
+// Handle WebSocket upgrade requests
+server.on('upgrade', (request, socket, head) => {
+    const pathname = new URL(request.url, `http://${request.headers.host}`).pathname;
+
+    if (pathname === '/media-stream') {
+        wss.handleUpgrade(request, socket, head, (ws) => {
+            wss.emit('connection', ws, request);
+        });
+    } else {
+        socket.destroy();
+    }
+});
+
+// Start server with WebSocket support
+server.listen(PORT, () => {
     console.log(`🐟 DeepFish API Server running on http://localhost:${PORT}`);
     console.log(`📞 Vesper is ready to take calls`);
     console.log(`📋 Mei is ready to manage projects`);
@@ -350,6 +377,7 @@ app.listen(PORT, () => {
     console.log(`🧠 Memory: ENABLED`);
     console.log(`📞 Twilio: ${isTwilioEnabled() ? 'ENABLED' : 'DISABLED'}`);
     console.log(`🔊 ElevenLabs Voice: ${isElevenLabsEnabled() ? 'ENABLED' : 'DISABLED (using Polly fallback)'}`);
+    console.log(`🌐 WebSocket: ENABLED on /media-stream`);
 
     // LLM Provider diagnostics
     const llmAvailable = isLlmAvailable();

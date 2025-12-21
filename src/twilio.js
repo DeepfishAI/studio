@@ -312,30 +312,57 @@ async function addSpeech(response, text, agentId, req) {
 /**
  * Handle incoming call - Vesper answers
  * POST /api/voice/incoming
+ * 
+ * Supports two modes:
+ * - HTTP mode (default): Uses traditional TwiML with <Say>/<Play>
+ * - WebSocket mode: Uses <Connect><Stream> for real-time bidirectional audio
  */
 export async function handleIncomingCall(req, res) {
     const response = new VoiceResponse();
 
-    // Vesper's greeting - professional Hong Kong style
-    await addSpeech(response, 'DeepFish Hong Kong... How may I direct your call?', 'vesper', req);
+    // Check if WebSocket mode is enabled (set USE_WEBSOCKET_VOICE=true)
+    const useWebSocket = process.env.USE_WEBSOCKET_VOICE === 'true';
 
-    // Gather speech input - wait for caller to say who they want
-    const gather = response.gather({
-        input: 'speech',
-        action: '/api/voice/route',
-        method: 'POST',
-        speechTimeout: 'auto',
-        language: 'en-US',
-        hints: 'Mei, Hanna, IT, Sally, Oracle, project manager, creative, developer, marketing, help, new project'
-    });
+    if (useWebSocket) {
+        // WebSocket Mode: Connect to Media Stream for real-time audio
+        console.log('[Twilio] Using WebSocket mode for incoming call');
 
-    // Silent gather - Vesper listens without prompting
-    // (The greeting already asked how to direct the call)
+        // Get the base URL for WebSocket connection
+        const protocol = req.headers['x-forwarded-proto'] || 'https';
+        const host = req.headers.host;
+        const wsUrl = `wss://${host}/media-stream`;
 
-    // If no input after timeout, gently prompt
-    response.pause({ length: 5 });
-    await addSpeech(response, 'I\'m still here. Just let me know who you\'d like to speak with.', 'vesper', req);
-    response.redirect('/api/voice/incoming');
+        // Use Connect/Stream to establish bidirectional WebSocket
+        const connect = response.connect();
+        connect.stream({
+            url: wsUrl,
+            name: 'DeepFish-MediaStream'
+        });
+
+        console.log(`[Twilio] Connecting Media Stream to: ${wsUrl}`);
+    } else {
+        // HTTP Mode: Traditional TwiML with ElevenLabs TTS
+        // Vesper's greeting - professional Hong Kong style
+        await addSpeech(response, 'DeepFish Hong Kong... How may I direct your call?', 'vesper', req);
+
+        // Gather speech input - wait for caller to say who they want
+        const gather = response.gather({
+            input: 'speech',
+            action: '/api/voice/route',
+            method: 'POST',
+            speechTimeout: 'auto',
+            language: 'en-US',
+            hints: 'Mei, Hanna, IT, Sally, Oracle, project manager, creative, developer, marketing, help, new project'
+        });
+
+        // Silent gather - Vesper listens without prompting
+        // (The greeting already asked how to direct the call)
+
+        // If no input after timeout, gently prompt
+        response.pause({ length: 5 });
+        await addSpeech(response, 'I\'m still here. Just let me know who you\'d like to speak with.', 'vesper', req);
+        response.redirect('/api/voice/incoming');
+    }
 
     res.type('text/xml');
     res.send(response.toString());
