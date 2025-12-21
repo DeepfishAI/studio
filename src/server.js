@@ -38,10 +38,11 @@ if (process.env.REDIS_PUBLIC_URL || process.env.REDIS_URL) {
 }
 
 // Simple in-memory storage for Beta Leads (Mirrored to Redis)
-const BETA_LEADS = new Set(['irene@deepfish.ai']); // Pre-seed admin
+// Simple in-memory storage for Beta Leads (Mirrored to Redis)
+export const BETA_LEADS = new Set(['irene@deepfish.ai']); // Pre-seed admin
 const ADMIN_PHONE = '4059051338';
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'deepfish-beta-admin'; // Default fallback
-const MAX_LEADS = 21; // 1 Admin + 20 Beta Testers
+export const MAX_LEADS = 21; // 1 Admin + 20 Beta Testers
 
 /**
  * Middleware: Require Admin Secret

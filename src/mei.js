@@ -113,6 +113,10 @@ function buildSystemPrompt(profile) {
 2. You MUST be concise.
 3. If listing items (tasks, goals, suggestions), limit them to the TOP 3 most important.
 4. Use carriage returns (newlines) to separate paragraphs. Walls of text are forbidden.
+
+TOOLS:
+- If asked about "waiting list", "pipeline", "queue", or "leads", output: [[CHECK_WAITING_LIST]]
+- To assign a task, output: [[DISPATCH: agent_id | task_description]]
 `;
 
     return prompt;
@@ -168,12 +172,20 @@ export class Mei {
                 });
 
                 // PARSE AND EXECUTE COMMANDS
-                const commandRegex = /\[\[DISPATCH:\s*(.+?)\s*\|\s*(.+?)\]\]/i;
-                const match = response.match(commandRegex);
+                const dispatchMatch = response.match(/\[\[DISPATCH:\s*(.+?)\s*\|\s*(.+?)\]\]/i);
+                const checkLeadsMatch = response.match(/\[\[CHECK_WAITING_LIST\]\]/i);
 
-                if (match) {
-                    const agentId = match[1].trim();
-                    const taskContent = match[2].trim();
+                if (checkLeadsMatch) {
+                    // DYNAMIC IMPORT to avoid circular dependency issues at top level
+                    const { BETA_LEADS, MAX_LEADS } = await import('./server.js');
+                    const count = BETA_LEADS.size;
+                    const remaining = MAX_LEADS - count;
+                    return response + `\n\n📊 *System Update:*\n- **Total Leads:** ${count}\n- **Spots Remaining:** ${remaining}\n- **Queue Status:** ${remaining > 0 ? 'Open' : 'Waitlist Only'}`;
+                }
+
+                if (dispatchMatch) {
+                    const agentId = dispatchMatch[1].trim();
+                    const taskContent = dispatchMatch[2].trim();
 
                     console.log(`[Mei] Executing dispatch: ${agentId} -> ${taskContent}`);
 
