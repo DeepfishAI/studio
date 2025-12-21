@@ -7,6 +7,11 @@
 
 import { eventBus, getTaskContext, updateTaskStatus, getActiveTasks, BusOps } from './bus.js';
 import { spawnIntern, spawnInternTeam, getActiveInterns } from './interns.js';
+import { sendSms } from './twilio.js';
+import { chat } from './llm.js';
+import { getAgent } from './agent.js';
+
+const ADMIN_PHONE = '4059051338';
 
 class Orchestrator {
     constructor() {
@@ -35,13 +40,17 @@ class Orchestrator {
         eventBus.on('query', this.onQuery.bind(this));
         eventBus.on('correct', this.onCorrect.bind(this));
 
-        // Intern events
-        eventBus.on('intern_spawn', this.onInternSpawn.bind(this));
-        eventBus.on('intern_complete', this.onInternComplete.bind(this));
-        eventBus.on('intern_failed', this.onInternFailed.bind(this));
+        // ⚡ IRON CLAD EXECUTION LOOP ⚡
+        // Listen for DISPATCH to trigger actual agent work
+        eventBus.on('bus_message', async (msg) => {
+            if (msg.type === 'DISPATCH') {
+                this.onDispatch(msg);
+            }
+        });
 
         // Debug: log all bus messages
         eventBus.on('bus_message', (msg) => {
+            if (msg.type === 'DISPATCH') return; // Handled above
             let content = '';
             if (msg.content) {
                 content = typeof msg.content === 'string'
@@ -282,6 +291,81 @@ class Orchestrator {
 
         // Go to sleep and wait for completion
         this.sleep();
+    }
+
+    /**
+     * Handle DISPATCH event - The Core Loop
+     * This actually spins up the target agent to do the work
+     */
+    async onDispatch(msg) {
+        const { agentId, content, taskId } = msg;
+        console.log(`[Orchestrator] 🚀 SPINNING UP ${agentId} for task: ${taskId}`);
+
+        // Update Status
+        this.wake(`${agentId} activated`);
+        const task = this.pendingTasks.get(taskId);
+        if (task) {
+            task.status = 'in_progress';
+            task.assignedTo = agentId;
+        }
+
+        // EXECUTE AGENT ASYNC (Parallel Processing)
+        // We don't await this so the bus keeps moving
+        this.runAgentExecution(agentId, taskId, content).catch(err => {
+            console.error(`[Orchestrator] 💥 Agent ${agentId} crashed:`, err);
+            BusOps.BLOCKER(agentId, taskId, `Crashed: ${err.message}`);
+        });
+    }
+
+    /**
+     * Run the Agent Logic (LLM Process)
+     */
+    async runAgentExecution(agentId, taskId, instructions) {
+        // 1. Get Agent Profile
+        const agent = getAgent(agentId);
+        if (!agent) {
+            throw new Error(`Agent ${agentId} not found`);
+        }
+
+        // 2. Build Context
+        const context = `
+You are ${agent.name}, ${agent.title}.
+TASK ID: ${taskId}
+INSTRUCTIONS: ${instructions}
+
+Your goal is to COMPLETE this task using your skills.
+If you need to ask a question, use [[QUERY: target | question]].
+If you are done, use [[COMPLETE: deliverable summary]].
+If you need more time/steps, simply describe what you are doing.
+`;
+
+        // 3. Think (LLM Call)
+        console.log(`[Orchestrator] ${agentId} is thinking...`);
+        const response = await chat(agent.prompt?.system || `You are ${agentId}. Act professionally.`, context);
+
+        // 4. Act (Parse Response)
+        // Check for COMPLETE
+        if (response.includes('[[COMPLETE:')) {
+            const match = response.match(/\[\[COMPLETE:\s*(.+?)\]\]/is);
+            const deliverable = match ? match[1] : response;
+            await BusOps.COMPLETE(agentId, taskId, deliverable);
+        }
+        // Check for QUERY
+        else if (response.includes('[[QUERY:')) {
+            const match = response.match(/\[\[QUERY:\s*(.+?)\s*\|\s*(.+?)\]\]/is);
+            if (match) {
+                await BusOps.QUERY(agentId, taskId, match[2], [match[1]]);
+            } else {
+                // Fallback: just post message
+                await BusOps.ASSERT(agentId, taskId, response);
+            }
+        }
+        // Metadata / Status Update / Partial Work
+        else {
+            await BusOps.ASSERT(agentId, taskId, response);
+            // Auto-complete for now if simple response to avoid hanging tasks
+            await BusOps.COMPLETE(agentId, taskId, response);
+        }
     }
 }
 
