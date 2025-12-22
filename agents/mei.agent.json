@@ -42,11 +42,11 @@
     },
     "models": {
         "best": {
-            "provider": "anthropic",
-            "name": "claude-3-5-sonnet-20241022",
+            "provider": "gemini",
+            "name": "gemini-1.5-pro",
             "maxTokens": 4096,
             "temperature": 0.5,
-            "systemPromptOverlay": "You are running on Claude 3.5 Sonnet (BEST). Be extremely precise and strategic."
+            "systemPromptOverlay": "You are running on Gemini 1.5 Pro (BEST). Be extremely precise and strategic."
         },
         "better": {
             "provider": "gemini",
