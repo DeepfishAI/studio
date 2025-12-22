@@ -162,7 +162,7 @@ export async function serveAudio(req, res) {
 
     try {
         const { apiKey: elevenLabsKey } = getElevenLabsCredentials();
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream?optimize_streaming_latency=4`, {
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream?output_format=mp3_44100_128`, {
             method: 'POST',
             headers: {
                 'xi-api-key': elevenLabsKey,
@@ -170,7 +170,7 @@ export async function serveAudio(req, res) {
             },
             body: JSON.stringify({
                 text: text,
-                model_id: 'eleven_turbo_v2_5', // Use Turbo for max speed
+                model_id: 'eleven_turbo_v2_5',
                 voice_settings: {
                     stability: 0.5,
                     similarity_boost: 0.75
@@ -385,6 +385,14 @@ export async function handleRouteCall(req, res) {
     const response = new VoiceResponse();
 
     console.log(`[Voice] Speech received: "${speechResult}"`);
+
+    // Handle empty speech/timeout
+    if (!speechResult) {
+        await addSpeech(response, "I didn't hear anything. Are you still there?", 'vesper', req);
+        response.redirect('/api/voice/incoming');
+        res.type('text/xml');
+        return res.send(response.toString());
+    }
 
     // Use Vesper to detect intent (matches keywords against virtual_office.json)
     const intent = await vesper.detectIntent(speechResult);
