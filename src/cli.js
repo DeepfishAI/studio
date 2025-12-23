@@ -12,6 +12,7 @@ import { Vesper } from './vesper.js';
 import { conferenceRoom } from './conference.js';
 import * as modes from './modes.js';
 import { voice } from './voice.js';
+import { eventBus } from './bus.js';
 
 const mei = new Mei();
 const vesper = new Vesper();
@@ -96,6 +97,23 @@ console.log(vesper.listAgents(c));
 console.log(`\n${c.dim('Type a number (1-6), agent name, or describe what you need.')}\n`);
 
 rl.prompt();
+
+// Listen for bus notifications
+eventBus.on('bus_message', (msg) => {
+    if (msg.type === 'COMPLETE') {
+        process.stdout.write(`\n\n${c.success('✅ Task Complete:')} ${c.text(msg.taskId)} by ${c.glow(msg.agentId)}\n`);
+        if (msg.content?.executionResults?.length > 0) {
+            msg.content.executionResults.forEach(res => {
+                if (res.success) process.stdout.write(`   ${c.success('→')} File created: ${c.text(res.path)}\n`);
+            });
+        }
+        process.stdout.write(`\n${rl.getPrompt()}`);
+    } else if (msg.type === 'BLOCKER') {
+        process.stdout.write(`\n\n${c.warn('⚠️  Agent Blocked:')} ${c.glow(msg.agentId)} for task ${c.text(msg.taskId)}\n`);
+        process.stdout.write(`   ${c.warn('Reason:')} ${msg.content}\n`);
+        process.stdout.write(`\n${rl.getPrompt()}`);
+    }
+});
 
 // Main input handler (named so we can restore after conference mode)
 async function handleNormalInput(input) {

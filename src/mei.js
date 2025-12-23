@@ -10,6 +10,8 @@ import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { chat, isLlmAvailable } from './llm.js';
+import { getOrchestrator } from './orchestrator.js';
+import { createTaskContext, BusOps } from './bus.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -137,28 +139,37 @@ export class Mei {
         // Find matching route
         const route = this.findRoute(lowerInput);
         const agent = route ? this.agents.find(a => a.id === route.route) : null;
-        const agentName = agent?.name || (route?.route) || null;
+        const agentId = route?.route;
+        const agentName = agent?.name || agentId || null;
 
-        // If LLM available, use it
+        // If a specialist is needed, dispatch via Orchestrator
+        if (agentId && agentId !== 'mei') {
+            console.log(`[Mei] Routing to ${agentName}...`);
+
+            // Create task on the bus
+            const context = createTaskContext(input);
+            const orchestrator = getOrchestrator();
+
+            // Dispatch and let the orchestrator handle it
+            orchestrator.dispatchToAgent(context.taskId, agentId, {
+                task: input,
+                route: route
+            });
+
+            // Return a status message to the user immediately
+            return `Got it! I've assigned this to **${agentName}**. 
+I'll notify you as soon as the work is complete.
+*(Task ID: ${context.taskId})*`;
+        }
+
+        // If no specialist or routed to Mei, just chat
         if (this.llmAvailable) {
             try {
-                // Build context for Mei
-                let context = input;
-                if (agentName) {
-                    context = `User request: "${input}"\n\nNote: Based on keywords, this would route to the ${agentName} agent.`;
-                    if (route?.delegate) {
-                        const intern = this.findIntern(agent, route.delegate);
-                        context += ` Specifically to ${intern?.name || route.delegate}.`;
-                    }
-                }
-
-                const response = await chat(this.systemPrompt, context, {
+                const response = await chat(this.systemPrompt, input, {
                     maxTokens: 512
                 });
-
                 return response;
             } catch (err) {
-                // Fall back to mock if LLM fails
                 return this.mockResponse(input, route, agent, agentName, c);
             }
         }

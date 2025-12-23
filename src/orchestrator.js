@@ -7,6 +7,7 @@
 
 import { eventBus, getTaskContext, updateTaskStatus, getActiveTasks, BusOps } from './bus.js';
 import { spawnIntern, spawnInternTeam, getActiveInterns } from './interns.js';
+import { createAgent } from './agents.js';
 
 class Orchestrator {
     constructor() {
@@ -121,12 +122,29 @@ class Orchestrator {
         }
     }
 
-    /**
-     * Called when an agent hands off work
-     */
-    onHandoff({ agentId, toAgentId, taskId, content }) {
+    async onHandoff({ agentId, toAgentId, taskId, content }) {
         this.wake(`Handoff from ${agentId} to ${toAgentId}`);
         console.log(`[Orchestrator] ${agentId} → ${toAgentId}: Handoff for task ${taskId}`);
+
+        // If it's going to a specialist (not back to Mei), execute it
+        if (toAgentId !== 'mei') {
+            try {
+                const agent = await createAgent(toAgentId);
+                console.log(`[Orchestrator] Executing task ${taskId} via ${agent.name}...`);
+
+                // Agents now support execution!
+                const result = await agent.process(taskId, content.task || content, {
+                    execute: true, // Enable file writing for specialist tasks
+                    outputDir: './output'
+                });
+
+                // Signal completion on the bus
+                BusOps.COMPLETE(toAgentId, taskId, result);
+            } catch (err) {
+                console.error(`[Orchestrator] Failed to execute task ${taskId} via ${toAgentId}:`, err.message);
+                BusOps.BLOCKER(toAgentId, taskId, `Execution failed: ${err.message}`);
+            }
+        }
 
         // Notify handlers
         const handlers = this.handlers.get('handoff') || [];
