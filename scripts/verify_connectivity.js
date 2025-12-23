@@ -46,7 +46,8 @@ async function verify() {
                 try {
                     const response = await llm.chat("You are a connectivity tester. Reply with 'LIVE'.", "Are you live?", {
                         provider: p.id === 'google' ? 'gemini' : p.id,
-                        maxTokens: 5
+                        maxTokens: 5,
+                        noFallback: true
                     });
 
                     if (response.includes('LIVE') || response.length > 0) {

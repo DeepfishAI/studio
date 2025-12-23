@@ -39,8 +39,8 @@ export async function chat(systemPrompt, userMessage, options = {}) {
         provider = 'anthropic'
     } = options;
 
-    // Try requested provider, fall back to any available
-    const providers = [provider, 'anthropic', 'gemini', 'nvidia'];
+    // Try requested provider, fall back to any available (unless noFallback is set)
+    const providers = options.noFallback ? [provider] : [provider, 'anthropic', 'gemini', 'nvidia'];
 
     for (const p of providers) {
         if (isProviderAvailable(p)) {
@@ -48,6 +48,7 @@ export async function chat(systemPrompt, userMessage, options = {}) {
                 return await chatWithProvider(p, systemPrompt, userMessage, { model, maxTokens });
             } catch (err) {
                 console.error(`[LLM] ${p} failed:`, err.message);
+                if (options.noFallback) throw err;
                 continue;
             }
         }
@@ -112,7 +113,7 @@ async function chatGemini(systemPrompt, userMessage, options) {
     const apiKey = getApiKey('gemini');
     if (!apiKey) throw new Error('Gemini API key not configured');
 
-    const model = options.model || 'gemini-2.0-flash';
+    const model = (options.model && !options.model.startsWith('claude')) ? options.model : 'gemini-2.0-flash';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     try {
@@ -148,8 +149,8 @@ async function chatNvidia(systemPrompt, userMessage, options) {
     const apiKey = getApiKey('nvidia');
     if (!apiKey) throw new Error('NVIDIA API key not configured');
 
-    // Default to Llama 70B
-    const model = options.model || 'meta/llama-3.1-405b-instruct';
+    // Default to Llama
+    const model = (options.model && !options.model.startsWith('claude')) ? options.model : 'meta/llama-3.1-405b-instruct';
     const url = 'https://integrate.api.nvidia.com/v1/chat/completions';
 
     try {
