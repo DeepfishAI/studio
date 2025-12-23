@@ -6,6 +6,8 @@
 
 import { chat } from './llm.js';
 import { BusOps, getTaskContext } from './bus.js';
+import { execute, parseCodeFromResponse, getExtensionForLanguage } from './executor.js';
+import { join } from 'path';
 
 export class Agent {
     constructor(config) {
@@ -37,7 +39,8 @@ When working:
     /**
      * Process a task
      */
-    async process(taskId, input) {
+    async process(taskId, input, options = {}) {
+        const { execute: shouldExecute = false, outputDir = './output' } = options;
         const context = getTaskContext(taskId);
         if (!context) {
             throw new Error(`Task ${taskId} not found`);
@@ -53,12 +56,33 @@ When working:
             maxTokens: 1024
         });
 
-        // Step 3: Return result (Mei will handle validation)
+        // Step 3: Parse for code blocks (Work Product)
+        const codeBlocks = parseCodeFromResponse(response);
+        let executionResults = [];
+
+        // Step 4: Execute if requested
+        if (shouldExecute && codeBlocks.length > 0) {
+            for (const block of codeBlocks) {
+                const ext = getExtensionForLanguage(block.language);
+                const fileName = `${this.id}_${Date.now()}.${ext}`;
+                const filePath = join(outputDir, fileName);
+
+                const result = await execute('write_file', {
+                    path: filePath,
+                    content: block.code
+                });
+                executionResults.push(result);
+            }
+        }
+
+        // Step 5: Return result (Mei will handle validation)
         return {
             agentId: this.id,
             agentName: this.name,
             taskId,
             result: response,
+            codeBlocks,
+            executionResults,
             timestamp: new Date().toISOString()
         };
     }
@@ -71,6 +95,16 @@ When working:
             return BusOps.ACK(this.id, taskId, messageTimestamp);
         }
         return null;
+    }
+
+    /**
+     * Specialized method for code execution
+     */
+    async executeCode(taskId, input, options = {}) {
+        return this.process(taskId, input, {
+            ...options,
+            execute: options.writeToFile || options.execute
+        });
     }
 
     /**
@@ -91,5 +125,21 @@ When working:
             return BusOps.CORRECT(this.id, taskId, correction, targetAgent);
         }
         return null;
+    }
+}
+
+/**
+ * Developer Agent
+ * Specialized for technical tasks and code execution
+ */
+export class DeveloperAgent extends Agent {
+    constructor(config = {}) {
+        super({
+            id: 'it',
+            name: 'IT',
+            role: 'Principal Architect',
+            primitive: 'Systems Architecture & Implementation',
+            ...config
+        });
     }
 }

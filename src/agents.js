@@ -10,6 +10,7 @@
  */
 
 import { loadAgent, listAgents, getAgentSkins, clearAgentCache } from './agentLoader.js';
+import { DeveloperAgent } from './agent.js';
 
 /**
  * Create an agent by ID with optional skin
@@ -46,4 +47,4 @@ export function reloadAgents() {
 }
 
 // Re-export for convenience
-export { loadAgent, listAgents, clearAgentCache };
+export { loadAgent, listAgents, clearAgentCache, DeveloperAgent };

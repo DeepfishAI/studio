@@ -48,9 +48,15 @@ async function testCodeExecution() {
     });
 
     // Show files written
-    if (result.filesWritten?.length > 0) {
+    if (result.executionResults?.length > 0) {
         console.log(`\n${c.success('✓ Files Written:')}`);
-        result.filesWritten.forEach(f => console.log(`  ${c.success('→')} ${f}`));
+        result.executionResults.forEach(res => {
+            if (res.success) {
+                console.log(`  ${c.success('→')} ${res.path}`);
+            } else {
+                console.log(`  ${c.accent('✗')} Failed to write: ${res.error}`);
+            }
+        });
     }
 
     console.log(`\n${c.success('✓ Test complete!')}\n`);
