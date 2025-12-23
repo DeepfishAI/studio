@@ -1,6 +1,15 @@
-const apiKey = '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';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const config = JSON.parse(readFileSync(join(__dirname, '..', 'config.secrets.json'), 'utf8'));
+const apiKey = config.llm_providers?.nvidia?.api_key;
 const model = 'meta/llama-3.1-8b-instruct';
 const url = 'https://integrate.api.nvidia.com/v1/chat/completions';
+
+console.log(`Using NVIDIA API key from config: ${apiKey ? apiKey.substring(0, 15) + '...' : 'NOT FOUND'}`);
 
 async function test() {
     console.log(`Testing ${model}...`);

@@ -1,7 +1,15 @@
 // Node native fetch used
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-const apiKey = 'AIzaSyA4_J7ALCf7YFvQPbp1on5XkINeuRd2QFI';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const config = JSON.parse(readFileSync(join(__dirname, '..', 'config.secrets.json'), 'utf8'));
+const apiKey = config.llm_providers?.google?.gemini_api_key;
 const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+
+console.log(`Using API key from config: ${apiKey ? apiKey.substring(0, 12) + '...' : 'NOT FOUND'}`);
 
 async function test() {
     for (const model of models) {
