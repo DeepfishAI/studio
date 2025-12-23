@@ -13,3 +13,18 @@ railway.cmd login
 ```powershell
 npm run secrets:sync
 ```
+
+3. Login to GitHub
+```powershell
+gh auth login
+```
+
+4. Login to ElevenLabs
+```powershell
+elevenlabs auth login
+```
+
+5. Login to Dashlane
+```powershell
+dashlane login
+```
