@@ -667,13 +667,25 @@
             "rules": [
                 {
                     "trigger": [
+                        "code",
+                        "build",
+                        "fix",
+                        "debug",
+                        "program",
+                        "develop",
+                        "api"
+                    ],
+                    "route": "it"
+                },
+                {
+                    "trigger": [
                         "image",
                         "graphic",
                         "logo",
                         "design",
                         "visual"
                     ],
-                    "route": "creative",
+                    "route": "hanna",
                     "delegate": "graphic_designer"
                 },
                 {
@@ -685,7 +697,7 @@
                         "edit",
                         "headline"
                     ],
-                    "route": "creative",
+                    "route": "hanna",
                     "delegate": "copywriter"
                 },
                 {
@@ -697,19 +709,7 @@
                         "fact-check",
                         "source"
                     ],
-                    "route": "researcher"
-                },
-                {
-                    "trigger": [
-                        "code",
-                        "build",
-                        "fix",
-                        "debug",
-                        "program",
-                        "develop",
-                        "api"
-                    ],
-                    "route": "developer"
+                    "route": "oracle"
                 },
                 {
                     "trigger": [
@@ -720,7 +720,7 @@
                         "metrics",
                         "numbers"
                     ],
-                    "route": "analyst"
+                    "route": "it"
                 },
                 {
                     "trigger": [
@@ -731,7 +731,7 @@
                         "prioritize",
                         "goal"
                     ],
-                    "route": "strategist"
+                    "route": "mei"
                 },
                 {
                     "trigger": [
@@ -741,7 +741,7 @@
                         "integrate",
                         "repeat"
                     ],
-                    "route": "automator"
+                    "route": "it"
                 },
                 {
                     "trigger": [
@@ -749,8 +749,8 @@
                         "infographic"
                     ],
                     "route_sequence": [
-                        "analyst",
-                        "graphic_designer"
+                        "it",
+                        "hanna"
                     ]
                 }
             ]
