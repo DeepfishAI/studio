@@ -673,7 +673,14 @@
                         "debug",
                         "program",
                         "develop",
-                        "api"
+                        "api",
+                        "python",
+                        "javascript",
+                        "typescript",
+                        "function",
+                        "script",
+                        "server",
+                        "backend"
                     ],
                     "route": "it"
                 },
