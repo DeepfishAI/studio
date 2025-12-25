@@ -1,0 +1,7 @@
+┌─── Express Application Layer
+├─── Middleware Stack (Auth, CORS, Rate Limiting)  
+├─── Route Controllers (Business Logic)
+├─── Service Layer (Domain Operations)
+├─── Data Access Layer (Repository Pattern)
+├─── Error Handling & Logging
+└─── Health Monitoring & Metrics
