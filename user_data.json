@@ -16,6 +16,16 @@
       "productId": "marketing_hand",
       "name": "Marketing Assistant",
       "timestamp": "2025-12-25T06:20:01.503Z"
+    },
+    {
+      "productId": "marketing_hand",
+      "name": "Marketing Assistant",
+      "timestamp": "2025-12-25T06:20:29.111Z"
+    },
+    {
+      "productId": "marketing_hand",
+      "name": "Marketing Assistant",
+      "timestamp": "2025-12-25T06:20:58.224Z"
     }
   ],
   "capacities": {
@@ -23,6 +33,6 @@
     "hanna": 1,
     "it": 1,
     "oracle": 1,
-    "sally": 4
+    "sally": 6
   }
 }

@@ -104,11 +104,15 @@ async function chatAnthropic(systemPrompt, userMessage, options) {
             ]
         };
 
-        // Enable extended thinking if requested
+        // Enable extended thinking if requested (requires budget >= 1024, max_tokens > budget)
         if (options.thinking) {
+            const minBudget = 1024;
+            const budgetTokens = Math.max(minBudget, Math.floor(options.maxTokens / 2));
+            // Ensure max_tokens is at least budget + some response room
+            requestParams.max_tokens = Math.max(options.maxTokens, budgetTokens + 2000);
             requestParams.thinking = {
                 type: 'enabled',
-                budget_tokens: Math.min(options.maxTokens, 10000)
+                budget_tokens: budgetTokens
             };
         }
 
