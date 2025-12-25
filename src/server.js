@@ -99,11 +99,11 @@ app.post('/api/chat', async (req, res) => {
                 chat.currentAgent = intent.agentId;
 
                 if (intent.agentId === 'mei') {
-                    response = await mei.process(message);
+                    response = await mei.process(message, null, chat.taskId);
                 } else {
                     // For now, Mei handles delegation to other agents
                     const delegationMessage = `I'm routing your request to ${intent.agent.name}. Let me process this...\n\n`;
-                    response = delegationMessage + await mei.process(message);
+                    response = delegationMessage + await mei.process(message, null, chat.taskId);
                     respondingAgent = 'mei';
                 }
 
@@ -115,11 +115,11 @@ app.post('/api/chat', async (req, res) => {
             }
         } else if (chat.currentAgent === 'mei') {
             // Mei processes directly
-            response = await mei.process(message);
+            response = await mei.process(message, null, chat.taskId);
             BusOps.ASSERT('mei', chat.taskId, `Processing request: "${message}"`);
         } else {
             // Other agent - route through Mei for now
-            response = await mei.process(message);
+            response = await mei.process(message, null, chat.taskId);
             BusOps.ASSERT(chat.currentAgent, chat.taskId, `Processing: "${message}"`);
         }
 
@@ -166,7 +166,8 @@ app.post('/api/cli', async (req, res) => {
             response = `🔌 **Server Status:** ✅ Online\n📍 **API Base:** http://localhost:${PORT}\n👤 **User:** Guest`;
         } else {
             // Default: route through Mei
-            response = await mei.process(command);
+            // For CLI, we use a fixed chatId or create a generic one
+            response = await mei.process(command, null, 'cli_session');
         }
 
         res.json({ response });

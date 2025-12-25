@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { chat, isLlmAvailable } from './llm.js';
 import { getOrchestrator } from './orchestrator.js';
-import { createTaskContext, BusOps } from './bus.js';
+import { createTaskContext, getTaskContext, BusOps } from './bus.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -133,7 +133,7 @@ export class Mei {
     /**
      * Process user input through the gateway
      */
-    async process(input, c = null) {
+    async process(input, c = null, taskId = null) {
         const lowerInput = input.toLowerCase();
 
         // Find matching route
@@ -146,8 +146,8 @@ export class Mei {
         if (agentId && agentId !== 'mei') {
             console.log(`[Mei] Routing to ${agentName}...`);
 
-            // Create task on the bus
-            const context = createTaskContext(input);
+            // Use existing taskId if provided, otherwise create one
+            const context = taskId ? getTaskContext(taskId) : createTaskContext(input);
             const orchestrator = getOrchestrator();
 
             // Dispatch and let the orchestrator handle it

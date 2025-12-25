@@ -104,7 +104,7 @@
                     "hole": "React frontend not wired to backend agents",
                     "quick_plug": "Skip frontend for now, test via CLI",
                     "proper_fix": "Wire ChatPage.jsx to backend orchestrator via API",
-                    "status": "deferred",
+                    "status": "completed",
                     "priority": "after_revenue"
                 },
                 {
