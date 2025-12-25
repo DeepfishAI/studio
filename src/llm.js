@@ -34,7 +34,7 @@ function getAnthropicClient() {
  */
 export async function chat(systemPrompt, userMessage, options = {}) {
     const {
-        model = 'claude-sonnet-4-20250514',
+        model = 'claude-3-5-sonnet-20240620',
         maxTokens = 1024,
         provider = 'anthropic'
     } = options;
@@ -45,7 +45,13 @@ export async function chat(systemPrompt, userMessage, options = {}) {
     for (const p of providers) {
         if (isProviderAvailable(p)) {
             try {
-                return await chatWithProvider(p, systemPrompt, userMessage, { model, maxTokens });
+                const result = await chatWithProvider(p, systemPrompt, userMessage, { model, maxTokens });
+
+                // If caller explicitly asks for usage, return the object
+                if (options.includeUsage) return result;
+
+                // Default: return just the content string
+                return result.content;
             } catch (err) {
                 console.error(`[LLM] ${p} failed:`, err.message);
                 if (options.noFallback) throw err;
@@ -89,7 +95,7 @@ async function chatAnthropic(systemPrompt, userMessage, options) {
 
     try {
         const response = await client.messages.create({
-            model: options.model || 'claude-sonnet-4-20250514',
+            model: options.model || 'claude-3-5-sonnet-20240620',
             max_tokens: options.maxTokens,
             system: systemPrompt,
             messages: [
@@ -98,8 +104,19 @@ async function chatAnthropic(systemPrompt, userMessage, options) {
         });
 
         // Extract text from response
-        const textBlocks = response.content.filter(block => block.type === 'text');
-        return textBlocks.map(block => block.text).join('\n');
+        const text = response.content
+            .filter(block => block.type === 'text')
+            .map(block => block.text)
+            .join('\n');
+
+        return {
+            content: text,
+            usage: {
+                inputTokens: response.usage?.input_tokens || 0,
+                outputTokens: response.usage?.output_tokens || 0,
+                model: response.model
+            }
+        };
     } catch (err) {
         console.error('[LLM:Anthropic] Error:', err.message);
         throw err;
@@ -135,7 +152,17 @@ async function chatGemini(systemPrompt, userMessage, options) {
         }
 
         const data = await response.json();
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+        return {
+            content,
+            usage: {
+                // Gemini returns usage in usageMetadata
+                inputTokens: data.usageMetadata?.promptTokenCount || 0,
+                outputTokens: data.usageMetadata?.candidatesTokenCount || 0,
+                model: model
+            }
+        };
     } catch (err) {
         console.error('[LLM:Gemini] Error:', err.message);
         throw err;
@@ -177,7 +204,16 @@ async function chatNvidia(systemPrompt, userMessage, options) {
         }
 
         const data = await response.json();
-        return data.choices?.[0]?.message?.content || '';
+        const content = data.choices?.[0]?.message?.content || '';
+
+        return {
+            content,
+            usage: {
+                inputTokens: data.usage?.prompt_tokens || 0,
+                outputTokens: data.usage?.completion_tokens || 0,
+                model: data.model || model
+            }
+        };
     } catch (err) {
         console.error('[LLM:NVIDIA] Error:', err.message);
         throw err;

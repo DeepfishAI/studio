@@ -21,13 +21,13 @@ export const ModelPresets = {
     FAST: {
         id: 'fast',
         name: 'Fast (Haiku)',
-        model: 'claude-3-5-haiku-20241022',
+        model: 'claude-3-haiku-20240307',
         maxTokens: 512
     },
     BALANCED: {
         id: 'balanced',
         name: 'Balanced (Sonnet)',
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-3-5-sonnet-20240620',
         maxTokens: 1024
     },
     THINKING: {

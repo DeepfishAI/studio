@@ -7,6 +7,67 @@ import { chat } from './llm.js';
 import { eventBus } from './bus.js';
 import crypto from 'crypto';
 
+// Model pricing (per 1k tokens) in USD
+const MODEL_COSTS = {
+    'claude-3-5-sonnet-20240620': { input: 0.003, output: 0.015 },
+    'claude-3-haiku-20240307': { input: 0.00025, output: 0.00125 },
+    'claude-3-opus-20240229': { input: 0.015, output: 0.075 },
+    'gemini-2.0-flash': { input: 0.0001, output: 0.0004 },
+    'meta/llama-3.1-405b-instruct': { input: 0.002, output: 0.002 },
+    'default': { input: 0.001, output: 0.005 }
+};
+
+// Concurrency control
+const MAX_CONCURRENT_INTERNS = 5;
+let currentlyActiveCount = 0;
+const pendingQueue = [];
+
+/**
+ * Exponential backoff helper
+ */
+async function withRetry(fn, maxRetries = 3, baseDelay = 1000) {
+    let lastError;
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            return await fn();
+        } catch (err) {
+            lastError = err;
+            const isRateLimit = err.message.includes('429') || err.message.toLowerCase().includes('rate limit');
+            const isRetryable = isRateLimit || err.message.includes('503') || err.message.includes('500');
+
+            if (!isRetryable || i === maxRetries - 1) break;
+
+            const delay = baseDelay * Math.pow(2, i);
+            console.log(`[Intern] Retry ${i + 1}/${maxRetries} after ${delay}ms due to: ${err.message}`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+    throw lastError;
+}
+
+/**
+ * Wait for a slot in the concurrency queue
+ */
+async function acquireSlot() {
+    if (currentlyActiveCount < MAX_CONCURRENT_INTERNS) {
+        currentlyActiveCount++;
+        return;
+    }
+    return new Promise(resolve => pendingQueue.push(resolve));
+}
+
+/**
+ * Release a slot and wake next in queue
+ */
+function releaseSlot() {
+    currentlyActiveCount--;
+    if (pendingQueue.length > 0) {
+        const next = pendingQueue.shift();
+        currentlyActiveCount++;
+        next();
+    }
+}
+
 // Generate UUID using native crypto
 const generateId = () => crypto.randomUUID();
 
@@ -143,6 +204,16 @@ Format:
     }
 };
 
+/**
+ * Calculate cost for an LLM call
+ */
+function calculateCost(usage) {
+    if (!usage) return 0;
+    const modelKey = usage.model || 'default';
+    const rates = MODEL_COSTS[modelKey] || MODEL_COSTS['default'];
+    return (usage.inputTokens / 1000 * rates.input) + (usage.outputTokens / 1000 * rates.output);
+}
+
 // Active interns tracking
 const activeInterns = new Map();
 
@@ -169,7 +240,7 @@ export async function spawnIntern(type, task, options = {}) {
         name: internConfig.name,
         task,
         managerId,
-        status: 'working',
+        status: 'waiting',
         startTime: Date.now()
     };
     activeInterns.set(internId, intern);
@@ -182,24 +253,32 @@ export async function spawnIntern(type, task, options = {}) {
         task
     });
 
-    console.log(`[Intern] Spawned ${internConfig.name} (${internId.slice(0, 8)})`);
+    console.log(`[Intern] Spawned ${internConfig.name} (${internId.slice(0, 8)}) - Waiting for slot...`);
 
+    await acquireSlot();
+    intern.status = 'working';
     try {
         // Build the user message
         const userMessage = `${context ? context + '\n\n' : ''}Task: ${task}`;
 
-        // Call LLM with correct signature: chat(systemPrompt, userMessage, options)
-        const response = await chat(
-            internConfig.systemPrompt,
-            userMessage,
-            { maxTokens: 2000 }
-        );
+        // Call LLM with retries and usage data
+        const result = await withRetry(async () => {
+            return await chat(
+                internConfig.systemPrompt,
+                userMessage,
+                { ...options, maxTokens: 2000, includeUsage: true }
+            );
+        });
+
+        const cost = calculateCost(result.usage);
 
         // Build deliverable
         const deliverable = {
             internId,
             type: internConfig.deliverableType,
-            content: response,
+            content: result.content,
+            usage: result.usage,
+            cost: cost,
             completedAt: Date.now(),
             duration: Date.now() - intern.startTime
         };
@@ -212,12 +291,13 @@ export async function spawnIntern(type, task, options = {}) {
         eventBus.emit('intern_complete', {
             internId,
             managerId,
-            deliverable
+            deliverable,
+            cost
         });
 
-        console.log(`[Intern] ${internConfig.name} completed in ${deliverable.duration}ms`);
+        console.log(`[Intern] ${internConfig.name} completed in ${deliverable.duration}ms (Cost: $${cost.toFixed(4)})`);
 
-        // Cleanup
+        // Cleanup tracking map
         setTimeout(() => {
             activeInterns.delete(internId);
         }, 5000);
@@ -236,6 +316,8 @@ export async function spawnIntern(type, task, options = {}) {
 
         console.error(`[Intern] ${internConfig.name} failed:`, error.message);
         throw error;
+    } finally {
+        releaseSlot();
     }
 }
 
