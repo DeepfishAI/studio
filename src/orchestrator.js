@@ -43,9 +43,9 @@ class Orchestrator {
 
         // Debug: log all bus messages
         eventBus.on('bus_message', (msg) => {
-            const content = typeof msg.content === 'string'
+            const content = msg.content ? (typeof msg.content === 'string'
                 ? msg.content.substring(0, 50)
-                : JSON.stringify(msg.content).substring(0, 50);
+                : JSON.stringify(msg.content).substring(0, 50)) : '';
             console.log(`[BUS] ${msg.type} from ${msg.agentId}: ${content}`);
         });
     }

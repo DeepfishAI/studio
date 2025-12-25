@@ -13,6 +13,7 @@ import CheckoutSuccessPage from './pages/CheckoutSuccessPage'
 import CheckoutCanceledPage from './pages/CheckoutCanceledPage'
 import WorkspacePage from './pages/WorkspacePage'
 import TerminalPage from './pages/TerminalPage'
+import StorePage from './pages/StorePage'
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useAuth()
@@ -73,6 +74,7 @@ function AppRoutes() {
                 <Route path="billing" element={<BillingPage />} />
                 <Route path="workspace" element={<WorkspacePage />} />
                 <Route path="terminal" element={<TerminalPage />} />
+                <Route path="store" element={<StorePage />} />
             </Route>
 
             {/* Billing result pages (outside Layout for cleaner UX) */}

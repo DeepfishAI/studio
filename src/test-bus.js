@@ -56,9 +56,9 @@ console.log(JSON.stringify(orchestrator.getStatus(), null, 2));
 console.log('\n9. Task transcript:');
 const transcript = getTaskTranscript(context.taskId);
 transcript.forEach((msg, i) => {
-    const content = typeof msg.content === 'string'
+    const content = msg.content ? (typeof msg.content === 'string'
         ? msg.content.substring(0, 60)
-        : JSON.stringify(msg.content).substring(0, 60);
+        : JSON.stringify(msg.content).substring(0, 60)) : '';
     console.log(`   ${i + 1}. [${msg.type}] ${msg.agentId}: ${content}...`);
 });
 

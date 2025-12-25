@@ -5,6 +5,7 @@
 
 import { chat } from './llm.js';
 import { eventBus } from './bus.js';
+import { getGlobalCapacity } from './user.js';
 import crypto from 'crypto';
 
 // Model pricing (per 1k tokens) in USD
@@ -18,7 +19,7 @@ const MODEL_COSTS = {
 };
 
 // Concurrency control
-const MAX_CONCURRENT_INTERNS = 5;
+// Concurrency control (managed via user data/purchases)
 let currentlyActiveCount = 0;
 const pendingQueue = [];
 
@@ -49,7 +50,8 @@ async function withRetry(fn, maxRetries = 3, baseDelay = 1000) {
  * Wait for a slot in the concurrency queue
  */
 async function acquireSlot() {
-    if (currentlyActiveCount < MAX_CONCURRENT_INTERNS) {
+    const maxCapacity = getGlobalCapacity();
+    if (currentlyActiveCount < maxCapacity) {
         currentlyActiveCount++;
         return;
     }

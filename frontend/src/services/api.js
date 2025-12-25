@@ -26,6 +26,26 @@ export const api = {
     },
 
     /**
+     * Get products from catalog
+     */
+    async getProducts() {
+        const response = await fetch(`${API_BASE}/api/products`)
+        return response.json()
+    },
+
+    /**
+     * Purchase a product
+     */
+    async purchaseProduct(productId) {
+        const response = await fetch(`${API_BASE}/api/purchase`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId }),
+        })
+        return response.json()
+    },
+
+    /**
      * Send command to CLI endpoint
      */
     async cliCommand(command) {

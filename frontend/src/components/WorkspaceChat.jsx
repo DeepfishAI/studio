@@ -20,20 +20,69 @@ function WorkspaceChat({ onApplyCode, currentFile, currentContent }) {
 
     // Scroll to bottom when messages change
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+        const container = document.querySelector('.workspace-chat__messages');
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
     }, [messages])
 
     // Initial welcome message
     useEffect(() => {
         const welcomeMsg = {
-            id: 1,
+            id: 'welcome',
             agent: 'mei',
             agentName: 'Mei',
-            content: "Welcome to your workspace! 🐟 I'm here to help you build something amazing. What would you like to create today?",
+            content: "Welcome to your workspace! 🐟 I'm here to help you build something amazing.",
             timestamp: new Date()
         }
         setMessages([welcomeMsg])
     }, [])
+
+    // Poll for transcript/bus events
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            try {
+                const transcriptData = await api.getTranscript(chatId);
+                const busEvents = transcriptData.transcript || [];
+
+                if (busEvents.length > 0) {
+                    setMessages(prev => {
+                        // Merge bus events into messages without duplicates
+                        const newMsgs = [...prev];
+                        busEvents.forEach(event => {
+                            const eventId = `bus-${event.timestamp}`;
+                            if (!newMsgs.find(m => m.id === eventId)) {
+                                newMsgs.push({
+                                    id: eventId,
+                                    agent: event.agentId,
+                                    agentName: agents.find(a => a.id === event.agentId)?.name || event.agentId,
+                                    content: formatBusContent(event),
+                                    timestamp: new Date(event.timestamp),
+                                    isBusEvent: true,
+                                    type: event.type
+                                });
+                            }
+                        });
+                        return newMsgs.sort((a, b) => a.timestamp - b.timestamp);
+                    });
+                }
+            } catch (err) {
+                // Ignore background poll errors
+            }
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [chatId]);
+
+    const formatBusContent = (event) => {
+        if (event.type === 'HANDOFF') {
+            return `Delegated to **${event.toAgentId}**: ${event.content?.task || 'Work package'}`;
+        }
+        if (event.type === 'COMPLETE') {
+            return `Finished task for **${event.taskId}**.`;
+        }
+        return event.content || '';
+    };
 
     const handleSend = async () => {
         if (!input.trim() || isLoading) return
@@ -135,6 +184,7 @@ When providing code, wrap it in a code block and specify the filename like this:
 
     // Remove code blocks from displayed message
     const cleanResponse = (text) => {
+        if (typeof text !== 'string') return '[Complex Data]';
         return text
             .replace(/```[\s\S]*?```/g, '[Code provided below]')
             .trim()
@@ -166,16 +216,19 @@ When providing code, wrap it in a code block and specify the filename like this:
             {/* Messages */}
             <div className="workspace-chat__messages">
                 {messages.map(msg => (
-                    <div key={msg.id} className={`workspace-chat__message workspace-chat__message--${msg.agent === 'user' ? 'user' : 'agent'}`}>
-                        <div className="workspace-chat__message-header">
-                            <span className="workspace-chat__message-name">{msg.agentName}</span>
-                            <span className="workspace-chat__message-time">
-                                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                        </div>
-                        <div className="workspace-chat__message-content">
+                    <div key={msg.id} className="workspace-chat__script-line">
+                        <span className="workspace-chat__script-agent" style={{
+                            color: msg.agent === 'user' ? 'var(--color-accent-blue)' :
+                                msg.agent === 'mei' ? 'var(--color-mei)' :
+                                    msg.agent === 'it' ? 'var(--color-it)' :
+                                        msg.agent === 'hanna' ? 'var(--color-hanna)' :
+                                            'var(--color-text-secondary)'
+                        }}>
+                            {msg.agentName}:
+                        </span>
+                        <span className="workspace-chat__script-content">
                             {msg.content}
-                        </div>
+                        </span>
                         {msg.codeBlock && (
                             <div className="workspace-chat__code-block">
                                 <div className="workspace-chat__code-header">
@@ -184,7 +237,7 @@ When providing code, wrap it in a code block and specify the filename like this:
                                         className="btn btn--primary btn--sm"
                                         onClick={() => onApplyCode(msg.codeBlock.filename, msg.codeBlock.code)}
                                     >
-                                        ✨ Apply to {msg.codeBlock.filename}
+                                        ✨ Apply
                                     </button>
                                 </div>
                                 <pre className="workspace-chat__code-content">

@@ -312,49 +312,31 @@
     padding: var(--space-md);
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
-}
-
-.workspace-chat__message {
-    max-width: 90%;
-}
-
-.workspace-chat__message--user {
-    align-self: flex-end;
-}
-
-.workspace-chat__message--agent {
-    align-self: flex-start;
-}
-
-.workspace-chat__message-header {
-    display: flex;
     gap: var(--space-sm);
-    margin-bottom: var(--space-xs);
+    /* Reduced gap for script look */
 }
 
-.workspace-chat__message-name {
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: var(--color-text-secondary);
-}
-
-.workspace-chat__message-time {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-}
-
-.workspace-chat__message-content {
-    background: var(--color-bg-secondary);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-lg);
+.workspace-chat__script-line {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
     font-size: var(--font-size-sm);
-    line-height: 1.5;
+    padding: var(--space-xs) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.workspace-chat__message--user .workspace-chat__message-content {
-    background: var(--color-accent-blue);
+.workspace-chat__script-agent {
+    font-weight: 700;
+    margin-right: var(--space-sm);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
 }
+
+.workspace-chat__script-content {
+    color: var(--color-text-primary);
+}
+
+/* Removed old bubble styles */
 
 .workspace-chat__code-block {
     margin-top: var(--space-sm);

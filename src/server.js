@@ -9,8 +9,10 @@ import { Vesper } from './vesper.js';
 import { Mei } from './mei.js';
 import { createTaskContext, BusOps, getTaskTranscript } from './bus.js';
 import * as Billing from './billing.js';
+import { getProducts, getProductById } from './products.js';
 import fs from 'fs';
 import path from 'path';
+import { loadUserData, saveUserData } from './user.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,6 +24,9 @@ const mei = new Mei();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Load initial user data
+let userData = loadUserData();
 
 // Active chats (in-memory for now)
 const activeChats = new Map();
@@ -52,6 +57,55 @@ app.get('/api/agents', (req, res) => {
     }));
 
     res.json({ agents });
+});
+
+/**
+ * Get products (from spreadsheet)
+ */
+app.get('/api/products', (req, res) => {
+    const products = getProducts();
+    res.json({ products });
+});
+
+/**
+ * Execute a purchase
+ */
+app.post('/api/purchase', (req, res) => {
+    const { productId } = req.body;
+    const product = getProductById(productId);
+
+    if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+    }
+
+    console.log(`[Purchase] Processing purchase for: ${product.name} ($${product.price})`);
+
+    // Update user data
+    userData.purchases.push({
+        productId,
+        name: product.name,
+        timestamp: new Date().toISOString()
+    });
+
+    if (product.effect_type === 'agent_capacity') {
+        const agent = product.target_agent || 'any';
+        userData.capacities[agent] = (userData.capacities[agent] || 0) + (product.effect_value || 1);
+    }
+
+    saveUserData(userData);
+
+    res.json({
+        success: true,
+        message: `Successfully purchased ${product.name}!`,
+        userData
+    });
+});
+
+/**
+ * Get current user data
+ */
+app.get('/api/user', (req, res) => {
+    res.json(loadUserData());
 });
 
 /**

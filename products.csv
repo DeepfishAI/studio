@@ -1,0 +1,6 @@
+id,name,price,description,effect_type,effect_value,target_agent,comments
+creative_intern,Creative Intern for Hanna,1.99,Adds +1 parallel instance for Hanna,agent_capacity,1,hanna,High demand for designers
+code_monkey,Code Monkey for IT,2.99,Adds +1 parallel instance for IT,agent_capacity,1,it,Essential for build velocity
+research_buddy,Research Buddy for Oracle,1.49,Adds +1 parallel instance for Oracle,agent_capacity,1,oracle,Good entry level product
+office_pack_5,Office Expansion Pack (5),7.99,Adds +5 capacity for any agent,agent_capacity,5,any,Featured bundle deal!
+marketing_hand,Marketing Assistant,1.99,Adds +1 parallel instance for Sally,agent_capacity,1,sally,SEO boost
