@@ -34,9 +34,10 @@ function getAnthropicClient() {
  */
 export async function chat(systemPrompt, userMessage, options = {}) {
     const {
-        model = 'claude-3-5-sonnet-20240620',
-        maxTokens = 1024,
-        provider = 'anthropic'
+        model = 'claude-opus-4-5-20251101',
+        maxTokens = 16000,
+        provider = 'anthropic',
+        thinking = true
     } = options;
 
     // Try requested provider, fall back to any available (unless noFallback is set)
@@ -45,7 +46,7 @@ export async function chat(systemPrompt, userMessage, options = {}) {
     for (const p of providers) {
         if (isProviderAvailable(p)) {
             try {
-                const result = await chatWithProvider(p, systemPrompt, userMessage, { model, maxTokens });
+                const result = await chatWithProvider(p, systemPrompt, userMessage, { model, maxTokens, thinking });
 
                 // If caller explicitly asks for usage, return the object
                 if (options.includeUsage) return result;
@@ -94,14 +95,24 @@ async function chatAnthropic(systemPrompt, userMessage, options) {
     const client = getAnthropicClient();
 
     try {
-        const response = await client.messages.create({
-            model: options.model || 'claude-3-5-sonnet-20240620',
+        const requestParams = {
+            model: options.model || 'claude-opus-4-5-20251101',
             max_tokens: options.maxTokens,
             system: systemPrompt,
             messages: [
                 { role: 'user', content: userMessage }
             ]
-        });
+        };
+
+        // Enable extended thinking if requested
+        if (options.thinking) {
+            requestParams.thinking = {
+                type: 'enabled',
+                budget_tokens: Math.min(options.maxTokens, 10000)
+            };
+        }
+
+        const response = await client.messages.create(requestParams);
 
         // Extract text from response
         const text = response.content
