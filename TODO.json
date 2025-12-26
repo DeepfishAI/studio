@@ -122,6 +122,22 @@
                     "proper_fix": "Error handling, retry logic, rate limiting, cost tracking",
                     "status": "deferred",
                     "priority": "after_revenue"
+                },
+                {
+                    "id": "floating_background_text",
+                    "hole": "Floating background text removed or broken on landing page",
+                    "quick_plug": "Static landing page still functional",
+                    "proper_fix": "Restore floating testimonial cards / ambient text animations",
+                    "status": "deferred",
+                    "priority": "after_revenue"
+                },
+                {
+                    "id": "standardized_react_components",
+                    "hole": "Frontend uses custom CSS and ad-hoc styling mechanics",
+                    "quick_plug": "Current implementation works but inconsistent",
+                    "proper_fix": "Replace with standardized React component library (e.g., Radix, shadcn/ui) for inputs, buttons, modals, forms",
+                    "status": "deferred",
+                    "priority": "after_revenue"
                 }
             ]
         },
