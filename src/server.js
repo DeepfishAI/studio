@@ -151,6 +151,7 @@ import chatRoutes from './routes/chat.js';
 import billingRoutes from './routes/billing.js';
 import voiceRoutes from './routes/voice.js';
 import trainingRoutes from './routes/training.js';
+import authRoutes from './routes/auth.js';
 
 // ... (Redis setup)
 
@@ -192,6 +193,7 @@ app.get('/health', (req, res) => {
 // ============================================
 
 // Core Feature Routes
+app.use('/api/auth', authRoutes); // Login/logout with email verification
 app.use('/api/chat', chatRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/voice', voiceRoutes); // includes /incoming, /route, /agent/:id, /audio/:id, /tts
