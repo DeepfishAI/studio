@@ -83,21 +83,40 @@ test.describe('Mobile Layout & Visibility', () => {
 
     test('login form elements are visible on mobile', async ({ page }) => {
         await page.goto('/login');
+        // Wait longer for the page to fully render
         await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(2000); // Extra wait for React hydration
 
         // Check viewport dimensions are respected
         const viewport = page.viewportSize();
         console.log(`Testing at viewport: ${viewport?.width}x${viewport?.height}`);
 
-        // Find email input
-        const emailInput = page.locator('input[type="email"], input[name="email"], input[placeholder*="email" i]').first();
-        await expect(emailInput).toBeVisible();
+        // Take a screenshot for debugging
+        await page.screenshot({ path: `test-results/login-debug-${viewport?.width}x${viewport?.height}.png` });
 
-        // Check it's within viewport
-        const box = await emailInput.boundingBox();
-        if (box && viewport) {
-            expect(box.x).toBeGreaterThanOrEqual(0);
-            expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
+        // Try multiple selectors - the login page uses class="input" for email
+        const emailInput = page.locator('input.input, input[type="email"], input[placeholder*="email" i]').first();
+
+        // Check if form exists first
+        const form = page.locator('form.login-form, form');
+        const formCount = await form.count();
+        console.log(`Forms found: ${formCount}`);
+
+        if (formCount > 0) {
+            await expect(emailInput).toBeVisible({ timeout: 10000 });
+
+            // Check it's within viewport
+            const box = await emailInput.boundingBox();
+            if (box && viewport) {
+                expect(box.x).toBeGreaterThanOrEqual(0);
+                expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
+            }
+        } else {
+            // If no form exists, log what we see instead
+            const pageContent = await page.content();
+            console.log('Page content length:', pageContent.length);
+            // Fail with descriptive message
+            expect(formCount, 'Expected login form to exist on /login page').toBeGreaterThan(0);
         }
     });
 });
