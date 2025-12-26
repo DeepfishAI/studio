@@ -200,9 +200,15 @@ However, I confirm that:
 async function chatAnthropic(systemPrompt, userMessage, options) {
     const client = getAnthropicClient();
 
+    // Only use models that start with 'claude' - otherwise use default
+    let model = options.model;
+    if (!model || !model.startsWith('claude')) {
+        model = 'claude-sonnet-4-20250514';
+    }
+
     try {
         const response = await client.messages.create({
-            model: options.model || 'claude-sonnet-4-20250514',
+            model,
             max_tokens: options.maxTokens,
             system: systemPrompt,
             messages: [
@@ -226,7 +232,12 @@ async function chatGemini(systemPrompt, userMessage, options) {
     const apiKey = getApiKey('gemini');
     if (!apiKey) throw new Error('Gemini API key not configured');
 
-    const model = options.model || 'gemini-1.5-flash';
+    // Only use models that start with 'gemini' - otherwise use default
+    let model = options.model;
+    if (!model || !model.startsWith('gemini')) {
+        model = 'gemini-2.0-flash';
+    }
+
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     try {
@@ -262,8 +273,12 @@ async function chatNvidia(systemPrompt, userMessage, options) {
     const apiKey = getApiKey('nvidia');
     if (!apiKey) throw new Error('NVIDIA API key not configured');
 
-    // Default to Llama 70B
-    const model = options.model || 'meta/llama-3.1-70b-instruct';
+    // Only use NVIDIA-style models (contain '/') - otherwise use default
+    let model = options.model;
+    if (!model || (!model.includes('/') && !model.startsWith('nvidia'))) {
+        model = 'meta/llama-3.1-70b-instruct';
+    }
+
     const url = 'https://integrate.api.nvidia.com/v1/chat/completions';
 
     try {
