@@ -5,6 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  * Playwright E2E Test Configuration for DeepFish
  * 
  * Run tests with: npm run test:e2e
+ * Run mobile tests: npm run test:e2e -- --project="iPhone 14"
  * View report: npx playwright show-report
  */
 export default defineConfig({
@@ -31,11 +32,11 @@ export default defineConfig({
 
     // Shared settings for all projects
     use: {
-        // Base URL for all tests - point to your dev server
-        baseURL: 'http://localhost:3001',
+        // Base URL - use PROD for stress testing, LOCAL for dev
+        baseURL: process.env.TEST_URL || 'https://deepfish.app',
 
-        // Capture screenshot on failure
-        screenshot: 'only-on-failure',
+        // Capture screenshot ALWAYS for mobile debugging
+        screenshot: 'on',
 
         // Record video on failure
         video: 'on-first-retry',
@@ -44,20 +45,32 @@ export default defineConfig({
         trace: 'on-first-retry',
     },
 
-    // Configure projects for major browsers
+    // Configure projects for browsers AND mobile devices
     projects: [
+        // Desktop Chrome
         {
-            name: 'chromium',
+            name: 'Desktop Chrome',
             use: { ...devices['Desktop Chrome'] },
         },
+        // iPhone 14
+        {
+            name: 'iPhone 14',
+            use: { ...devices['iPhone 14'] },
+        },
+        // iPhone 14 Pro Max (larger screen)
+        {
+            name: 'iPhone 14 Pro Max',
+            use: { ...devices['iPhone 14 Pro Max'] },
+        },
+        // Android - Pixel 7
+        {
+            name: 'Pixel 7',
+            use: { ...devices['Pixel 7'] },
+        },
+        // Android - Galaxy S8 (older/smaller)
+        {
+            name: 'Galaxy S8',
+            use: { ...devices['Galaxy S8'] },
+        },
     ],
-
-    // Run your local dev server before starting the tests
-    // Uncomment if you want Playwright to auto-start the server
-    // webServer: {
-    //     command: 'npm run start',
-    //     url: 'http://localhost:3000',
-    //     reuseExistingServer: !process.env.CI,
-    //     timeout: 120 * 1000,
-    // },
 });
