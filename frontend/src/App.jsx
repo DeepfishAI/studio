@@ -55,30 +55,22 @@ function AppRoutes() {
         }
     }, []) // Run once on mount
 
-    if (loading) {
-        return (
-            <div className="loading-screen">
-                <div className="loading-spinner"></div>
-            </div>
-        )
-    }
-
     return (
         <Routes>
-            {/* Public landing page */}
+            {/* Public landing page - no auth loading needed */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/verify" element={<VerificationPage />} />
 
             {/* Admin Switchboard */}
             <Route path="/admin" element={<AdminPage />} />
 
-            {/* Login page */}
+            {/* Login page - renders immediately, no loading wait */}
             <Route
                 path="/login"
-                element={user ? <Navigate to="/app" replace /> : <LoginPage />}
+                element={!loading && user ? <Navigate to="/app" replace /> : <LoginPage />}
             />
 
-            {/* Protected app routes */}
+            {/* Protected app routes - these wait for auth loading */}
             <Route
                 path="/app"
                 element={

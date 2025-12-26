@@ -52,7 +52,8 @@ export default function LandingPage() {
             <style>{`
                 .landing-page {
                     min-height: 100vh;
-                    background: #0f1115; /* Dark surface */
+                    min-height: 100dvh;
+                    background: #0f1115;
                     color: white;
                     display: flex;
                     flex-direction: column;
@@ -60,19 +61,24 @@ export default function LandingPage() {
                     justify-content: center;
                     font-family: 'Inter', sans-serif;
                     text-align: center;
-                    padding: 20px;
+                    padding: 16px;
+                    padding-top: 80px;
+                    padding-bottom: env(safe-area-inset-bottom, 16px);
                     position: relative;
+                    overflow-x: hidden;
                 }
                 .landing-header {
-                    position: absolute;
+                    position: fixed;
                     top: 0;
                     left: 0;
                     right: 0;
-                    padding: 30px 40px;
+                    padding: 16px;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                     z-index: 10;
+                    background: rgba(15, 17, 21, 0.9);
+                    backdrop-filter: blur(10px);
                 }
                 .landing-header__logo {
                     display: flex;
@@ -111,26 +117,31 @@ export default function LandingPage() {
                 }
                 .email-input {
                     flex: 1;
-                    padding: 15px;
-                    border-radius: 8px;
+                    min-height: 52px;
+                    padding: 14px 16px;
+                    border-radius: 12px;
                     border: 1px solid #2d3342;
                     background: #1a1d24;
                     color: white;
-                    font-size: 1rem;
+                    font-size: 16px;
                     outline: none;
+                    width: 100%;
                 }
                 .email-input:focus {
                     border-color: #FF3366;
                 }
                 .join-btn {
-                    padding: 15px 30px;
-                    border-radius: 8px;
+                    min-height: 52px;
+                    padding: 14px 28px;
+                    border-radius: 12px;
                     border: none;
                     background: #FF3366;
                     color: white;
                     font-weight: bold;
+                    font-size: 16px;
                     cursor: pointer;
                     transition: all 0.2s;
+                    white-space: nowrap;
                 }
                 .join-btn:hover {
                     transform: translateY(-2px);
@@ -187,10 +198,11 @@ export default function LandingPage() {
                     border: 1px solid rgba(255, 51, 102, 0.2);
                 }
                 .footer {
-                    margin-top: 60px;
+                    margin-top: 40px;
                     color: #4a5568;
-                    font-size: 0.9rem;
-                }
+                    font-size: 0.85rem;
+                    padding: 0 16px;
+                    max-width: 100%;
                 }
                 
                 /* Floating Testimonials */
@@ -257,10 +269,28 @@ export default function LandingPage() {
                 .t-4 { right: 8%; animation-delay: 18s; animation-duration: 22s; bottom: -100px; }
 
                 @media (max-width: 768px) {
-                    .hero-title { font-size: 2.5rem; }
-                    .landing-header { padding: 20px; }
-                    .cta-form { flex-direction: column; }
-                    .testimonial-card { display: none; } /* Hide on mobile to save space */
+                    .hero-title { 
+                        font-size: 2rem; 
+                        padding: 0 8px;
+                    }
+                    .hero-subtitle {
+                        font-size: 1rem;
+                        padding: 0 8px;
+                    }
+                    .landing-header { 
+                        padding: 12px 16px; 
+                    }
+                    .cta-form { 
+                        flex-direction: column;
+                        width: 100%;
+                        max-width: 100%;
+                        padding: 0 8px;
+                    }
+                    .testimonial-card { display: none; }
+                    .btn--outline {
+                        padding: 10px 16px;
+                        font-size: 0.9rem;
+                    }
                 }
             `}</style>
 

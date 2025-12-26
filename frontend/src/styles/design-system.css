@@ -774,3 +774,184 @@ h4,
    Google Fonts Import
    ======================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ========================================
+   Login Page - Mobile First
+   ======================================== */
+.login-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    /* Dynamic viewport for mobile */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-primary);
+    padding: var(--space-lg);
+    padding-bottom: env(safe-area-inset-bottom, var(--space-lg));
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+    z-index: 1;
+}
+
+/* Logo */
+.login-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.login-logo__icon {
+    font-size: 2rem;
+}
+
+.login-logo__text {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    background: linear-gradient(135deg, #FF3366, #FF9933);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Hero Text */
+.login-hero {
+    text-align: center;
+}
+
+.login-hero__title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: var(--space-md);
+}
+
+.login-hero__subtitle {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: 1.5;
+}
+
+/* Agent Avatars */
+.login-agents {
+    text-align: center;
+}
+
+.login-agents__avatars {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-sm);
+}
+
+.login-agents__avatars .avatar {
+    margin-left: -12px;
+    border: 2px solid var(--color-bg-primary);
+}
+
+.login-agents__avatars .avatar:first-child {
+    margin-left: 0;
+}
+
+.login-agents__label {
+    font-size: var(--font-size-sm);
+}
+
+/* Login Form - Mobile First */
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.login-form .input {
+    min-height: 52px;
+    /* Touch-friendly */
+    font-size: 16px;
+    /* Prevent iOS zoom */
+    padding: var(--space-md) var(--space-lg);
+}
+
+.login-form .btn {
+    min-height: 52px;
+    /* Touch-friendly */
+    font-size: var(--font-size-md);
+}
+
+.login-form__error {
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    text-align: center;
+    margin: 0;
+}
+
+/* Trust Badges */
+.login-trust {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+.login-trust__badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.login-trust__icon {
+    font-size: 1rem;
+}
+
+/* Background Orbs */
+.login-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.login-bg__orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+}
+
+.login-bg__orb--1 {
+    width: 300px;
+    height: 300px;
+    background: var(--color-accent-blue);
+    top: -100px;
+    right: -100px;
+}
+
+.login-bg__orb--2 {
+    width: 250px;
+    height: 250px;
+    background: var(--color-accent-purple);
+    bottom: -80px;
+    left: -80px;
+}
+
+/* Desktop enhancements */
+@media (min-width: 768px) {
+    .login-hero__title {
+        font-size: var(--font-size-3xl);
+    }
+
+    .login-container {
+        gap: var(--space-xl);
+    }
+}
