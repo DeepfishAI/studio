@@ -136,10 +136,32 @@ class Orchestrator {
 
     /**
      * Called when an agent hands off work
+     * THIS IS THE KEY FIX - actually execute the target agent
      */
     onHandoff({ agentId, toAgentId, taskId, content }) {
         this.wake(`Handoff from ${agentId} to ${toAgentId}`);
         console.log(`[Orchestrator] ${agentId} → ${toAgentId}: Handoff for task ${taskId}`);
+
+        // Update task status
+        const task = this.pendingTasks.get(taskId);
+        if (task) {
+            task.status = 'in_progress';
+            task.assignedTo = toAgentId;
+        }
+
+        // 🔥 THE FIX: Actually run the agent instead of just logging
+        // Extract instructions from workPackage
+        const instructions = typeof content === 'string'
+            ? content
+            : content?.instructions || content?.request || JSON.stringify(content);
+
+        console.log(`[Orchestrator] 🚀 SPINNING UP ${toAgentId} via HANDOFF`);
+
+        // Execute agent async (don't block the bus)
+        this.runAgentExecution(toAgentId, taskId, instructions).catch(err => {
+            console.error(`[Orchestrator] 💥 Agent ${toAgentId} crashed:`, err);
+            BusOps.BLOCKER(toAgentId, taskId, `Crashed: ${err.message}`);
+        });
 
         // Notify handlers
         const handlers = this.handlers.get('handoff') || [];

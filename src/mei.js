@@ -189,13 +189,11 @@ export class Mei {
 
                     console.log(`[Mei] Executing dispatch: ${agentId} -> ${taskContent}`);
 
-                    // 1. Create Task Context
-                    const taskId = `task-${Date.now()}`;
-                    await createTaskContext({
-                        taskId,
-                        content: taskContent,
-                        agentId: 'mei' // Mei is the creator
-                    });
+                    // 1. Create Task Context (pass the original request as string)
+                    const taskContext = await createTaskContext(taskContent);
+                    const taskId = taskContext.taskId;
+
+                    console.log(`[Mei] Task created: ${taskId}`);
 
                     // 2. Emit to Bus (Target Agent will wake up)
                     // Note: In a real system, we'd wait for ACK, but for now we fire-and-forget
@@ -208,7 +206,7 @@ export class Mei {
                         timestamp: new Date().toISOString()
                     });
 
-                    return response + `\n\n✅ *System: Dispatched "${taskContent}" to ${agentId} via RediBus*`;
+                    return response + `\n\n✅ *System: Dispatched "${taskContent}" to ${agentId} via RediBus (Task: ${taskId.split('_')[1] || taskId})*`;
                 }
 
                 return response;
