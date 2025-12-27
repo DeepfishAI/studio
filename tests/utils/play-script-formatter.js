@@ -39,6 +39,8 @@ const AGENT_COLORS = {
     MEI: '\x1b[35m',       // Magenta
     IT: '\x1b[34m',        // Blue
     HANNA: '\x1b[33m',     // Yellow
+    SALLY: '\x1b[32m',     // Green
+    ORACLE: '\x1b[31m',    // Red
     ANALYST: '\x1b[32m',   // Green
     AUTOMATOR: '\x1b[31m', // Red
     SYSTEM: '\x1b[90m',    // Gray

@@ -14,7 +14,7 @@ import { chat } from '../src/llm.js';
 import { ScriptRecorder, formatDuration } from './utils/play-script-formatter.js';
 
 // Test configuration
-const TEST_QUESTION = "Design a mobile app for recipe sharing with user authentication, analyze expected user engagement metrics, create the branding and UI design, and set up an automated CI/CD deployment pipeline";
+const TEST_QUESTION = "Design a mobile app for recipe sharing with user authentication, create the branding and UI design, develop a marketing strategy, and provide architectural guidance";
 
 const AGENT_TASKS = {
     it: [
@@ -25,13 +25,13 @@ const AGENT_TASKS = {
         "Design brand identity (logo, colors, typography) for recipe app",
         "Create UI mockups for recipe browsing and creation"
     ],
-    analyst: [
-        "Analyze expected user engagement metrics for recipe sharing",
-        "Define KPIs for recipe app success measurement"
+    sally: [
+        "Develop marketing strategy for recipe app launch",
+        "Create social media campaign for user acquisition"
     ],
-    automator: [
-        "Set up CI/CD pipeline with GitHub Actions",
-        "Configure automated deployment to cloud platform"
+    oracle: [
+        "Review overall app architecture and quality standards",
+        "Provide guidance on best practices for recipe sharing platform"
     ]
 };
 

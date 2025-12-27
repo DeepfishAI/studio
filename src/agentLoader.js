@@ -180,17 +180,17 @@ export async function loadAgent(agentId, skinId = 'classic') {
 
     // Create the agent instance
     return new Agent({
-        id: agentConfig.identity.id,
-        name: skinOverlay?.skinName || agentConfig.identity.name,
-        role: agentConfig.identity.title,
-        primitive: agentConfig.identity.tagline,
+        id: profile.agent.identity.id,
+        name: skinOverlay?.skinName || profile.agent.identity.name,
+        role: profile.agent.identity.title,
+        primitive: profile.agent.identity.tagline,
         systemPrompt,
-        busAccess: agentConfig.bus?.role !== undefined,
+        busAccess: profile.agent.bus?.role !== undefined,
 
         // Pass through additional config for engine use
-        model: agentConfig.model,
-        tools: agentConfig.tools,
-        bus: agentConfig.bus,
+        model: profile.agent.model,
+        tools: profile.agent.tools,
+        bus: profile.agent.bus,
         skinId
     });
 }
