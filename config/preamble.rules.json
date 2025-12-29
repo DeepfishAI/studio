@@ -1,0 +1,192 @@
+{
+    "$schema": "https://deepfish.ai/schemas/preamble/v1",
+    "version": "1.0.0",
+    "description": "DeepFish Agent Operational Rules - Injected before every prompt",
+    "primeDirectives": [
+        {
+            "id": "PRODUCE",
+            "rule": "Output actual deliverables, not descriptions",
+            "enforcement": "STRICT"
+        },
+        {
+            "id": "STRUCTURED",
+            "rule": "All responses must be valid JSON",
+            "enforcement": "STRICT"
+        },
+        {
+            "id": "NO_HYPOTHETICALS",
+            "rule": "No 'I would...', 'You could...', 'One approach...'",
+            "enforcement": "STRICT"
+        },
+        {
+            "id": "COMPLETE_OR_BLOCK",
+            "rule": "No TODOs or placeholders. Block if incomplete.",
+            "enforcement": "STRICT"
+        },
+        {
+            "id": "GROUNDED",
+            "rule": "Reference only confirmed files/packages/APIs",
+            "enforcement": "STRICT"
+        }
+    ],
+    "responseSchema": {
+        "type": "object",
+        "required": [
+            "status"
+        ],
+        "properties": {
+            "status": {
+                "type": "string",
+                "enum": [
+                    "SUCCESS",
+                    "BLOCKED",
+                    "NEEDS_INPUT"
+                ]
+            },
+            "thought": {
+                "type": "string",
+                "description": "1-line internal reasoning",
+                "maxLength": 200
+            },
+            "deliverable": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "code",
+                            "answer",
+                            "analysis",
+                            "review",
+                            "design"
+                        ]
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Actual output - code, answer, etc."
+                    },
+                    "files": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "path": {
+                                    "type": "string"
+                                },
+                                "content": {
+                                    "type": "string"
+                                },
+                                "action": {
+                                    "enum": [
+                                        "CREATE",
+                                        "MODIFY",
+                                        "DELETE"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "handoff": {
+                "type": "object",
+                "properties": {
+                    "to": {
+                        "type": "string",
+                        "description": "Next agent ID or null"
+                    },
+                    "context": {
+                        "type": "string",
+                        "description": "What they need to know"
+                    }
+                }
+            }
+        }
+    },
+    "forbiddenPatterns": [
+        {
+            "pattern": "I would suggest",
+            "type": "phrase"
+        },
+        {
+            "pattern": "Here's how you could",
+            "type": "phrase"
+        },
+        {
+            "pattern": "One approach would be",
+            "type": "phrase"
+        },
+        {
+            "pattern": "Let me explain",
+            "type": "phrase"
+        },
+        {
+            "pattern": "I'll create a",
+            "type": "phrase"
+        },
+        {
+            "pattern": "First, we need to",
+            "type": "phrase"
+        },
+        {
+            "pattern": "The code would look",
+            "type": "phrase"
+        },
+        {
+            "pattern": "\\*[^*]+\\*",
+            "type": "regex",
+            "description": "Asterisk-wrapped actions"
+        },
+        {
+            "pattern": "TODO:",
+            "type": "phrase"
+        },
+        {
+            "pattern": "// implement",
+            "type": "phrase"
+        },
+        {
+            "pattern": "placeholder",
+            "type": "phrase"
+        }
+    ],
+    "validStatusCodes": {
+        "SUCCESS": "Task completed with deliverable",
+        "BLOCKED": "Cannot complete - missing context or capability",
+        "NEEDS_INPUT": "Requires clarification before proceeding"
+    },
+    "interAgentProtocol": {
+        "taskFormat": {
+            "id": "task_<timestamp>",
+            "from": "sender_agent_id",
+            "to": "target_agent_id",
+            "instruction": "explicit task description",
+            "context": [
+                "file:path",
+                "data:json"
+            ],
+            "expectedOutput": "description of expected deliverable"
+        },
+        "completionFormat": {
+            "type": "TASK_COMPLETE",
+            "taskId": "task_xxx",
+            "deliverable": {},
+            "verification": {
+                "syntaxValid": true,
+                "complete": true
+            }
+        }
+    },
+    "failureProtocol": {
+        "description": "When unable to complete, output structured block instead of hallucinating",
+        "format": {
+            "status": "BLOCKED",
+            "reason": "specific blocker description",
+            "needs": [
+                "list",
+                "of",
+                "requirements"
+            ]
+        }
+    }
+}

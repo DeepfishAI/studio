@@ -8,6 +8,9 @@
  * 3. Read user.json (learned facts, preferences) - always fresh
  * 4. Optionally merge skin overlay
  * 5. Build final system prompt
+ * 
+ * NOTE: Anti-hallucination preamble is now injected at the LLM layer
+ * (src/llm.js) to ensure ALL calls are governed, not just agent prompts.
  */
 
 import { readFile } from 'fs/promises';
@@ -129,6 +132,7 @@ export function buildSystemPrompt(profile, skinOverlay = null) {
     prompt += `3. To use a tool, use: [[TOOL:name {"args":"mock"}]]\n`;
     prompt += `4. Otherwise, just converse normally.\n`;
 
+    // Preamble is now applied at the LLM layer (src/llm.js)
     return prompt;
 }
 

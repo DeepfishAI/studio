@@ -486,6 +486,73 @@ export const BusOps = {
         }
 
         return tasks;
+    },
+
+    // ====================================
+    // CONSENSUS LOOP OPERATIONS
+    // ====================================
+
+    /**
+     * PROPOSE - Agent submits work for peer review
+     */
+    PROPOSE: async (sessionId, agentId, workProduct) => {
+        const message = {
+            type: 'PROPOSE',
+            sessionId,
+            agentId,
+            workProductPreview: workProduct.substring(0, 200),
+            timestamp: new Date().toISOString()
+        };
+
+        eventBus.emit('bus_message', message);
+        eventBus.emit('consensus_propose', { sessionId, agentId, workProduct });
+
+        console.log(`[Bus] 📝 ${agentId} proposed work for consensus session ${sessionId}`);
+
+        return message;
+    },
+
+    /**
+     * VOTE - Agent votes on proposed work
+     */
+    VOTE: async (sessionId, agentId, approved, feedback = '', confidence = 100) => {
+        const message = {
+            type: 'VOTE',
+            sessionId,
+            agentId,
+            approved,
+            feedback: feedback.substring(0, 500),
+            confidence,
+            timestamp: new Date().toISOString()
+        };
+
+        eventBus.emit('bus_message', message);
+        eventBus.emit('consensus_vote', { sessionId, agentId, approved, feedback, confidence });
+
+        console.log(`[Bus] 🗳️ ${agentId} voted ${approved ? '✓ APPROVE' : '✗ REJECT'} on session ${sessionId}`);
+
+        return message;
+    },
+
+    /**
+     * REVISE - Request agent to revise work based on feedback
+     */
+    REVISE: async (sessionId, agentId, feedback, previousWork) => {
+        const message = {
+            type: 'REVISE',
+            sessionId,
+            agentId,
+            feedback,
+            previousWorkPreview: previousWork?.substring(0, 200),
+            timestamp: new Date().toISOString()
+        };
+
+        eventBus.emit('bus_message', message);
+        eventBus.emit('consensus_revise', { sessionId, agentId, feedback, previousWork });
+
+        console.log(`[Bus] 🔄 Revision requested from ${agentId} for session ${sessionId}`);
+
+        return message;
     }
 };
 

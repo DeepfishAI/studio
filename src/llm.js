@@ -2,18 +2,33 @@
  * LLM Service
  * Wraps LLM API calls with multi-provider abstraction
  * 
+ * THE CONSTITUTIONAL LAYER - All agent communications pass through here.
+ * Anti-hallucination preamble is injected at this layer to ensure
+ * consistent enforcement across ALL LLM calls in DeepFish.
+ * 
  * Supports:
  * - Anthropic Claude (primary)
  * - Google Gemini
  * - NVIDIA NIM (via OpenAI-compatible API)
- * - MOCK (Fallback for testing)
  */
 
 import Anthropic from '@anthropic-ai/sdk';
 import { getApiKey, isProviderEnabled } from './config.js';
+import { AGENT_PREAMBLE_COMPACT, validateAgentResponse } from './preamble.js';
 
 // Client instances
 let anthropicClient = null;
+
+// Constitutional enforcement toggle (can be disabled for testing)
+let constitutionEnabled = true;
+
+/**
+ * Enable/disable constitutional preamble injection
+ */
+export function setConstitutionEnabled(enabled) {
+    constitutionEnabled = enabled;
+    console.log(`[LLM] Constitutional enforcement: ${enabled ? 'ENABLED' : 'DISABLED'}`);
+}
 
 function getAnthropicClient() {
     if (anthropicClient) return anthropicClient;
@@ -28,6 +43,15 @@ function getAnthropicClient() {
 }
 
 /**
+ * Apply constitutional preamble to system prompt
+ * This is the enforcement point for anti-hallucination rules
+ */
+function applyConstitution(systemPrompt) {
+    if (!constitutionEnabled) return systemPrompt;
+    return `${AGENT_PREAMBLE_COMPACT}\n\n${systemPrompt}`;
+}
+
+/**
  * Send a message to the LLM and get a response
  * @param {string} systemPrompt - The system context
  * @param {string} userMessage - The user's message
@@ -37,13 +61,20 @@ export async function chat(systemPrompt, userMessage, options = {}) {
     const {
         model = 'claude-sonnet-4-20250514',
         maxTokens = 1024,
-        provider = 'anthropic'
+        provider = 'anthropic',
+        skipConstitution = false  // Escape hatch for internal/safety calls
     } = options;
+
+    // CONSTITUTIONAL LAYER: Inject anti-hallucination preamble
+    const effectivePrompt = skipConstitution ? systemPrompt : applyConstitution(systemPrompt);
 
     // Try requested provider, fall back to any available - NO MOCK
     const providers = [provider, 'anthropic', 'gemini', 'nvidia'];
 
     console.log(`[LLM] Starting chat. Checking providers in order: ${providers.join(', ')}`);
+    if (constitutionEnabled && !skipConstitution) {
+        console.log(`[LLM] Constitutional preamble: ACTIVE`);
+    }
 
     for (const p of providers) {
         const available = isProviderAvailable(p);
@@ -52,7 +83,7 @@ export async function chat(systemPrompt, userMessage, options = {}) {
         if (available) {
             try {
                 console.log(`[LLM] Attempting call with provider: ${p}`);
-                const result = await chatWithProvider(p, systemPrompt, userMessage, { model, maxTokens });
+                const result = await chatWithProvider(p, effectivePrompt, userMessage, { model, maxTokens });
                 console.log(`[LLM] Success with provider: ${p}`);
                 return result;
             } catch (err) {
