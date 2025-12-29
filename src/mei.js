@@ -33,21 +33,27 @@ function loadAgentProfile(agentId) {
         if (existsSync(agentPath)) {
             profile.agent = JSON.parse(readFileSync(agentPath, 'utf-8'));
         }
-    } catch (err) { }
+    } catch (err) {
+        console.warn(`[Mei] Failed to load agent profile: ${err.message}`);
+    }
 
     try {
         const personalityPath = join(AGENTS_DIR, `${agentId}.personality.json`);
         if (existsSync(personalityPath)) {
             profile.personality = JSON.parse(readFileSync(personalityPath, 'utf-8'));
         }
-    } catch (err) { }
+    } catch (err) {
+        console.warn(`[Mei] Failed to load personality profile: ${err.message}`);
+    }
 
     try {
         const userPath = join(AGENTS_DIR, `${agentId}.user.json`);
         if (existsSync(userPath)) {
             profile.user = JSON.parse(readFileSync(userPath, 'utf-8'));
         }
-    } catch (err) { }
+    } catch (err) {
+        console.warn(`[Mei] Failed to load user profile: ${err.message}`);
+    }
 
     return profile;
 }

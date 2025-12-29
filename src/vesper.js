@@ -31,21 +31,27 @@ function loadAgentProfile(agentId) {
         if (existsSync(agentPath)) {
             profile.agent = JSON.parse(readFileSync(agentPath, 'utf-8'));
         }
-    } catch (err) { }
+    } catch (err) {
+        console.warn(`[Vesper] Failed to load agent profile: ${err.message}`);
+    }
 
     try {
         const personalityPath = join(AGENTS_DIR, `${agentId}.personality.json`);
         if (existsSync(personalityPath)) {
             profile.personality = JSON.parse(readFileSync(personalityPath, 'utf-8'));
         }
-    } catch (err) { }
+    } catch (err) {
+        console.warn(`[Vesper] Failed to load personality profile: ${err.message}`);
+    }
 
     try {
         const userPath = join(AGENTS_DIR, `${agentId}.user.json`);
         if (existsSync(userPath)) {
             profile.user = JSON.parse(readFileSync(userPath, 'utf-8'));
         }
-    } catch (err) { }
+    } catch (err) {
+        console.warn(`[Vesper] Failed to load user profile: ${err.message}`);
+    }
 
     return profile;
 }
@@ -155,7 +161,9 @@ function loadAvailableAgents() {
                     if (existsSync(userPath)) {
                         userConfig = JSON.parse(readFileSync(userPath, 'utf-8'));
                     }
-                } catch (e) { }
+                } catch (e) {
+                    console.warn(`[Vesper] Failed to load user config for ${id}: ${e.message}`);
+                }
 
                 agents.push({
                     id: agent.identity?.id || id,
@@ -168,7 +176,9 @@ function loadAvailableAgents() {
                     stats: userConfig.stats
                 });
             }
-        } catch (err) { }
+        } catch (err) {
+            console.warn(`[Vesper] Failed to load agent ${id}: ${err.message}`);
+        }
     }
 
     return agents;

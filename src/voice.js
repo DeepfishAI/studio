@@ -45,7 +45,9 @@ function loadVoiceSettings() {
         if (existsSync(voiceSettingsPath)) {
             return JSON.parse(readFileSync(voiceSettingsPath, 'utf-8'));
         }
-    } catch (err) { }
+    } catch (err) {
+        console.warn(`[Voice] Failed to load voice settings: ${err.message}`);
+    }
 
     // Default settings
     return {

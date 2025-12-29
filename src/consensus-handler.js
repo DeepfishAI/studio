@@ -93,7 +93,7 @@ Consider: Is this complete? Correct? Well-done?
 Respond with ONLY a decimal number (e.g., 0.85). Nothing else.`;
 
         const response = await agent.process(confidencePrompt);
-        const match = response.match(/0?\\.?\\d+/);
+        const match = response.match(/\d*\.?\d+/);
         if (match) {
             const score = parseFloat(match[0]);
             return Math.min(1.0, Math.max(0.0, score));
