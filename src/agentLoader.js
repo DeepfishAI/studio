@@ -125,11 +125,22 @@ export function buildSystemPrompt(profile, skinOverlay = null) {
         });
     }
 
+    // ACTION MODE: For agents with file/code tools, emphasize they must ACT
+    if (agentConfig?.tools?.fileSystem || agentConfig?.tools?.codeExecution) {
+        prompt += `\n\n## 🔧 ACTION MODE ENABLED\n`;
+        prompt += `You have REAL tools that create REAL files in the workspace.\n`;
+        prompt += `When asked to create code, apps, games, or any files:\n`;
+        prompt += `1. DO NOT just describe what you would create\n`;
+        prompt += `2. DO NOT roleplay or pretend — actually CREATE the file\n`;
+        prompt += `3. USE the [[TOOL:write_file {...}]] command to write the actual code\n`;
+        prompt += `4. After writing, confirm what you created\n`;
+    }
+
     // Standard deepfish formatting instructions
     prompt += `\n\n## CRITICAL OUTPUT FORMATTING\n`;
     prompt += `1. When you finish a task, end with: [[COMPLETE: summary of what you did]]\n`;
     prompt += `2. If you are stuck or need help, end with: [[BLOCKER: reason]]\n`;
-    prompt += `3. To use a tool, use: [[TOOL:name {"args":"mock"}]]\n`;
+    prompt += `3. To use a tool, use: [[TOOL:name {"args":"values"}]]\n`;
     prompt += `4. Otherwise, just converse normally.\n`;
 
     // Preamble is now applied at the LLM layer (src/llm.js)

@@ -191,29 +191,39 @@ export class Agent {
 
         const tools = this.profile.agent.tools;
         let prompt = `\n\nAVAILABLE TOOLS:\n`;
-        prompt += `You have access to the following tools. To use one, output: [[TOOL:tool_name {"arg": "value"}]]\n`;
+        prompt += `You have access to REAL tools that create REAL files. To use one, output: [[TOOL:tool_name {"arg": "value"}]]\n`;
 
         let hasTools = false;
 
         // "fileSystem": true enables all file ops
         if (tools.fileSystem || tools.codeExecution) {
-            prompt += `- write_file(path, content): Write text files to workspace.\n`;
-            prompt += `- read_file(path): Read file content.\n`;
-            prompt += `- list_files(path): List files in directory.\n`;
+            prompt += `\n**File Operations:**\n`;
+            prompt += `- write_file: Write/create files in workspace\n`;
+            prompt += `  Example: [[TOOL:write_file {"path": "apps/game.html", "content": "<!DOCTYPE html>\\n<html>...</html>"}]]\n`;
+            prompt += `- read_file: Read file content\n`;
+            prompt += `  Example: [[TOOL:read_file {"path": "apps/game.html"}]]\n`;
+            prompt += `- list_files: List files in directory\n`;
+            prompt += `  Example: [[TOOL:list_files {"path": "."}]]\n`;
             hasTools = true;
         }
 
         if (tools.imageGeneration) {
-            prompt += `- generate_image(prompt, style): Create image assets.\n`;
+            prompt += `\n**Image Generation:**\n`;
+            prompt += `- generate_image: Create image assets\n`;
+            prompt += `  Example: [[TOOL:generate_image {"prompt": "pixel art game sprite", "style": "8bit"}]]\n`;
             hasTools = true;
         }
 
         if (!hasTools) return '';
 
+        // CRITICAL: Explicit instruction to ACT, not describe
+        prompt += `\n**⚠️ CRITICAL RULE:**\n`;
+        prompt += `When asked to create code or files, you MUST use the write_file tool.\n`;
+        prompt += `DO NOT just describe what you would write — actually USE the tool to create it.\n`;
+        prompt += `The file will be saved to the workspace folder and will be REAL.\n`;
+
         return prompt;
     }
-
-    // mockResponse removed - no more mock fallbacks
 }
 
 /**
