@@ -24,6 +24,10 @@ import { handleMediaStream } from './mediastream.js';
 import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
 import Redis from 'ioredis';
+import { getErrorStats, filterErrorsByCategory, filterErrorsBySeverity, trapError, createErrorHandler } from './error-filter.js';
+
+// Create error handler for server module
+const handleError = createErrorHandler('server');
 
 // Redis Client (Automatic Recovery System)
 let redis = null;
@@ -323,6 +327,30 @@ app.get('/api/logs', (req, res) => {
         success: true,
         count: logs.length,
         logs
+    });
+});
+
+/**
+ * Get error statistics and recent errors
+ * GET /api/errors
+ * Query params: category, severity
+ */
+app.get('/api/errors', (req, res) => {
+    const { category, severity } = req.query;
+
+    let errors;
+    if (category) {
+        errors = filterErrorsByCategory(category);
+    } else if (severity) {
+        errors = filterErrorsBySeverity(severity);
+    } else {
+        errors = null; // Will return stats only
+    }
+
+    res.json({
+        success: true,
+        stats: getErrorStats(),
+        errors: errors || undefined
     });
 });
 

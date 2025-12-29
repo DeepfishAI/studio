@@ -17,6 +17,10 @@ import {
     concludeDiscussion
 } from './consensus.js';
 import { Agent } from './agent.js';
+import { createErrorHandler } from './error-filter.js';
+
+// Create error handler for this module
+const handleError = createErrorHandler('consensus');
 
 // Track active handlers to prevent duplicate registrations
 let handlerRegistered = false;
@@ -157,7 +161,7 @@ export function registerConsensusHandlers() {
             }
 
         } catch (err) {
-            console.error(`[ConsensusHandler] Revision failed:`, err.message);
+            handleError(err, { sessionId: data.sessionId, round: data.round });
 
             // Emit failure event for handling
             eventBus.emit('consensus_revision_failed', {
@@ -211,7 +215,7 @@ export function registerConsensusHandlers() {
             castVote(data.sessionId, data.reviewerId, vote.approved, vote.feedback, vote.confidence);
 
         } catch (err) {
-            console.error(`[ConsensusHandler] Review by ${data.reviewerId} failed:`, err.message);
+            handleError(err, { reviewerId: data.reviewerId, sessionId: data.sessionId });
             // On error, abstain (don't vote) - session will handle timeout
         }
     });
@@ -273,7 +277,7 @@ Respond as JSON:
                 );
 
             } catch (err) {
-                console.error(`[ConsensusHandler] ${dissent.agentId} discussion failed:`, err.message);
+                handleError(err, { agentId: dissent.agentId, sessionId: data.sessionId });
             }
         }
 
