@@ -221,6 +221,33 @@ If you are blocked, respond with: [[BLOCKER: reason]]`;
             step++;
             console.log(`[${this.name}] 🔧 Step ${step}/${maxSteps}`);
 
+            // Planning interval - regenerate plan every N steps
+            if (planningInterval > 0 && step % planningInterval === 1) {
+                console.log(`[${this.name}] 🎯 Generating plan (interval: ${planningInterval})`);
+                const planStep = new PlanningStep('', { timing: new Timing() });
+
+                try {
+                    const planPrompt = step === 1
+                        ? `Analyze this task and create a step-by-step plan:\n${input}`
+                        : `The task is: ${input}\n\nProgress so far:\n${conversationHistory}\n\nCreate an updated plan for the remaining work.`;
+
+                    const planResult = await chat(systemPrompt, planPrompt, {
+                        provider: modelConfig.provider,
+                        model: modelConfig.name,
+                        maxTokens: 1024
+                    });
+
+                    planStep.plan = planResult;
+                    planStep.complete();
+                    this.memory.addStep(planStep);
+
+                    conversationHistory += `\n\n[Current Plan]: ${planResult}`;
+                    console.log(`[${this.name}] 🎯 Plan: ${planResult.substring(0, 100)}...`);
+                } catch (err) {
+                    console.error(`[${this.name}] 🎯 Planning failed:`, err.message);
+                }
+            }
+
             // Create action step for memory
             const actionStep = new ActionStep(step, { timing: new Timing() });
 

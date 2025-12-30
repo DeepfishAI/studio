@@ -1,15 +1,32 @@
 /**
  * Tool Registry
  * Loads and exposes all available tools to agents.
+ * Supports both legacy tool format and new Tool class
  */
 
 import * as fsTools from './fs.js';
 import * as imageTools from './images.js';
+import { Tool, ToolCollection, createTool } from './base.js';
 
+// Legacy tools (backward compatible)
 const allTools = {
     ...fsTools.tools,
     ...imageTools.tools
 };
+
+// New ToolCollection for enhanced tool management
+export const toolCollection = new ToolCollection();
+
+// Register legacy tools in the collection
+for (const [name, toolDef] of Object.entries(allTools)) {
+    try {
+        const tool = createTool(toolDef);
+        toolCollection.add(tool);
+    } catch (e) {
+        // Silently skip invalid tools during registration
+        console.warn(`[Registry] Could not register tool ${name}:`, e.message);
+    }
+}
 
 /**
  * Get tool definitions for system prompt (legacy)
