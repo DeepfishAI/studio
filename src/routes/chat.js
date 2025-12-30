@@ -115,7 +115,25 @@ router.post('/', async (req, res) => {
                 chat.currentAgent = intent.agentId;
 
                 const agent = getAgent(intent.agentId);
-                response = await agent.process(message);
+                await agent.hydrate();
+
+                // Use processWithTools for agents with tools (actually creates files!)
+                const hasTools = agent.profile?.agent?.tools &&
+                    (agent.profile.agent.tools.fileSystem ||
+                        agent.profile.agent.tools.codeExecution ||
+                        agent.profile.agent.tools.imageGeneration);
+
+                if (hasTools) {
+                    const result = await agent.processWithTools(message, { maxSteps: 5, forceToolUse: true });
+                    response = result.response;
+                    // Include tool results in the response if any files were created
+                    if (result.toolResults?.length > 0) {
+                        const toolSummary = result.toolResults.map(tr => `✅ ${tr.tool}: ${tr.result}`).join('\n');
+                        response = `${result.response}\n\n**Actions taken:**\n${toolSummary}`;
+                    }
+                } else {
+                    response = await agent.process(message);
+                }
 
                 // Emit bus event for routing
                 BusOps.ASSERT('vesper', chat.taskId, `Routed to ${intent.agentId}: "${message}"`);
@@ -130,7 +148,25 @@ router.post('/', async (req, res) => {
         } else {
             // Load the specific agent dynamically
             const agent = getAgent(chat.currentAgent);
-            response = await agent.process(message);
+            await agent.hydrate();
+
+            // Use processWithTools for agents with tools (actually creates files!)
+            const hasTools = agent.profile?.agent?.tools &&
+                (agent.profile.agent.tools.fileSystem ||
+                    agent.profile.agent.tools.codeExecution ||
+                    agent.profile.agent.tools.imageGeneration);
+
+            if (hasTools) {
+                const result = await agent.processWithTools(message, { maxSteps: 5, forceToolUse: true });
+                response = result.response;
+                // Include tool results in the response if any files were created
+                if (result.toolResults?.length > 0) {
+                    const toolSummary = result.toolResults.map(tr => `✅ ${tr.tool}: ${tr.result}`).join('\n');
+                    response = `${result.response}\n\n**Actions taken:**\n${toolSummary}`;
+                }
+            } else {
+                response = await agent.process(message);
+            }
             BusOps.ASSERT(chat.currentAgent, chat.taskId, `Processing: "${message}"`);
         }
 
