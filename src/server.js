@@ -31,6 +31,12 @@ import { getErrorStats, filterErrorsByCategory, filterErrorsBySeverity, trapErro
 // Create error handler for server module
 const handleError = createErrorHandler('server');
 
+// Node ESM path helpers
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Railway/Container port (Railway sets PORT)
+const PORT = Number(process.env.PORT || 3001);
+
 // Redis Client (Automatic Recovery System)
 let redis = null;
 if (process.env.REDIS_PUBLIC_URL || process.env.REDIS_URL) {
@@ -59,7 +65,8 @@ if (process.env.REDIS_PUBLIC_URL || process.env.REDIS_URL) {
 // Simple in-memory storage for Beta Leads (Mirrored to Redis)
 // Simple in-memory storage for Beta Leads (Mirrored to Redis)
 export const BETA_LEADS = new Set(['irene@deepfish.ai']); // Pre-seed admin
-const ADMIN_PHONE = '4059051338';
+const ADMIN_PHONE = (process.env.ADMIN_PHONE || process.env.TWILIO_ADMIN_PHONE || '4059051338').trim();
+const ENABLE_ADMIN_SMS = (process.env.ENABLE_ADMIN_SMS || '').toLowerCase() === 'true';
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 if (!ADMIN_SECRET) {
     console.warn('[Security] ⚠️  ADMIN_SECRET not set. Admin endpoints disabled.');
@@ -105,80 +112,9 @@ async function restoreLeads() {
 const app = express();
 // ... (middleware)
 
-/**
- * Beta Lead Capture
- * POST /api/leads
- * Body: { email }
- */
-app.post('/api/leads', (req, res) => {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email required' });
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Invalid email format' });
-    }
+// (Beta leads routes + hourly report scheduler moved below middleware)
 
-    // Sanitize: lowercase and trim
-    const sanitizedEmail = email.toLowerCase().trim();
-
-    // 🛑 SAFETY CAP: Limit to 20 new users
-    if (BETA_LEADS.size >= MAX_LEADS && !BETA_LEADS.has(sanitizedEmail)) {
-        console.warn(`[Beta] Signup Rejected: Limit Reached (${BETA_LEADS.size}/${MAX_LEADS}). Email: ${sanitizedEmail}`);
-        return res.status(403).json({
-            error: 'Beta Full',
-            message: 'We have reached our limit of 20 beta testers. You have been added to the extended waitlist.'
-        });
-    }
-
-    console.log(`[Beta] New Lead Joined: ${sanitizedEmail}`);
-
-    // Alert Admin via SMS
-    if (!BETA_LEADS.has(sanitizedEmail)) {
-        sendSms(ADMIN_PHONE, `🚀 New Pilot: ${sanitizedEmail} (${BETA_LEADS.size + 1}/${MAX_LEADS})`).catch(err => console.error(err));
-    }
-
-    BETA_LEADS.add(sanitizedEmail);
-
-    // BACKUP: Mirror to Redis
-    if (redis) {
-        redis.sadd('beta_leads', sanitizedEmail).catch(err => console.error('[Redis] Save failed:', err));
-    }
-
-    // In a real app, this would trigger a "Welcome" email via SendGrid/Resend
-
-    res.json({ success: true, count: BETA_LEADS.size });
-});
-
-/**
- * Admin: Get Leads
- * GET /api/leads
- */
-app.get('/api/leads', requireAdmin, (req, res) => {
-    res.json({ leads: Array.from(BETA_LEADS) });
-});
-
-/**
- * Hourly Vesper Report
- * Sends SMS status update every 60 minutes
- */
-let lastReportCount = 1; // Start at 1 (admin)
-setInterval(() => {
-    const currentCount = BETA_LEADS.size;
-    const newLeads = currentCount - lastReportCount;
-
-    // Only send if there's activity or at least once every 4 hours (count % 4 === 0)
-    // For Beta: sending every hour regardless to prove life
-    const msg = `📊 Hourly Report:\n🆕 New Pilots: ${newLeads}\n👥 Total: ${currentCount}\n💸 Est. Cost: < $5.00`;
-
-    console.log(`[Vesper] Sending hourly report: ${msg.replace(/\n/g, ', ')}`);
-    sendSms(ADMIN_PHONE, msg).catch(err => console.error('[Vesper] Report failed:', err));
-
-    lastReportCount = currentCount;
-}, 60 * 60 * 1000); // 60 minutes
-const PORT = process.env.PORT || 3001;
-const __filename = fileURLToPath(import.meta.url);
 // ... (imports)
 import chatRoutes from './routes/chat.js';
 import billingRoutes from './routes/billing.js';
@@ -202,6 +138,134 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+/**
+ * Beta Lead Capture
+ * POST /api/leads
+ * Body: { email }
+ */
+app.post('/api/leads', (req, res) => {
+    const { email } = req.body || {};
+    if (!email) return res.status(400).json({ error: 'Email required' });
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Sanitize: lowercase and trim
+    const sanitizedEmail = email.toLowerCase().trim();
+
+    // 🛑 SAFETY CAP: Limit to 20 new users
+    if (BETA_LEADS.size >= MAX_LEADS && !BETA_LEADS.has(sanitizedEmail)) {
+        console.warn(`[Beta] Signup Rejected: Limit Reached (${BETA_LEADS.size}/${MAX_LEADS}). Email: ${sanitizedEmail}`);
+        return res.status(403).json({
+            error: 'Beta Full',
+            message: 'We have reached our limit of 20 beta testers. You have been added to the extended waitlist.'
+        });
+    }
+
+    const isNew = !BETA_LEADS.has(sanitizedEmail);
+    if (isNew) console.log(`[Beta] New Lead Joined: ${sanitizedEmail}`);
+
+    // Alert Admin via SMS (optional)
+    if (isNew && ENABLE_ADMIN_SMS && ADMIN_PHONE && isTwilioEnabled()) {
+        sendSms(ADMIN_PHONE, `🚀 New Pilot: ${sanitizedEmail} (${BETA_LEADS.size + 1}/${MAX_LEADS})`)
+            .catch(err => console.error('[Twilio] Lead SMS failed:', err));
+    }
+
+    BETA_LEADS.add(sanitizedEmail);
+
+    // BACKUP: Mirror to Redis
+    if (redis) {
+        redis.sadd('beta_leads', sanitizedEmail).catch(err => console.error('[Redis] Save failed:', err));
+    }
+
+    res.json({ success: true, count: BETA_LEADS.size });
+});
+
+/**
+ * Admin: Get Leads
+ * GET /api/leads
+ */
+app.get('/api/leads', requireAdmin, (req, res) => {
+    res.json({ leads: Array.from(BETA_LEADS) });
+});
+
+/**
+ * Hourly Vesper Report (optional)
+ *
+ * ✅ Default: OFF (prevents accidental SMS blasts in production)
+ * Enable by setting: ENABLE_ADMIN_SMS=true and ADMIN_PHONE=<your number>
+ *
+ * Dedupes across replicas using a Redis NX lock when available.
+ */
+let lastReportCount = BETA_LEADS.size;
+let lastReportSentAt = 0;
+
+async function sendHourlyReportOnce() {
+    if (!ENABLE_ADMIN_SMS) return;
+
+    if (!ADMIN_PHONE) {
+        console.warn('[Vesper] ENABLE_ADMIN_SMS=true but ADMIN_PHONE is not set.');
+        return;
+    }
+    if (!isTwilioEnabled()) {
+        console.warn('[Vesper] ENABLE_ADMIN_SMS=true but Twilio is not configured/enabled.');
+        return;
+    }
+
+    // Local safety throttle (prevents rapid repeats on restarts)
+    const now = Date.now();
+    if (now - lastReportSentAt < 55 * 60 * 1000) return;
+
+    // Distributed lock if Redis is present (prevents duplicate SMS across multiple instances)
+    if (redis) {
+        try {
+            const lockKey = 'vesper:hourly_report_lock';
+            const lockTtlSeconds = 55 * 60;
+            const ok = await redis.set(lockKey, String(now), 'NX', 'EX', lockTtlSeconds);
+            if (!ok) return; // another instance already sent recently
+        } catch (err) {
+            console.warn('[Vesper] Redis lock failed (continuing without lock):', err?.message || err);
+        }
+    }
+
+    const currentCount = BETA_LEADS.size;
+    const newLeads = Math.max(0, currentCount - lastReportCount);
+
+    const msg = `📊 Hourly Report:\n🆕 New Pilots: ${newLeads}\n👥 Total: ${currentCount}\n💸 Est. Cost: < $5.00`;
+    console.log(`[Vesper] Sending hourly report: ${msg.replace(/\n/g, ', ')}`);
+
+    try {
+        await sendSms(ADMIN_PHONE, msg);
+        lastReportCount = currentCount;
+        lastReportSentAt = now;
+    } catch (err) {
+        console.error('[Vesper] Report failed:', err);
+    }
+}
+
+function scheduleHourlyReport() {
+    // Align to the top of the hour to reduce drift
+    const now = new Date();
+    const msUntilNextHour =
+        (60 - now.getMinutes()) * 60 * 1000 -
+        now.getSeconds() * 1000 -
+        now.getMilliseconds();
+
+    setTimeout(() => {
+        sendHourlyReportOnce().catch(() => {});
+        setInterval(() => {
+            sendHourlyReportOnce().catch(() => {});
+        }, 60 * 60 * 1000);
+    }, Math.max(1000, msUntilNextHour));
+}
+
+scheduleHourlyReport();
+
 
 // Make Redis available to routers
 if (redis) {
@@ -534,7 +598,7 @@ server.on('upgrade', (request, socket, head) => {
 });
 
 // Start server with WebSocket support
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`🐟 DeepFish API Server running on http://localhost:${PORT}`);
     console.log(`📞 Vesper is ready to take calls`);
     console.log(`📋 Mei is ready to manage projects`);
