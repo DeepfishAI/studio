@@ -65,6 +65,10 @@ export function buildSystemPrompt(profile, skinOverlay = null) {
         prompt += ` You are "${identity.tagline}".`;
     }
 
+    // ============================================================
+    // PERSONALITY SECTION - Character traits, backstory, behavior
+    // ============================================================
+
     // Add full backstory (origin, philosophy, reputation)
     if (personality?.backstory) {
         if (personality.backstory.origin) {
@@ -143,6 +147,14 @@ export function buildSystemPrompt(profile, skinOverlay = null) {
         }
     }
 
+    // ============================================================
+    // END PERSONALITY SECTION
+    // ============================================================
+
+    // ============================================================
+    // USER CONTEXT - Learned facts and preferences
+    // ============================================================
+
     // Add user-specific context
     if (userOverlay?.customInstructions) {
         prompt += `\n\n## User Preferences\n${userOverlay.customInstructions}`;
@@ -154,6 +166,10 @@ export function buildSystemPrompt(profile, skinOverlay = null) {
             prompt += `- ${fact.fact}\n`;
         });
     }
+
+    // ============================================================
+    // TOOL CONFIGURATION - Action mode for file operations
+    // ============================================================
 
     // ACTION MODE: For agents with file/code tools, emphasize they must ACT
     if (agentConfig?.tools?.fileSystem || agentConfig?.tools?.codeExecution) {
