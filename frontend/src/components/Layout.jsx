@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { agents } from '../data/agents'
+import ScrollingCodeBackground from './ScrollingCodeBackground'
 import '../styles/app.css'
 import { useEffect } from 'react'
 
@@ -27,6 +28,9 @@ function Layout() {
 
     return (
         <div className="app-layout">
+            {/* Scrolling Code Background */}
+            <ScrollingCodeBackground />
+
             {/* Beta Warning Banner */}
             <div style={{
                 position: 'fixed',
