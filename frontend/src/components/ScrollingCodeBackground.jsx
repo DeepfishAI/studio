@@ -24,7 +24,7 @@ export default function ScrollingCodeBackground() {
     useEffect(() => {
         // Generate 5 random code lines with different speeds & colors
         const colors = ['#1E90FF', '#9B59B6', '#2ECC71', '#FF9F43', '#E74C99', '#00D4FF'];
-        const newLines = Array.from({ length: 5 }, (_, i) => ({
+        const newLines = Array.from({ length: 6 }, (_, i) => ({
             id: i,
             code: codeSnippets[Math.floor(Math.random() * codeSnippets.length)],
             color: colors[i % colors.length],
@@ -44,7 +44,7 @@ export default function ScrollingCodeBackground() {
             overflow: 'hidden',
             pointerEvents: 'none',
             zIndex: 0,
-            opacity: 0.12
+            opacity: 0.15
         }}>
             {lines.map(line => (
                 <div
@@ -67,10 +67,10 @@ export default function ScrollingCodeBackground() {
             <style>{`
         @keyframes scrollLeft {
           from {
-            transform: translateX(100vw);
+            transform: translateX(-100%);
           }
           to {
-            transform: translateX(-100%);
+            transform: translateX(100vw);
           }
         }
       `}</style>
