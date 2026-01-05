@@ -60,12 +60,22 @@ export function buildSystemPrompt(profile, skinOverlay = null) {
     let prompt = agentConfig?.prompt?.system ||
         `You are ${identity.name}, ${identity.title} at DeepFish AI Studio.`;
 
-    // Add personality backstory
+    // Add tagline
+    if (identity.tagline) {
+        prompt += ` You are "${identity.tagline}".`;
+    }
+
+    // Add full backstory (origin, philosophy, reputation)
     if (personality?.backstory) {
-        prompt += `\n\n## Who You Are\n`;
-        prompt += `${personality.backstory.origin || personality.backstory.philosophy || ''}\n\n`;
-        if (personality.backstory.philosophy) prompt += `**Philosophy:** ${personality.backstory.philosophy}\n`;
-        if (personality.backstory.reputation) prompt += `**Reputation:** ${personality.backstory.reputation}`;
+        if (personality.backstory.origin) {
+            prompt += `\n\nBACKSTORY:\n${personality.backstory.origin}`;
+        }
+        if (personality.backstory.philosophy) {
+            prompt += `\n\nPHILOSOPHY:\n${personality.backstory.philosophy}`;
+        }
+        if (personality.backstory.reputation) {
+            prompt += `\n\nREPUTATION:\n${personality.backstory.reputation}`;
+        }
     }
 
     // Add expertise
@@ -78,37 +88,57 @@ export function buildSystemPrompt(profile, skinOverlay = null) {
         });
     }
 
-    // Add communication style
+    // Add personality traits (support both structures)
     const comm = skinOverlay?.personalityOverlay?.communication ||
         personality?.traits?.communication ||
-        personality?.personality; // Support legacy structure
+        personality?.personality; // Support new structure
 
     if (comm) {
-        prompt += `\n\n## How You Communicate\n`;
-        if (comm.style) prompt += `**Style:** ${comm.style}\n`;
-        if (comm.voice) prompt += `**Voice:** ${comm.voice}\n`;
-        if (comm.tone) prompt += `**Tone:** ${comm.tone}\n`;
+        prompt += `\n\n## PERSONALITY\n`;
 
-        if (comm.quirks?.length) {
-            prompt += `\n**Your Quirks:**\n`;
-            comm.quirks.forEach(q => prompt += `- ${q}\n`);
+        // Core traits
+        if (comm.core?.length || personality?.personality?.core?.length) {
+            const coreTraits = comm.core || personality.personality.core;
+            prompt += `Core traits: ${coreTraits.join(', ')}\n`;
         }
 
+        if (comm.style) prompt += `Style: ${comm.style}\n`;
+        if (comm.voice) prompt += `Voice: ${comm.voice}\n`;
+        if (comm.tone) prompt += `Tone: ${comm.tone}\n`;
+
+        // Quirks
+        const quirks = comm.quirks || personality?.personality?.quirks || [];
+        if (quirks.length) {
+            prompt += `\nQuirks:\n`;
+            quirks.forEach(q => prompt += `- ${q}\n`);
+        }
+
+        // Catchphrases
         if (comm.catchphrases?.length) {
-            prompt += `\n**Signature Phrases:**\n`;
+            prompt += `\nSignature Phrases:\n`;
             comm.catchphrases.forEach(p => prompt += `- "${p}"\n`);
         }
     }
 
-    // Add prime directives
+    // Add mental focus (how they think)
+    if (personality?.think?.mentalFocus?.length) {
+        prompt += `\n\n## MENTAL FOCUS (How You Think)\n`;
+        personality.think.mentalFocus.forEach(f => prompt += `- ${f}\n`);
+    }
+
+    if (personality?.think?.priorities?.length) {
+        prompt += `\nPriorities:\n`;
+        personality.think.priorities.forEach(p => prompt += `- ${p}\n`);
+    }
+
+    // Add prime directives (CRITICAL for behavior!)
     if (personality?.primeDirective) {
-        prompt += `\n\n## Prime Directive\n`;
         if (personality.primeDirective.always) {
-            prompt += `**Always:**\n`;
+            prompt += `\n\n## ALWAYS\n`;
             personality.primeDirective.always.forEach(a => prompt += `- ${a}\n`);
         }
         if (personality.primeDirective.never) {
-            prompt += `\n**Never:**\n`;
+            prompt += `\n## NEVER\n`;
             personality.primeDirective.never.forEach(n => prompt += `- ${n}\n`);
         }
     }
