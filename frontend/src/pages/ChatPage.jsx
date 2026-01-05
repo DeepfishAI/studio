@@ -151,14 +151,16 @@ function ChatPage() {
 
         } catch (error) {
             console.error('[Chat] Error:', error)
-            const agentResponse = {
-                id: messages.length + 2,
+            const errorMessage = {
+            \n                id: messages.length + 2,
                 type: 'agent',
                 agent: currentAgent,
-                text: getSimulatedResponse(currentAgent, userInput),
+                text: `❌ **Error: Unable to connect to ${current Agent.name
+            } **\n\n${ error.message || 'Unknown error occurred'
+        } \n\nPlease check: \n - API keys are configured\n - Backend service is running\n - Network connection is stable`,
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }
-            setMessages(prev => [...prev, agentResponse])
+            setMessages(prev => [...prev, errorMessage])
         } finally {
             setIsTyping(false)
         }
@@ -167,7 +169,7 @@ function ChatPage() {
     const playVoice = async (text, agentId) => {
         try {
             const { url } = await api.generateTts(text, agentId)
-            const audioUrl = `${import.meta.env.VITE_API_URL || ''}${url}`
+            const audioUrl = `${ import.meta.env.VITE_API_URL || '' }${ url } `
 
             // Stop current audio if playing
             audioRef.current.pause()
@@ -189,7 +191,7 @@ function ChatPage() {
                         className="chat-header__avatar"
                         style={{ cursor: 'context-menu' }}
                         onError={(e) => {
-                            e.target.style.background = `var(--color-${currentAgent.id})`
+                            e.target.style.background = `var(--color - ${ currentAgent.id })`
                         }}
                     />
                 </AgentContextMenu>
@@ -220,14 +222,14 @@ function ChatPage() {
                                 value={volume}
                                 onChange={(e) => setVolume(parseFloat(e.target.value))}
                                 style={{ width: '60px', accentColor: 'var(--color-primary)' }}
-                                title={`Volume: ${Math.round(volume * 100)}%`}
+                                title={`Volume: ${ Math.round(volume * 100) }% `}
                             />
                         </div>
                     )}
 
                     {/* Microphone Toggle */}
                     <button
-                        className={`btn btn--circle ${isListening ? 'btn--danger' : 'btn--secondary'}`}
+                        className={`btn btn--circle ${ isListening ? 'btn--danger' : 'btn--secondary' } `}
                         onClick={() => {
                             if (isListening) {
                                 recognitionRef.current?.stop()
@@ -252,7 +254,7 @@ function ChatPage() {
 
                     {/* Speaker Toggle */}
                     <button
-                        className={`btn btn--circle ${voiceEnabled ? 'btn--success' : 'btn--secondary'}`}
+                        className={`btn btn--circle ${ voiceEnabled ? 'btn--success' : 'btn--secondary' } `}
                         onClick={() => {
                             setVoiceEnabled(!voiceEnabled)
                             if (!voiceEnabled) {
@@ -266,7 +268,7 @@ function ChatPage() {
                     >
                         {voiceEnabled ? '🔊' : '🔇'}
                     </button>
-                    <Link to={`/agents/${currentAgent.id}`} className="btn btn--secondary btn--sm">
+                    <Link to={`/ agents / ${ currentAgent.id } `} className="btn btn--secondary btn--sm">
                         View Profile
                     </Link>
                 </div>
@@ -275,7 +277,7 @@ function ChatPage() {
             {/* Messages */}
             <div className="chat-messages">
                 {messages.map(message => (
-                    <div key={message.id} className={`message message--${message.type}`}>
+                    <div key={message.id} className={`message message--${ message.type } `}>
                         {message.type === 'agent' && (
                             <img
                                 src={message.agent.portrait}
@@ -320,7 +322,7 @@ function ChatPage() {
             <form className="chat-input" onSubmit={handleSubmit}>
                 <textarea
                     className="chat-input__field"
-                    placeholder={`Message ${currentAgent.name}...`}
+                    placeholder={`Message ${ currentAgent.name }...`}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -384,35 +386,35 @@ function getSimulatedResponse(agent, userInput) {
             `I'll coordinate with the team on this. Hanna might be perfect for the visual aspects, and IT can handle the technical implementation.`,
             `Understood. I'm dispatching this to the appropriate team members now. You'll see progress updates as we go.`,
         ],
-        hanna: [
-            `Interesting! Let me think about the visual hierarchy here...`,
-            `I'm seeing possibilities here. Would you prefer a minimalist approach or something more dynamic?`,
-            `I love this direction. Let me sketch out some concepts.`,
-        ],
+    hanna: [
+        `Interesting! Let me think about the visual hierarchy here...`,
+        `I'm seeing possibilities here. Would you prefer a minimalist approach or something more dynamic?`,
+        `I love this direction. Let me sketch out some concepts.`,
+    ],
         it: [
             `Analyzing requirements... This looks like a standard implementation with some custom logic.`,
             `I'll architect this with scalability in mind.`,
             `Zero ambiguity. I'll have a working prototype ready for review shortly.`,
         ],
-        sally: [
-            `Let me analyze the competitive landscape first...`,
-            `From an SEO perspective, there are several opportunities here.`,
-            `Great! I'll put together a growth strategy with measurable KPIs.`,
-        ],
-        vesper: [
-            `*sips coffee* Sounds like you need to talk to Mei about that. Want me to patch you through?`,
-            `Mmm, I can connect you to the right person. Just give me the details.`,
-            `Oh, you again. *smiles* What is it this time?`,
-        ],
-        oracle: [
-            `I have foreseen this need. The skill catalog has been updated with new capabilities that may serve you well.`,
-            `Interesting... The patterns in your request suggest you would benefit from our premium tier skills.`,
-            `All is as it should be. I have trained the agents well for this very purpose.`,
-        ],
+            sally: [
+                `Let me analyze the competitive landscape first...`,
+                `From an SEO perspective, there are several opportunities here.`,
+                `Great! I'll put together a growth strategy with measurable KPIs.`,
+            ],
+                vesper: [
+                    `*sips coffee* Sounds like you need to talk to Mei about that. Want me to patch you through?`,
+                    `Mmm, I can connect you to the right person. Just give me the details.`,
+                    `Oh, you again. *smiles* What is it this time?`,
+                ],
+                    oracle: [
+                        `I have foreseen this need. The skill catalog has been updated with new capabilities that may serve you well.`,
+                        `Interesting... The patterns in your request suggest you would benefit from our premium tier skills.`,
+                        `All is as it should be. I have trained the agents well for this very purpose.`,
+                    ],
     }
 
-    const agentResponses = responses[agent.id] || responses.mei
-    return agentResponses[Math.floor(Math.random() * agentResponses.length)]
+const agentResponses = responses[agent.id] || responses.mei
+return agentResponses[Math.floor(Math.random() * agentResponses.length)]
 }
 
 export default ChatPage

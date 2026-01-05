@@ -13,7 +13,7 @@
 // ========================================
 // MASTER SWITCH - Set to false to disable all fallbacks
 // ========================================
-export const ENABLE_FALLBACKS = true;
+export const ENABLE_FALLBACKS = false;
 
 // ========================================
 // LLM MODEL FALLBACKS BY TIER
