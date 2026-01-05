@@ -52,8 +52,8 @@ if (process.env.REDIS_PUBLIC_URL || process.env.REDIS_URL) {
         // Bind redis to provider-key store and hydrate cache (best-effort)
         try {
             bindProviderKeysRedis(redis);
-            initProviderKeys().catch(() => {});
-        } catch {}
+            initProviderKeys().catch(() => { });
+        } catch { }
         restoreLeads(); // Sync on connect
     });
 } else {
@@ -257,9 +257,9 @@ function scheduleHourlyReport() {
         now.getMilliseconds();
 
     setTimeout(() => {
-        sendHourlyReportOnce().catch(() => {});
+        sendHourlyReportOnce().catch(() => { });
         setInterval(() => {
-            sendHourlyReportOnce().catch(() => {});
+            sendHourlyReportOnce().catch(() => { });
         }, 60 * 60 * 1000);
     }, Math.max(1000, msUntilNextHour));
 }
@@ -602,7 +602,7 @@ server.listen(PORT, '0.0.0.0', () => {
     console.log(`🐟 DeepFish API Server running on http://localhost:${PORT}`);
     console.log(`📞 Vesper is ready to take calls`);
     console.log(`📋 Mei is ready to manage projects`);
-    console.log(`💳 Billing: ${Billing.isBillingEnabled() ? 'ENABLED' : 'DISABLED (configure Stripe keys)'}`);
+    console.log(`💳 Billing: ${Billing.isBillingEnabled() ? 'ENABLED' : 'DISABLED (handled by deployment service)'}`);
     console.log(`🧠 Memory: ENABLED`);
     try { startMeiDailyReviewScheduler(); console.log('📚 Mei knowledge review scheduler: STARTED'); } catch (e) { console.warn('Mei scheduler failed to start', e); }
     console.log(`📞 Twilio: ${isTwilioEnabled() ? 'ENABLED' : 'DISABLED'}`);
