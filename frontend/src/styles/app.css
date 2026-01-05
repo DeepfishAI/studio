@@ -160,8 +160,10 @@
 
 .sidebar {
     width: 280px;
-    background: var(--color-bg-secondary);
-    border-right: 1px solid var(--color-bg-tertiary);
+    background: rgba(42, 42, 42, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
     padding: var(--space-lg);
@@ -274,6 +276,9 @@
     margin-left: 280px;
     padding: var(--space-2xl);
     min-height: 100vh;
+    background: rgba(26, 26, 26, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 /* ========================================
@@ -322,7 +327,10 @@
 }
 
 .quick-action-card {
-    background: var(--color-bg-secondary);
+    background: rgba(42, 42, 42, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-xl);
     padding: var(--space-xl);
     text-align: center;
@@ -553,7 +561,10 @@
 }
 
 .agent-card {
-    background: var(--color-bg-secondary);
+    background: rgba(42, 42, 42, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-xl);
     padding: var(--space-xl);
     transition: all var(--transition-normal);
