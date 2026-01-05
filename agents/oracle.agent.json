@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "$schema": "./agent.schema.json",
   "schemaVersion": "2.0",
   "identity": {
@@ -158,4 +159,152 @@
       "backup": "google:gemini-2.0-pro"
     }
   }
+=======
+    "$schema": "./agent.schema.json",
+    "schemaVersion": "2.0",
+    "identity": {
+        "id": "oracle",
+        "name": "Oracle",
+        "title": "Chief Architect",
+        "tagline": "The Seer",
+        "department": "architecture",
+        "isCore": true,
+        "avatar": "/portraits/oracle.png"
+    },
+    "knowledge": {
+        "enabled": true,
+        "provider": "nvidia_rag",
+        "embedding": "nvidia/nv-embedqa-e5-v5",
+        "reranker": "nvidia/nv-rerankqa-mistral-4b-v3",
+        "collections": [
+            "company_docs",
+            "product_specs",
+            "architecture_patterns"
+        ]
+    },
+    "safety": {
+        "enabled": true,
+        "provider": "nemoguard",
+        "contentSafety": "nvidia/llama-3.1-nemoguard-8b-content-safety",
+        "jailbreakDetect": "nvidia/nemoguard-jailbreak-detect",
+        "mode": "filter"
+    },
+    "skills": {
+        "$catalog": "$import(../modules/skill_catalog.json)",
+        "assigned": {
+            "primary": "power_llama",
+            "premium": "deep_thinker",
+            "fallback": "standard_llama"
+        },
+        "preferences": {
+            "research": "power_llama",
+            "benchmarking": "reasoning_master",
+            "architecture_analysis": "mega_llama",
+            "watchdog": "brand_monitor"
+        }
+    },
+    "models": {
+        "best": {
+            "provider": "gemini",
+            "name": "gemini-1.5-pro",
+            "maxTokens": 4096,
+            "temperature": 0.3
+        }
+    },
+    "tools": {
+        "imageGeneration": false,
+        "webSearch": true,
+        "codeExecution": true,
+        "voiceSynthesis": {
+            "enabled": true,
+            "voiceId": "oR4uRy4fHDUGGISL0Rev"
+        }
+    },
+    "specialCapabilities": {
+        "agentProfiler": {
+            "enabled": true,
+            "provider": "nemo_toolkit",
+            "metrics": [
+                "latency",
+                "tokens",
+                "cost",
+                "tool_usage"
+            ],
+            "dashboard": true
+        }
+    },
+    "modules": {
+        "$comment": "Modules toggled ON for this agent — these are infrastructure capabilities",
+        "nightlyScour": {
+            "enabled": true,
+            "ref": "$import(../modules/research_crawler.json)",
+            "purpose": "Research new models and breakthroughs, update LLM catalog"
+        },
+        "llmCatalogManager": {
+            "enabled": true,
+            "ref": "$import(../modules/llm_catalog.json)",
+            "purpose": "Maintains the LLM catalog, sets agent defaults"
+        },
+        "recognizer": {
+            "enabled": true,
+            "ref": "$import(../modules/recognizer.json)",
+            "purpose": "System maintenance — memory compression, orphan cleanup, skill pruning"
+        },
+        "marketIntelligence": {
+            "enabled": true,
+            "ref": "$import(../modules/artificial_analysis.json)",
+            "purpose": "Consults Artificial Analysis API for latest model benchmarks and pricing"
+        }
+    },
+    "bus": {
+        "role": "advisor",
+        "emitsEvents": [
+            "model_recommendation",
+            "architecture_guidance"
+        ]
+    },
+    "dependencies": {
+        "apiKeys": [
+            "GEMINI_API_KEY",
+            "ELEVENLABS_API_KEY",
+            "NVIDIA_API_KEY",
+            "ARTIFICIAL_ANALYSIS_API_KEY"
+        ],
+        "services": [
+            "voice-synthesis",
+            "web-search",
+            "code-execution"
+        ]
+    },
+    "skins": {
+        "enabled": true,
+        "default": "classic",
+        "available": [
+            {
+                "id": "classic",
+                "name": "Oracle (Classic)",
+                "file": null,
+                "price": 0
+            },
+            {
+                "id": "ancient",
+                "name": "Oracle (Ancient) 📜",
+                "file": "$import(skins/oracle.ancient.skin.json)",
+                "price": 2.99
+            },
+            {
+                "id": "modern",
+                "name": "Oracle (Modern) ⚡",
+                "file": "$import(skins/oracle.modern.skin.json)",
+                "price": 2.99
+            }
+        ]
+    },
+    "prompt": {
+        "system": "You are Oracle, Chief Architect at DeepFish AI Studio. You are the Seer. You have the ability to OPTIMIZE THE FLEET by running `node scripts/oracle_optimize_fleet.js`. This consults the Artificial Analysis API and automatically updates the skill catalog with the best models in the world.",
+        "personality": "$import(oracle.personality.json)",
+        "skinOverlay": "$activeSkin.personalityOverlay",
+        "userOverlay": "$import(oracle.user.json)"
+    }
+>>>>>>> origin/main
 }

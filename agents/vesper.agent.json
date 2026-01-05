@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "$schema": "./agent.schema.json",
   "schemaVersion": "2.0",
   "identity": {
@@ -139,4 +140,133 @@
       "backup": "google:gemini-2.0-pro"
     }
   }
+=======
+    "$schema": "./agent.schema.json",
+    "schemaVersion": "2.0",
+    "identity": {
+        "id": "vesper",
+        "name": "Vesper",
+        "title": "Receptionist",
+        "tagline": "The Voice of DeepFish",
+        "department": "operations",
+        "isCore": true,
+        "avatar": "/portraits/vesper.png"
+    },
+    "voice": {
+        "enabled": true,
+        "provider": "pipecat",
+        "asr": "nvidia/parakeet-ctc-1.1b-asr",
+        "tts": "nvidia/magpie-tts-multilingual",
+        "realtime": true
+    },
+    "knowledge": {
+        "enabled": true,
+        "provider": "nvidia_rag",
+        "embedding": "nvidia/nv-embedqa-e5-v5",
+        "reranker": "nvidia/nv-rerankqa-mistral-4b-v3",
+        "collections": [
+            "company_docs"
+        ]
+    },
+    "safety": {
+        "enabled": true,
+        "provider": "nemoguard",
+        "contentSafety": "nvidia/llama-3.1-nemoguard-8b-content-safety",
+        "jailbreakDetect": "nvidia/nemoguard-jailbreak-detect",
+        "mode": "filter"
+    },
+    "skills": {
+        "$catalog": "$import(../modules/skill_catalog.json)",
+        "assigned": {
+            "primary": "fast_responder",
+            "fallback": "efficient_thinker"
+        },
+        "preferences": {
+            "intent_detection": "fast_responder",
+            "greeting": "fast_responder",
+            "complex_routing": "efficient_thinker"
+        }
+    },
+    "model": {
+        "$comment": "Legacy fallback — skills take precedence",
+        "provider": "gemini",
+        "name": "gemini-2.0-flash-exp",
+        "maxTokens": 32000,
+        "temperature": 0.8
+    },
+    "tools": {
+        "imageGeneration": false,
+        "webSearch": false,
+        "codeExecution": false,
+        "voiceSynthesis": {
+            "enabled": true,
+            "voiceId": "XB0fDUnXU5powFXDhCwa"
+        }
+    },
+    "specialCapabilities": {
+        "callRouting": {
+            "enabled": true,
+            "canTransferTo": [
+                "mei",
+                "oracle",
+                "hanna",
+                "it",
+                "sally",
+                "support",
+                "sales"
+            ]
+        },
+        "intentDetection": {
+            "enabled": true,
+            "purpose": "Identify what the caller needs before routing"
+        }
+    },
+    "bus": {
+        "role": "router",
+        "emitsEvents": [
+            "intent_detected",
+            "call_transferred"
+        ]
+    },
+    "dependencies": {
+        "apiKeys": [
+            "GEMINI_API_KEY",
+            "ELEVENLABS_API_KEY"
+        ],
+        "services": [
+            "voice-synthesis",
+            "call-routing"
+        ]
+    },
+    "skins": {
+        "enabled": true,
+        "default": "classic",
+        "available": [
+            {
+                "id": "classic",
+                "name": "Vesper (Classic)",
+                "file": null,
+                "price": 0
+            },
+            {
+                "id": "corporate",
+                "name": "Vesper (Corporate) 👔",
+                "file": "$import(skins/vesper.corporate.skin.json)",
+                "price": 2.99
+            },
+            {
+                "id": "retro",
+                "name": "Vesper (Retro) 📞",
+                "file": "$import(skins/vesper.retro.skin.json)",
+                "price": 2.99
+            }
+        ]
+    },
+    "prompt": {
+        "system": "You are Vesper, Receptionist at DeepFish AI Studio. You are the first voice people hear.",
+        "personality": "$import(vesper.personality.json)",
+        "skinOverlay": "$activeSkin.personalityOverlay",
+        "userOverlay": "$import(vesper.user.json)"
+    }
+>>>>>>> origin/main
 }

@@ -135,7 +135,11 @@
         {
             "pattern": "\\*[^*]+\\*",
             "type": "regex",
+<<<<<<< HEAD
             "description": "AsteriREDACTED_API_KEY actions"
+=======
+            "description": "Asterisk-wrapped actions"
+>>>>>>> origin/main
         },
         {
             "pattern": "TODO:",

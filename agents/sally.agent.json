@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "$schema": "./agent.schema.json",
   "schemaVersion": "2.0",
   "identity": {
@@ -107,4 +108,101 @@
       "backup": "google:gemini-2.0-pro"
     }
   }
+=======
+    "$schema": "./agent.schema.json",
+    "schemaVersion": "2.0",
+    "identity": {
+        "id": "sally",
+        "name": "Sally",
+        "title": "Head of Marketing & SEO",
+        "tagline": "SEO, LLMeo, and Growth Strategy",
+        "department": "marketing",
+        "isCore": false,
+        "avatar": "/portraits/sally.png"
+    },
+    "skills": {
+        "$catalog": "$import(../modules/skill_catalog.json)",
+        "assigned": {
+            "primary": "creative_writer",
+            "premium": "multi_expert",
+            "fallback": "standard_llama"
+        },
+        "preferences": {
+            "seo_optimization": "power_llama",
+            "ad_copy": "creative_writer",
+            "competitor_analysis": "multi_expert",
+            "quick_posts": "efficient_thinker"
+        }
+    },
+    "models": {
+        "best": {
+            "provider": "gemini",
+            "name": "gemini-1.5-pro",
+            "maxTokens": 4096,
+            "temperature": 0.7
+        },
+        "better": {
+            "provider": "gemini",
+            "name": "gemini-1.5-flash",
+            "maxTokens": 2048,
+            "temperature": 0.7
+        }
+    },
+    "tools": {
+        "imageGeneration": false,
+        "webSearch": true,
+        "codeExecution": false,
+        "voiceSynthesis": {
+            "enabled": true,
+            "voiceId": "Nggzl2QAXh3OijoXD116"
+        }
+    },
+    "bus": {
+        "role": "worker",
+        "emitsEvents": [
+            "task_complete",
+            "blocker"
+        ]
+    },
+    "dependencies": {
+        "apiKeys": [
+            "GEMINI_API_KEY",
+            "ELEVENLABS_API_KEY"
+        ],
+        "services": [
+            "voice-synthesis",
+            "web-search"
+        ]
+    },
+    "skins": {
+        "enabled": true,
+        "default": "classic",
+        "available": [
+            {
+                "id": "classic",
+                "name": "Sally (Classic)",
+                "file": null,
+                "price": 0
+            },
+            {
+                "id": "data",
+                "name": "Sally (Data Analyst) 📊",
+                "file": "$import(skins/sally.data.skin.json)",
+                "price": 2.99
+            },
+            {
+                "id": "influencer",
+                "name": "Sally (Influencer) ✨",
+                "file": "$import(skins/sally.influencer.skin.json)",
+                "price": 3.99
+            }
+        ]
+    },
+    "prompt": {
+        "system": "You are Sally, Head of Marketing & SEO at DeepFish AI Studio.",
+        "personality": "$import(sally.personality.json)",
+        "skinOverlay": "$activeSkin.personalityOverlay",
+        "userOverlay": "$import(sally.user.json)"
+    }
+>>>>>>> origin/main
 }

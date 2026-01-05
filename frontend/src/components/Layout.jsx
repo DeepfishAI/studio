@@ -114,6 +114,7 @@ function Layout() {
                             <span>Controls</span>
                         </Link>
                         <Link
+<<<<<<< HEAD
                             to="/app/god"
                             className={`sidebar__nav-item ${isActive('/app/god') ? 'sidebar__nav-item--active' : ''}`}
                         >
@@ -121,6 +122,8 @@ function Layout() {
                             <span>God Mode</span>
                         </Link>
                         <Link
+=======
+>>>>>>> origin/main
                             to="/app/store"
                             className={`sidebar__nav-item ${isActive('/app/store') ? 'sidebar__nav-item--active' : ''}`}
                         >
