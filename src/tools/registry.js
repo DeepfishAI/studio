@@ -6,12 +6,18 @@
 
 import * as fsTools from './fs.js';
 import * as imageTools from './images.js';
+import * as executionTools from './execution.js';
+import * as searchTools from './search.js';
+import * as taskTools from './task.js';
 import { Tool, ToolCollection, createTool } from './base.js';
 
 // Legacy tools (backward compatible)
 const allTools = {
     ...fsTools.tools,
-    ...imageTools.tools
+    ...imageTools.tools,
+    execute_javascript: executionTools.tool,
+    search_web: searchTools.tool,
+    delegate_task: taskTools.tool
 };
 
 // New ToolCollection for enhanced tool management

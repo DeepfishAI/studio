@@ -71,7 +71,8 @@
     "voiceSynthesis": {
       "enabled": true,
       "voiceId": "MF3mGyEYCl7XYWbV9V6O"
-    }
+    },
+    "subagents": true
   },
   "orchestration": {
     "canDispatch": true,

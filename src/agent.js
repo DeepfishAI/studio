@@ -177,7 +177,7 @@ export class Agent {
 
         // Check if this agent has tools enabled
         const agentTools = this.profile.agent?.tools;
-        const hasTools = agentTools?.fileSystem || agentTools?.codeExecution || agentTools?.imageGeneration;
+        const hasTools = agentTools?.fileSystem || agentTools?.codeExecution || agentTools?.imageGeneration || agentTools?.webSearch;
 
         if (!hasTools) {
             console.log(`[${this.name}] 🔧 No tools enabled, falling back to regular process()`);
@@ -189,11 +189,20 @@ export class Agent {
 
         // Filter to only tools this agent can use
         const allowedTools = [];
-        if (agentTools.fileSystem || agentTools.codeExecution) {
+        if (agentTools.fileSystem) {
             allowedTools.push('write_file', 'read_file', 'list_files');
+        }
+        if (agentTools.codeExecution) {
+            allowedTools.push('execute_javascript');
+        }
+        if (agentTools.webSearch) {
+            allowedTools.push('search_web');
         }
         if (agentTools.imageGeneration) {
             allowedTools.push('generate_image');
+        }
+        if (agentTools.subagents) {
+            allowedTools.push('delegate_task');
         }
         const filteredSchemas = toolSchemas.filter(t => allowedTools.includes(t.name));
 
